@@ -1,9 +1,12 @@
 /* ===================================================
-   Dama - Tahta Stilleri (board.css)
-   Ahşap tema dama tahtası ve taşları
+   board.css — Türk Daması Tahta ve Taş Stilleri
+   Referans: klasik ahşap dama görünümü
    =================================================== */
 
-/* Tahta sarmalayıcı: tahtayı ortalar ve kareleştirir */
+/* ===================================================
+   TAHTA
+   =================================================== */
+
 .board-wrap {
     width: 100%;
     max-width: 560px;
@@ -12,23 +15,26 @@
 }
 
 /* Dama tahtası: 8x8 ızgara */
-.board {
+#board {
     display: grid;
     grid-template-columns: repeat(8, 1fr);
     grid-template-rows: repeat(8, 1fr);
     width: 100%;
     aspect-ratio: 1 / 1;
-    border: 6px solid var(--ahsap-koyu, #5C3D11);
-    border-radius: 6px;
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+    border: 10px solid #5c3310;
+    border-radius: 4px;
+    box-shadow:
+        inset 0 0 0 3px #7a4820,
+        0 10px 32px rgba(0, 0, 0, 0.55);
     overflow: hidden;
     user-select: none;
     -webkit-user-select: none;
     touch-action: manipulation;
+    background: #5c3310;
 }
 
 /* Tek bir kare */
-.board__square {
+.square {
     position: relative;
     display: flex;
     align-items: center;
@@ -36,251 +42,260 @@
     cursor: default;
 }
 
-/* Açık renk kare (ahşap açık) */
-.board__square--light {
-    background-color: var(--ahsap-acik, #D4A853);
+/* Açık kare — krem/bej */
+.square--light {
+    background-color: #f0d9b5;
 }
 
-/* Koyu renk kare (ahşap koyu) - oynanabilir kareler */
-.board__square--dark {
-    background-color: var(--ahsap-ana, #8B6914);
+/* Koyu kare — koyu kahve */
+.square--dark {
+    background-color: #b58863;
     cursor: pointer;
 }
 
-/* Seçili kare vurgusu */
-.board__square--selected::after {
+/* Seçili kare */
+.square.is-selected::after {
     content: "";
     position: absolute;
     inset: 0;
-    background-color: rgba(255, 235, 130, 0.45);
-    box-shadow: inset 0 0 0 3px rgba(255, 220, 90, 0.9);
+    background-color: rgba(255, 230, 0, 0.35);
+    box-shadow: inset 0 0 0 3px rgba(255, 210, 0, 0.85);
     pointer-events: none;
+    z-index: 1;
 }
 
-/* Gidilebilir hamle göstergesi (boş kare) */
-.board__square--hareket::before {
-    content: "";
-    width: 28%;
-    height: 28%;
-    border-radius: 50%;
-    background-color: rgba(60, 200, 90, 0.55);
-    box-shadow: 0 0 6px rgba(60, 200, 90, 0.7);
-    pointer-events: none;
+/* Son hamle izleri */
+.square.is-last-from {
+    background-color: #cdd16f !important;
 }
-
-/* Taş alma hamlesi göstergesi (rakip taş üzerinde) */
-.board__square--alma::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    box-shadow: inset 0 0 0 4px rgba(220, 60, 60, 0.85);
-    border-radius: 4px;
-    pointer-events: none;
-}
-
-/* Son hamlenin başlangıç/bitiş karesi vurgusu */
-.board__square--son-hamle {
-    background-color: rgba(255, 235, 130, 0.25);
+.square.is-last-to {
+    background-color: #aaa23a !important;
 }
 
 /* ===================================================
-   Taşlar
+   HAMLE İPUÇLARI
    =================================================== */
 
-/* Taş tabanı */
+.move-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    z-index: 3;
+}
+
+/* Boş kareye hamle — yeşil nokta */
+.move-hint--simple::after {
+    content: "";
+    width: 30%;
+    height: 30%;
+    border-radius: 50%;
+    background-color: rgba(30, 180, 60, 0.65);
+    box-shadow: 0 0 8px rgba(30, 180, 60, 0.5);
+}
+
+/* Yeme hamlesi — kırmızı halka */
+.move-hint--capture::after {
+    content: "";
+    position: absolute;
+    inset: 8%;
+    border-radius: 50%;
+    border: 3px solid rgba(210, 40, 40, 0.85);
+    box-shadow: 0 0 8px rgba(210, 40, 40, 0.4);
+}
+
+/* ===================================================
+   TAŞLAR
+   =================================================== */
+
 .piece {
     position: relative;
-    width: 78%;
-    height: 78%;
+    width: 82%;
+    height: 82%;
     border-radius: 50%;
     cursor: grab;
     z-index: 2;
-    transition: transform var(--anim-sure, 0.25s) ease,
-                box-shadow var(--anim-sure, 0.25s) ease;
-    box-shadow: 0 3px 5px rgba(0, 0, 0, 0.4),
-                inset 0 -3px 6px rgba(0, 0, 0, 0.25),
-                inset 0 3px 6px rgba(255, 255, 255, 0.15);
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+    flex-shrink: 0;
 }
 
-/* Taş iç halka deseni (oyuk görünüm) */
+/* Beyaz taş — krem/fildişi, belirgin 3D */
+.piece--white {
+    background: radial-gradient(circle at 38% 32%,
+        #ffffff 0%,
+        #e8e0cc 45%,
+        #c8b89a 80%,
+        #a89878 100%);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.45),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.2),
+        inset 0 4px 8px rgba(255, 255, 255, 0.7);
+}
+
+/* Siyah taş — koyu kahve, belirgin 3D */
+.piece--black {
+    background: radial-gradient(circle at 38% 32%,
+        #5a3810 0%,
+        #3a2208 45%,
+        #200f02 80%,
+        #120800 100%);
+    box-shadow:
+        0 4px 8px rgba(0, 0, 0, 0.55),
+        inset 0 -3px 6px rgba(0, 0, 0, 0.4),
+        inset 0 4px 8px rgba(120, 70, 20, 0.35);
+}
+
+/* İç halka (oyuk görünüm) */
 .piece::before {
     content: "";
     position: absolute;
-    inset: 22%;
+    inset: 18%;
     border-radius: 50%;
-    border: 2px solid rgba(0, 0, 0, 0.18);
     pointer-events: none;
 }
 
-/* Beyaz taş */
-.piece--white {
-    background: radial-gradient(circle at 35% 30%, #fdfdfd, #cfcfcf 70%, #b0b0b0);
+.piece--white::before {
+    border: 2px solid rgba(160, 130, 90, 0.5);
 }
 
-/* Siyah taş */
-.piece--black {
-    background: radial-gradient(circle at 35% 30%, #4a4a4a, #222 70%, #0d0d0d);
+.piece--black::before {
+    border: 2px solid rgba(80, 45, 10, 0.6);
 }
 
-/* Dama (kral) taşı işareti */
-.piece--dama::after {
-    content: "";
+/* Seçili taş */
+.piece.is-active {
+    transform: scale(1.1) translateY(-2px);
+    box-shadow:
+        0 0 0 3px rgba(255, 220, 0, 0.9),
+        0 6px 14px rgba(0, 0, 0, 0.6);
+}
+
+/* Oynanabilir taş (hafif parlama) */
+.piece.is-movable {
+    box-shadow:
+        0 0 0 2px rgba(255, 210, 50, 0.5),
+        0 3px 7px rgba(0, 0, 0, 0.4);
+}
+
+/* Hareket animasyonu */
+.piece--moving {
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    z-index: 10;
+}
+
+/* Yenen taş soluklaşma */
+.piece--captured {
+    opacity: 0;
+    transform: scale(0.5);
+    transition: opacity 0.28s ease, transform 0.28s ease;
+}
+
+/* Dama olma efekti */
+.piece--just-promoted {
+    animation: promote-pop 0.45s ease;
+}
+
+@keyframes promote-pop {
+    0%   { transform: scale(1); }
+    40%  { transform: scale(1.22) translateY(-4px); }
+    70%  { transform: scale(0.95); }
+    100% { transform: scale(1); }
+}
+
+/* ===================================================
+   DAMA (KRAL) TAŞI
+   =================================================== */
+
+.piece--king .piece__crown {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 42%;
-    height: 42%;
-    background-color: var(--ahsap-acik, #D4A853);
-    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z'/></svg>") center / contain no-repeat;
-    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><path d='M3 8l4 4 5-7 5 7 4-4-2 11H5L3 8z'/></svg>") center / contain no-repeat;
+    width: 48%;
+    height: 48%;
     pointer-events: none;
 }
 
-/* Beyaz dama işareti rengi */
-.piece--white.piece--dama::after {
-    background-color: var(--ahsap-koyu, #5C3D11);
+.piece--white.piece--king .piece__crown {
+    color: #5c3310;
 }
 
-/* Siyah dama işareti rengi */
-.piece--black.piece--dama::after {
-    background-color: var(--ahsap-acik, #D4A853);
-}
-
-/* Seçili taş efekti */
-.piece--secili {
-    transform: scale(1.08);
-    box-shadow: 0 0 0 3px rgba(255, 220, 90, 0.9),
-                0 5px 10px rgba(0, 0, 0, 0.5);
-}
-
-/* Sürükleme sırasında */
-.piece.is-dragging {
-    cursor: grabbing;
-    z-index: 10;
-    opacity: 0.85;
-}
-
-/* Taş hareket animasyonu */
-.piece.is-moving {
-    transition: transform var(--anim-sure, 0.25s) cubic-bezier(0.4, 0, 0.2, 1);
-    z-index: 5;
-}
-
-/* Alınan (kaybedilen) taşların gösterimi */
-.player-bar__captured {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 3px;
-    align-items: center;
-    min-height: 18px;
-}
-
-.captured-piece {
-    width: 14px;
-    height: 14px;
-    border-radius: 50%;
-    box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.3);
-}
-
-.captured-piece--white {
-    background: radial-gradient(circle at 35% 30%, #fdfdfd, #cfcfcf 70%, #b0b0b0);
-}
-
-.captured-piece--black {
-    background: radial-gradient(circle at 35% 30%, #4a4a4a, #222 70%, #0d0d0d);
+.piece--black.piece--king .piece__crown {
+    color: #f0d9b5;
 }
 
 /* ===================================================
-   Koordinat etiketleri (isteğe bağlı kenar yazıları)
+   KOORDİNAT ETİKETLERİ
    =================================================== */
 
-.board__coord {
+.square__coord {
     position: absolute;
-    font-size: 10px;
-    font-weight: 600;
-    opacity: 0.65;
+    font-size: clamp(8px, 1.5vmin, 11px);
+    font-weight: 700;
+    opacity: 0.75;
     pointer-events: none;
-    color: var(--ahsap-koyu, #5C3D11);
+    z-index: 1;
 }
 
-.board__coord--sutun {
+.square--light .square__coord {
+    color: #b58863;
+}
+
+.square--dark .square__coord {
+    color: #f0d9b5;
+}
+
+.square__coord--file {
     bottom: 2px;
     right: 4px;
 }
 
-.board__coord--satir {
+.square__coord--rank {
     top: 2px;
-    left: 4px;
-}
-
-/* Açık karelerdeki koordinat rengi */
-.board__square--dark .board__coord {
-    color: var(--ahsap-acik, #D4A853);
+    left: 3px;
 }
 
 /* ===================================================
-   Açık tema uyarlamaları
+   KOYU TEMA UYARLAMASI
    =================================================== */
 
-.theme-light .board {
-    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.25);
+[data-theme="dark"] #board {
+    border-color: #3a2008;
+    box-shadow:
+        inset 0 0 0 3px #4e2d10,
+        0 10px 32px rgba(0, 0, 0, 0.75);
 }
 
-.theme-light .board__square--son-hamle {
-    background-color: rgba(255, 200, 60, 0.3);
+[data-theme="dark"] .square--light {
+    background-color: #c8a97a;
 }
 
-/* ===================================================
-   Animasyon hızı uyarlamaları
-   (data-hiz body üzerinden kontrol edilir)
-   =================================================== */
-
-body[data-hiz="yavas"] .piece {
-    --anim-sure: 0.45s;
+[data-theme="dark"] .square--dark {
+    background-color: #7a4e2a;
 }
 
-body[data-hiz="normal"] .piece {
-    --anim-sure: 0.25s;
+[data-theme="dark"] .square.is-last-from {
+    background-color: #9a9e40 !important;
 }
 
-body[data-hiz="hizli"] .piece {
-    --anim-sure: 0.12s;
-}
-
-/* ===================================================
-   Kazanma/oyun bitti durumunda tahta kilidi
-   =================================================== */
-
-.board.is-locked .board__square--dark {
-    cursor: default;
-}
-
-.board.is-locked .piece {
-    cursor: default;
+[data-theme="dark"] .square.is-last-to {
+    background-color: #7a7e20 !important;
 }
 
 /* ===================================================
-   Responsive: küçük ekranlar
+   RESPONSIVE
    =================================================== */
 
 @media (max-width: 600px) {
-    .board-wrap {
-        padding: 4px;
-    }
-
-    .board {
-        border-width: 4px;
-    }
-
-    .captured-piece {
-        width: 11px;
-        height: 11px;
+    #board {
+        border-width: 6px;
     }
 }
 
 @media (max-width: 380px) {
-    .board__coord {
+    .square__coord {
         font-size: 8px;
     }
 }
