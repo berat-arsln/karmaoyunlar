@@ -113,12 +113,12 @@
 }
 
 /* Beyaz taş */
-.piece--beyaz {
+.piece--white {
     background: radial-gradient(circle at 35% 30%, #fdfdfd, #cfcfcf 70%, #b0b0b0);
 }
 
 /* Siyah taş */
-.piece--siyah {
+.piece--black {
     background: radial-gradient(circle at 35% 30%, #4a4a4a, #222 70%, #0d0d0d);
 }
 
@@ -138,12 +138,12 @@
 }
 
 /* Beyaz dama işareti rengi */
-.piece--beyaz.piece--dama::after {
+.piece--white.piece--dama::after {
     background-color: var(--ahsap-koyu, #5C3D11);
 }
 
 /* Siyah dama işareti rengi */
-.piece--siyah.piece--dama::after {
+.piece--black.piece--dama::after {
     background-color: var(--ahsap-acik, #D4A853);
 }
 
@@ -183,11 +183,11 @@
     box-shadow: inset 0 -1px 2px rgba(0, 0, 0, 0.3);
 }
 
-.captured-piece--beyaz {
+.captured-piece--white {
     background: radial-gradient(circle at 35% 30%, #fdfdfd, #cfcfcf 70%, #b0b0b0);
 }
 
-.captured-piece--siyah {
+.captured-piece--black {
     background: radial-gradient(circle at 35% 30%, #4a4a4a, #222 70%, #0d0d0d);
 }
 
