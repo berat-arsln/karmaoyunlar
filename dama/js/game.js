@@ -97,8 +97,13 @@
      HAMLE ÜRETİMİ
      =================================================================== */
 
-  /* --- Tek bir taşın yeme hamlelerini bul --- */
-  function getCapturesForPiece(board, r, c) {
+  /* --- Tek bir taşın yeme hamlelerini bul ---
+     bannedAxis: ağa zincirleme yemede yasak eksen
+       null   → kısıtlama yok
+       "row"  → dikey yönler (dr!=0) yasak — satır boyunca yedikten sonra
+       "col"  → yatay yönler (dc!=0) yasak — sütun boyunca yedikten sonra
+  */
+  function getCapturesForPiece(board, r, c, bannedAxis) {
     const piece = board[r][c];
     if (!piece) return [];
     const captures = [];
@@ -131,8 +136,12 @@
       }
     } else {
       // Dama: her dik yönde uzaktan
+      // Zincirleme yemede aynı eksen yasak (bannedAxis)
       for (let i = 0; i < ORTHO.length; i++) {
         const d = ORTHO[i];
+        if (bannedAxis === "row" && d.dr !== 0) continue;
+        if (bannedAxis === "col" && d.dc !== 0) continue;
+
         let cr = r + d.dr;
         let cc = c + d.dc;
         // Önce boş kareleri geç
@@ -249,8 +258,8 @@
 
     const results = [];
 
-    function recurse(curBoard, cr, cc, accMoves, accCaptured) {
-      const caps = getCapturesForPiece(curBoard, cr, cc);
+    function recurse(curBoard, cr, cc, accMoves, accCaptured, bannedAxis) {
+      const caps = getCapturesForPiece(curBoard, cr, cc, bannedAxis);
       if (caps.length === 0) {
         if (accMoves.length > 0) {
           results.push({
@@ -270,17 +279,28 @@
         }
         nb[cr][cc] = null;
         nb[cap.to.r][cap.to.c] = moving;
+
+        // Ağa ise: bu adımda hangi eksen kullanıldı? Sonraki adımda o eksen yasak.
+        let nextBanned = bannedAxis;
+        if (moving && moving.king) {
+          const dr = cap.to.r - cr;
+          const dc = cap.to.c - cc;
+          // dr != 0 → dikey eksen kullanıldı → sonraki adımda dikey yasak
+          nextBanned = (dr !== 0) ? "col" : "row";
+        }
+
         recurse(
           nb,
           cap.to.r,
           cap.to.c,
           accMoves.concat([cap]),
-          accCaptured + cap.captured.length
+          accCaptured + cap.captured.length,
+          nextBanned
         );
       }
     }
 
-    recurse(cloneBoard(board), r, c, [], 0);
+    recurse(cloneBoard(board), r, c, [], 0, null);
     return results;
   }
 
@@ -316,7 +336,8 @@
       if (Game.mustCaptureFrom.r !== r || Game.mustCaptureFrom.c !== c) {
         return [];
       }
-      return getCapturesForPiece(Game.board, r, c);
+      // Zincir ortasında: yasak eksenle birlikte çağır
+      return getCapturesForPiece(Game.board, r, c, Game.mustCaptureFrom.bannedAxis || null);
     }
 
     const bestChains = getBestCaptureChains(Game.board, Game.turn);
@@ -425,11 +446,18 @@
         piece.king = true;
         result.promoted = true;
       } else {
-        const more = TD.getCapturesForPiece(Game.board, toR, toC);
+        // Ağa ise: bu hamlede kullanılan eksen yasak olacak
+        let bannedAxis = null;
+        if (piece.king) {
+          const dr = toR - fromR;
+          const dc = toC - fromC;
+          bannedAxis = (dr !== 0) ? "col" : "row";
+        }
+        const more = TD.getCapturesForPiece(Game.board, toR, toC, bannedAxis);
         if (more.length > 0) {
           result.continued = true;
           result.endsTurn = false;
-          Game.mustCaptureFrom = { r: toR, c: toC };
+          Game.mustCaptureFrom = { r: toR, c: toC, bannedAxis: bannedAxis };
         }
       }
     } else {
