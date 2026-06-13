@@ -104,9 +104,15 @@
     const captures = [];
 
     if (!piece.king) {
-      // Normal taş: 4 dik yönde
-      for (let i = 0; i < ORTHO.length; i++) {
-        const d = ORTHO[i];
+      // Normal taş: ileri + yan 3 yönde yeme (geriye yeme YOK)
+      const fwd = forwardDir(piece.color);
+      const captureDirs = [
+        { dr: fwd,  dc: 0  }, // ileri
+        { dr: 0,    dc: -1 }, // sol
+        { dr: 0,    dc: 1  }, // sağ
+      ];
+      for (let i = 0; i < captureDirs.length; i++) {
+        const d = captureDirs[i];
         const mr = r + d.dr;
         const mc = c + d.dc;
         const lr = r + d.dr * 2;
