@@ -1,0 +1,537 @@
+/* ===================================================================
+   ui.css — 1. Parça
+   İkon butonları, ayarlar paneli, overlay ve segment kontroller
+   =================================================================== */
+
+/* ---------- İkon butonları (üst bar) ---------- */
+.icon-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--topbar-text);
+  cursor: pointer;
+  transition: background 0.18s ease, transform 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.icon-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.icon-btn:active {
+  transform: scale(0.92);
+}
+
+.icon-btn svg {
+  display: block;
+}
+
+.icon-btn--ghost {
+  background: transparent;
+  color: var(--surface-text-soft);
+}
+
+.icon-btn--ghost:hover {
+  background: var(--surface-2);
+  color: var(--surface-text);
+}
+
+/* ---------- Overlay (panel/modal arka planı) ---------- */
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 40;
+}
+
+.overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+/* ===================================================================
+   AYARLAR PANELİ (sağdan kayan)
+   =================================================================== */
+.panel {
+  position: fixed;
+  top: 0;
+  right: 0;
+  height: 100%;
+  height: 100dvh;
+  width: min(340px, 86vw);
+  background: var(--surface);
+  color: var(--surface-text);
+  box-shadow: var(--shadow-panel);
+  transform: translateX(100%);
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  padding-top: env(safe-area-inset-top);
+  padding-right: env(safe-area-inset-right);
+}
+
+.panel.is-open {
+  transform: translateX(0);
+}
+
+.panel__header {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid var(--surface-border);
+}
+
+.panel__title {
+  font-size: 19px;
+  font-weight: 700;
+  color: var(--surface-text);
+}
+
+.panel__body {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 16px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.panel__divider {
+  border: none;
+  border-top: 1px solid var(--surface-border);
+  margin: 12px 0;
+}
+
+/* ---------- Ayar satırı ---------- */
+.setting-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 4px;
+}
+
+.setting-row__label {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--surface-text);
+}
+
+/* ---------- Ses aç/kapa toggle ---------- */
+.toggle-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 38px;
+  border: 1px solid var(--surface-border);
+  border-radius: 10px;
+  background: var(--surface-2);
+  color: var(--surface-text);
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease;
+}
+
+.toggle-btn:hover {
+  background: var(--surface);
+}
+
+.toggle-btn .icon-sound-off {
+  display: none;
+}
+
+.toggle-btn[data-state="off"] {
+  color: var(--surface-text-soft);
+  opacity: 0.75;
+}
+
+.toggle-btn[data-state="off"] .icon-sound-on {
+  display: none;
+}
+
+.toggle-btn[data-state="off"] .icon-sound-off {
+  display: block;
+}
+
+/* ---------- Nasıl oynanır link butonu ---------- */
+.panel-link-btn {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 14px 12px;
+  border: 1px solid var(--surface-border);
+  border-radius: 12px;
+  background: var(--surface-2);
+  color: var(--surface-text);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.18s ease, transform 0.12s ease;
+}
+
+.panel-link-btn:hover {
+  background: var(--surface);
+}
+
+.panel-link-btn:active {
+  transform: scale(0.98);
+}
+
+.panel-link-btn svg {
+  flex: 0 0 auto;
+  color: var(--btn-secondary-bg);
+}
+
+/* ===================================================================
+   SEGMENT KONTROL (mod / zorluk / tema seçimi)
+   =================================================================== */
+.seg-control {
+  display: inline-flex;
+  gap: 4px;
+  padding: 4px;
+  border-radius: 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--surface-border);
+}
+
+.seg-control--full {
+  display: flex;
+  width: 100%;
+}
+
+.seg-control--full .seg-control__btn {
+  flex: 1 1 0;
+}
+
+.seg-control--grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  width: 100%;
+}
+
+.seg-control__btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 9px;
+  background: transparent;
+  color: var(--surface-text-soft);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.18s ease, color 0.18s ease, box-shadow 0.18s ease;
+  white-space: nowrap;
+}
+
+.seg-control__btn:hover {
+  color: var(--surface-text);
+}
+
+.seg-control__btn.is-active {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+}
+
+.seg-control__btn svg {
+  flex: 0 0 auto;
+}
+
+/* ===================================================================
+   ui.css — 2. Parça
+   Modallar, butonlar, kupa ikonu ve "nasıl oynanır" biçimlendirmesi
+   =================================================================== */
+
+/* ---------- Modal taban ---------- */
+.modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background: var(--overlay-bg);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.25s ease, visibility 0.25s ease;
+  z-index: 60;
+}
+
+.modal.is-open {
+  opacity: 1;
+  visibility: visible;
+}
+
+.modal__box {
+  width: min(420px, 100%);
+  max-height: calc(100dvh - 40px);
+  background: var(--surface);
+  color: var(--surface-text);
+  border-radius: 16px;
+  box-shadow: var(--shadow-panel);
+  padding: 24px;
+  transform: translateY(16px) scale(0.98);
+  transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.modal.is-open .modal__box {
+  transform: translateY(0) scale(1);
+}
+
+.modal__box--scroll {
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.modal__box--center {
+  text-align: center;
+  align-items: center;
+}
+
+/* ---------- Modal başlık / header ---------- */
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+
+.modal__title {
+  font-size: 21px;
+  font-weight: 700;
+  color: var(--surface-text);
+}
+
+.modal__subtitle {
+  font-size: 15px;
+  color: var(--surface-text-soft);
+  margin-top: 6px;
+}
+
+/* ---------- Modal bölümleri ---------- */
+.modal__section {
+  margin-top: 18px;
+}
+
+.modal__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.6px;
+  color: var(--surface-text-soft);
+  margin-bottom: 10px;
+}
+
+/* ---------- Modal aksiyonları ---------- */
+.modal__actions {
+  display: flex;
+  gap: 10px;
+  margin-top: 26px;
+}
+
+.modal__actions--stack {
+  flex-direction: column;
+  margin-top: 22px;
+  width: 100%;
+}
+
+/* ---------- Butonlar ---------- */
+.btn {
+  flex: 1 1 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 13px 18px;
+  border: none;
+  border-radius: 11px;
+  font-size: 15px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: transform 0.12s ease, filter 0.18s ease, background 0.18s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn--primary {
+  background: var(--btn-primary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.25);
+}
+
+.btn--primary:hover {
+  filter: brightness(1.08);
+}
+
+.btn--secondary {
+  background: var(--btn-secondary-bg);
+  color: var(--btn-primary-text);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.btn--secondary:hover {
+  filter: brightness(1.08);
+}
+
+.btn--ghost {
+  background: var(--surface-2);
+  color: var(--btn-ghost-text);
+  border: 1px solid var(--surface-border);
+}
+
+.btn--ghost:hover {
+  background: var(--surface);
+}
+
+/* ---------- Kupa ikonu (oyun sonu) ---------- */
+.trophy-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 92px;
+  height: 92px;
+  margin: 4px auto 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 40%,
+      rgba(244, 208, 63, 0.25) 0%,
+      rgba(244, 208, 63, 0.08) 60%,
+      transparent 100%);
+  color: #f0c64a;
+}
+
+.trophy-icon svg {
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+/* ===================================================================
+   NASIL OYNANIR — metin biçimlendirmesi
+   =================================================================== */
+.how-to {
+  font-size: 14.5px;
+  line-height: 1.65;
+  color: var(--surface-text);
+}
+
+.how-to h3 {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--btn-secondary-bg);
+  margin: 18px 0 6px;
+}
+
+.how-to h3:first-child {
+  margin-top: 4px;
+}
+
+.how-to p {
+  margin-bottom: 8px;
+  color: var(--surface-text-soft);
+}
+
+.how-to ul {
+  margin: 0 0 10px;
+  padding-left: 20px;
+}
+
+.how-to li {
+  margin-bottom: 7px;
+  color: var(--surface-text-soft);
+}
+
+.how-to strong {
+  color: var(--surface-text);
+  font-weight: 700;
+}
+
+/* ---------- Modal scroll bar ince görünüm ---------- */
+.modal__box--scroll::-webkit-scrollbar,
+.panel__body::-webkit-scrollbar {
+  width: 8px;
+}
+
+.modal__box--scroll::-webkit-scrollbar-thumb,
+.panel__body::-webkit-scrollbar-thumb {
+  background: var(--surface-border);
+  border-radius: 8px;
+}
+
+.modal__box--scroll::-webkit-scrollbar-track,
+.panel__body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ===================================================================
+   RESPONSIVE — küçük ekran uyarlamaları
+   =================================================================== */
+@media (max-width: 380px) {
+  .modal__box {
+    padding: 20px;
+  }
+
+  .modal__title {
+    font-size: 19px;
+  }
+
+  .seg-control__btn {
+    padding: 9px 10px;
+    font-size: 13px;
+  }
+}
+
+@media (max-height: 560px) {
+  .modal__box {
+    padding: 18px;
+  }
+
+  .modal__section {
+    margin-top: 14px;
+  }
+
+  .modal__actions {
+    margin-top: 18px;
+  }
+
+  .trophy-icon {
+    width: 68px;
+    height: 68px;
+    margin: 0 auto 10px;
+  }
+}
+
+/* ---------- Hareket azaltma tercihi ---------- */
+@media (prefers-reduced-motion: reduce) {
+  .modal,
+  .modal__box,
+  .overlay,
+  .panel,
+  .btn,
+  .icon-btn,
+  .seg-control__btn,
+  .panel-link-btn {
+    transition: none !important;
+  }
+}

@@ -1,0 +1,629 @@
+/* ============================================
+   Sudoku - Arayüz (UI) Stilleri
+   Klasik gri tema
+   ============================================ */
+
+:root {
+  --sudoku-bg-koyu: #1a1a2e;
+  --sudoku-bg-acik: #f0f0f0;
+  --sudoku-gri-koyu: #2a2a2a;
+  --sudoku-gri-orta: #3a3a3a;
+  --sudoku-gri-acik: #c0c0c0;
+  --sudoku-vurgu: #4a90d9;
+  --sudoku-hata: #d9534f;
+  --sudoku-basari: #5cb85c;
+  --ui-gecis: 0.25s ease;
+}
+
+/* ============================================
+   Üst Bilgi Çubuğu (Header)
+   ============================================ */
+
+.sudoku-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 1rem 1.25rem;
+  background-color: var(--sudoku-gri-koyu);
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.sudoku-header__baslik {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: var(--sudoku-gri-acik);
+}
+
+.sudoku-header__baslik svg {
+  width: 28px;
+  height: 28px;
+  fill: currentColor;
+}
+
+/* Geri dön bağlantısı */
+.sudoku-header__geri {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.5rem 0.9rem;
+  border-radius: 8px;
+  background-color: var(--sudoku-gri-orta);
+  color: var(--sudoku-gri-acik);
+  text-decoration: none;
+  font-size: 0.9rem;
+  transition: background-color var(--ui-gecis);
+}
+
+.sudoku-header__geri:hover {
+  background-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+.sudoku-header__geri svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* ============================================
+   Üst Bilgi Paneli (Süre, Hata, Zorluk)
+   ============================================ */
+
+.sudoku-bilgi {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+.sudoku-bilgi__oge {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 90px;
+  padding: 0.6rem 1rem;
+  background-color: var(--sudoku-gri-koyu);
+  border-radius: 10px;
+}
+
+.sudoku-bilgi__etiket {
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #888;
+  margin-bottom: 0.25rem;
+}
+
+.sudoku-bilgi__deger {
+  font-size: 1.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  color: var(--sudoku-gri-acik);
+}
+
+.sudoku-bilgi__deger--hata {
+  color: var(--sudoku-hata);
+}
+
+/* ============================================
+   Zorluk Seçimi
+   ============================================ */
+
+.sudoku-zorluk {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  margin-bottom: 1.25rem;
+}
+
+.sudoku-zorluk__btn {
+  padding: 0.5rem 1.1rem;
+  border: 1px solid var(--sudoku-gri-orta);
+  border-radius: 8px;
+  background-color: var(--sudoku-gri-koyu);
+  color: var(--sudoku-gri-acik);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color var(--ui-gecis), border-color var(--ui-gecis), transform var(--ui-gecis);
+}
+
+.sudoku-zorluk__btn:hover {
+  background-color: var(--sudoku-gri-orta);
+}
+
+.sudoku-zorluk__btn--aktif {
+  background-color: var(--sudoku-vurgu);
+  border-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+/* ============================================
+   Sayı Giriş Tuş Takımı (Numpad)
+   ============================================ */
+
+.sudoku-numpad {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 0.5rem;
+  max-width: 420px;
+  margin: 1.5rem auto 0;
+}
+
+.sudoku-numpad__btn {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--sudoku-gri-orta);
+  border-radius: 8px;
+  background-color: var(--sudoku-gri-koyu);
+  color: var(--sudoku-gri-acik);
+  font-size: 1.4rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color var(--ui-gecis), transform var(--ui-gecis);
+}
+
+.sudoku-numpad__btn:hover {
+  background-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+.sudoku-numpad__btn:active {
+  transform: scale(0.94);
+}
+
+/* Silme tuşu (kalan sayı sayacı yoksa) */
+.sudoku-numpad__btn--sil {
+  grid-column: span 1;
+  background-color: var(--sudoku-gri-orta);
+}
+
+.sudoku-numpad__btn--sil svg {
+  width: 24px;
+  height: 24px;
+  fill: currentColor;
+}
+
+/* Tükenmiş sayı (9 kez kullanılmış) */
+.sudoku-numpad__btn--tukendi {
+  opacity: 0.35;
+  pointer-events: none;
+}
+
+.sudoku-numpad__kalan {
+  font-size: 0.65rem;
+  position: absolute;
+  bottom: 4px;
+  right: 6px;
+  color: #888;
+}
+
+.sudoku-numpad__btn {
+  position: relative;
+}
+
+/* ============================================
+   Kontrol Butonları (Yeni Oyun, İpucu, Not vb.)
+   ============================================ */
+
+.sudoku-kontrol {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.25rem;
+}
+
+.sudoku-kontrol__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.6rem 1.1rem;
+  border: none;
+  border-radius: 8px;
+  background-color: var(--sudoku-gri-orta);
+  color: var(--sudoku-gri-acik);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: background-color var(--ui-gecis), transform var(--ui-gecis);
+}
+
+.sudoku-kontrol__btn:hover {
+  background-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+.sudoku-kontrol__btn:active {
+  transform: translateY(1px);
+}
+
+.sudoku-kontrol__btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentColor;
+}
+
+/* Not modu etkin durumu */
+.sudoku-kontrol__btn--aktif {
+  background-color: var(--sudoku-basari);
+  color: #fff;
+}
+
+/* ============================================
+   Modal (Kazandın / Kaybettin / Onay)
+   ============================================ */
+
+.sudoku-modal {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--ui-gecis), visibility var(--ui-gecis);
+  z-index: 1000;
+}
+
+.sudoku-modal--acik {
+  opacity: 1;
+  visibility: visible;
+}
+
+.sudoku-modal__icerik {
+  width: 90%;
+  max-width: 380px;
+  padding: 2rem 1.75rem;
+  background-color: var(--sudoku-gri-koyu);
+  border-radius: 14px;
+  text-align: center;
+  transform: scale(0.9);
+  transition: transform var(--ui-gecis);
+}
+
+.sudoku-modal--acik .sudoku-modal__icerik {
+  transform: scale(1);
+}
+
+.sudoku-modal__ikon {
+  width: 56px;
+  height: 56px;
+  margin: 0 auto 1rem;
+}
+
+.sudoku-modal__ikon svg {
+  width: 100%;
+  height: 100%;
+}
+
+.sudoku-modal__ikon--basari svg {
+  fill: var(--sudoku-basari);
+}
+
+.sudoku-modal__ikon--hata svg {
+  fill: var(--sudoku-hata);
+}
+
+.sudoku-modal__baslik {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--sudoku-gri-acik);
+  margin-bottom: 0.5rem;
+}
+
+.sudoku-modal__mesaj {
+  font-size: 0.95rem;
+  color: #aaa;
+  margin-bottom: 1.5rem;
+  line-height: 1.5;
+}
+
+.sudoku-modal__butonlar {
+  display: flex;
+  justify-content: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.sudoku-modal__btn {
+  padding: 0.65rem 1.4rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color var(--ui-gecis), transform var(--ui-gecis);
+}
+
+.sudoku-modal__btn--birincil {
+  background-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+.sudoku-modal__btn--birincil:hover {
+  background-color: #3a7bc8;
+}
+
+.sudoku-modal__btn--ikincil {
+  background-color: var(--sudoku-gri-orta);
+  color: var(--sudoku-gri-acik);
+}
+
+.sudoku-modal__btn--ikincil:hover {
+  background-color: #4a4a4a;
+}
+
+.sudoku-modal__btn:active {
+  transform: translateY(1px);
+}
+
+/* ============================================
+   Bildirim / Uyarı Çubuğu (Toast)
+   ============================================ */
+
+.sudoku-bildirim {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%) translateY(120%);
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.75rem 1.25rem;
+  background-color: var(--sudoku-gri-orta);
+  color: var(--sudoku-gri-acik);
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+  font-size: 0.9rem;
+  opacity: 0;
+  transition: transform var(--ui-gecis), opacity var(--ui-gecis);
+  z-index: 1100;
+}
+
+.sudoku-bildirim--gorunur {
+  transform: translateX(-50%) translateY(0);
+  opacity: 1;
+}
+
+.sudoku-bildirim svg {
+  width: 20px;
+  height: 20px;
+  fill: currentColor;
+}
+
+.sudoku-bildirim--hata {
+  background-color: var(--sudoku-hata);
+  color: #fff;
+}
+
+.sudoku-bildirim--basari {
+  background-color: var(--sudoku-basari);
+  color: #fff;
+}
+
+/* ============================================
+   Ayarlar Paneli (Tema, Animasyon, Ses)
+   ============================================ */
+
+.sudoku-ayarlar {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  padding: 1.25rem;
+  background-color: var(--sudoku-gri-koyu);
+  border-radius: 12px;
+  margin-top: 1.5rem;
+}
+
+.sudoku-ayarlar__satir {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.sudoku-ayarlar__etiket {
+  font-size: 0.9rem;
+  color: var(--sudoku-gri-acik);
+}
+
+/* Açma/Kapama Anahtarı (Toggle) */
+.sudoku-anahtar {
+  position: relative;
+  display: inline-block;
+  width: 46px;
+  height: 24px;
+}
+
+.sudoku-anahtar input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.sudoku-anahtar__kaydirici {
+  position: absolute;
+  inset: 0;
+  background-color: var(--sudoku-gri-orta);
+  border-radius: 24px;
+  cursor: pointer;
+  transition: background-color var(--ui-gecis);
+}
+
+.sudoku-anahtar__kaydirici::before {
+  content: "";
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  left: 3px;
+  bottom: 3px;
+  background-color: #fff;
+  border-radius: 50%;
+  transition: transform var(--ui-gecis);
+}
+
+.sudoku-anahtar input:checked + .sudoku-anahtar__kaydirici {
+  background-color: var(--sudoku-vurgu);
+}
+
+.sudoku-anahtar input:checked + .sudoku-anahtar__kaydirici::before {
+  transform: translateX(22px);
+}
+
+/* Açılır seçim (Animasyon hızı vb.) */
+.sudoku-secim {
+  padding: 0.45rem 0.75rem;
+  border: 1px solid var(--sudoku-gri-orta);
+  border-radius: 8px;
+  background-color: var(--sudoku-gri-orta);
+  color: var(--sudoku-gri-acik);
+  font-size: 0.9rem;
+  cursor: pointer;
+}
+
+.sudoku-secim:focus {
+  outline: 2px solid var(--sudoku-vurgu);
+  outline-offset: 1px;
+}
+
+/* ============================================
+   Açık Mod Geçersiz Kılmaları
+   ============================================ */
+
+body.acik-mod .sudoku-header,
+body.acik-mod .sudoku-bilgi__oge,
+body.acik-mod .sudoku-ayarlar,
+body.acik-mod .sudoku-modal__icerik {
+  background-color: #ffffff;
+  color: #2a2a2a;
+}
+
+body.acik-mod .sudoku-header__baslik,
+body.acik-mod .sudoku-bilgi__deger,
+body.acik-mod .sudoku-modal__baslik,
+body.acik-mod .sudoku-ayarlar__etiket,
+body.acik-mod .sudoku-header__geri {
+  color: #2a2a2a;
+}
+
+body.acik-mod .sudoku-header__geri,
+body.acik-mod .sudoku-zorluk__btn,
+body.acik-mod .sudoku-numpad__btn,
+body.acik-mod .sudoku-kontrol__btn,
+body.acik-mod .sudoku-secim {
+  background-color: #e4e4e4;
+  color: #2a2a2a;
+  border-color: #cccccc;
+}
+
+body.acik-mod .sudoku-zorluk__btn:hover,
+body.acik-mod .sudoku-numpad__btn:hover,
+body.acik-mod .sudoku-kontrol__btn:hover,
+body.acik-mod .sudoku-header__geri:hover {
+  background-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+body.acik-mod .sudoku-zorluk__btn--aktif {
+  background-color: var(--sudoku-vurgu);
+  color: #fff;
+}
+
+body.acik-mod .sudoku-bilgi__etiket,
+body.acik-mod .sudoku-modal__mesaj {
+  color: #666;
+}
+
+body.acik-mod .sudoku-bildirim {
+  background-color: #ffffff;
+  color: #2a2a2a;
+}
+
+/* ============================================
+   Animasyon Hızı Sınıfları
+   (body üzerine uygulanır: hiz-yavas / hiz-hizli)
+   ============================================ */
+
+body.hiz-yavas {
+  --ui-gecis: 0.45s ease;
+}
+
+body.hiz-hizli {
+  --ui-gecis: 0.12s ease;
+}
+
+/* ============================================
+   Duyarlı (Responsive) Düzen
+   ============================================ */
+
+@media (max-width: 640px) {
+  .sudoku-header {
+    padding: 0.75rem 1rem;
+  }
+
+  .sudoku-header__baslik {
+    font-size: 1.15rem;
+  }
+
+  .sudoku-bilgi__oge {
+    min-width: 72px;
+    padding: 0.5rem 0.75rem;
+  }
+
+  .sudoku-bilgi__deger {
+    font-size: 1.1rem;
+  }
+
+  .sudoku-numpad {
+    max-width: 100%;
+    gap: 0.4rem;
+  }
+
+  .sudoku-numpad__btn {
+    font-size: 1.2rem;
+  }
+
+  .sudoku-kontrol__btn {
+    padding: 0.55rem 0.9rem;
+    font-size: 0.85rem;
+  }
+
+  .sudoku-modal__icerik {
+    padding: 1.5rem 1.25rem;
+  }
+}
+
+@media (max-width: 380px) {
+  .sudoku-numpad {
+    grid-template-columns: repeat(5, 1fr);
+  }
+
+  .sudoku-zorluk__btn {
+    padding: 0.45rem 0.85rem;
+    font-size: 0.85rem;
+  }
+
+  .sudoku-kontrol {
+    gap: 0.45rem;
+  }
+}
+
+/* ============================================
+   Erişilebilirlik (Hareket Azaltma Tercihi)
+   ============================================ */
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.01ms !important;
+  }
+}

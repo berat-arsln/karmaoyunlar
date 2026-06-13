@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tavla - Karma Oyunlar</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/ui.css">
+</head>
+<body class="theme-dark animasyon-normal" data-tema="ahsap">
+
+    <!-- Üst gezinme çubuğu -->
+    <header class="ust-bar">
+        <a href="../index.html" class="geri-link" aria-label="Ana sayfaya dön">
+            <!-- Geri ok ikonu -->
+            <svg class="ikon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+            <span>Ana Sayfa</span>
+        </a>
+
+        <h1 class="oyun-baslik">Tavla</h1>
+
+        <div class="ust-bar__araclar">
+            <!-- Ses aç/kapat -->
+            <button id="ses-btn" class="arac-btn" aria-label="Sesi aç veya kapat">
+                <svg class="ikon ikon-ses-acik" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+            </button>
+
+            <!-- Ayarlar -->
+            <button id="ayarlar-btn" class="arac-btn" aria-label="Ayarları aç">
+                <svg class="ikon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Oyun kurulum ekranı -->
+    <section id="kurulum-ekrani" class="kurulum-ekrani">
+        <h2 class="kurulum-baslik">Yeni Oyun</h2>
+
+        <div class="kurulum-grup">
+            <span class="kurulum-etiket">Oyun Modu</span>
+            <div class="secim-grubu" role="radiogroup" aria-label="Oyun modu seçimi">
+                <button class="secim-btn aktif" data-mod="iki-kisi">2 Kişilik</button>
+                <button class="secim-btn" data-mod="bilgisayar">Bilgisayara Karşı</button>
+            </div>
+        </div>
+
+        <div id="zorluk-grup" class="kurulum-grup gizli">
+            <span class="kurulum-etiket">Zorluk Seviyesi</span>
+            <div class="secim-grubu" role="radiogroup" aria-label="Zorluk seçimi">
+                <button class="secim-btn" data-zorluk="kolay">Kolay</button>
+                <button class="secim-btn aktif" data-zorluk="orta">Orta</button>
+                <button class="secim-btn" data-zorluk="zor">Zor</button>
+                <button class="secim-btn" data-zorluk="imkansiz">İmkansız</button>
+            </div>
+        </div>
+
+        <div class="kurulum-grup">
+            <span class="kurulum-etiket">Zar Animasyonu</span>
+            <div class="secim-grubu" role="radiogroup" aria-label="Zar animasyon türü">
+                <button class="secim-btn aktif" data-zar="3d">3D Zar</button>
+                <button class="secim-btn" data-zar="2d">2D Zar</button>
+            </div>
+        </div>
+
+        <button id="oyna-btn" class="oyna-buton">Oyunu Başlat</button>
+    </section>
+
+    <!-- Oyun ekranı -->
+    <main id="oyun-ekrani" class="oyun-ekrani gizli">
+
+        <!-- Üst oyuncu bilgisi -->
+        <div class="oyuncu-bilgi oyuncu-bilgi--ust">
+            <div class="oyuncu-bilgi__ad" id="oyuncu2-ad">Siyah</div>
+            <div class="oyuncu-bilgi__durum" id="oyuncu2-durum"></div>
+        </div>
+
+        <!-- Tavla tahtası -->
+        <div class="tahta-cevre">
+            <div id="tavla-tahta" class="tavla-tahta" data-tema="ahsap">
+                <!-- Tahta hücreleri ve pullar js/ui.js tarafından oluşturulur -->
+            </div>
+        </div>
+
+        <!-- Zar ve kontrol alanı -->
+        <div class="zar-alani">
+            <div id="zar-kutusu" class="zar-kutusu" data-zar-turu="3d">
+                <div id="zar-1" class="zar zar-1"></div>
+                <div id="zar-2" class="zar zar-2"></div>
+            </div>
+            <button id="zar-at-btn" class="zar-at-btn">Zar At</button>
+        </div>
+
+        <!-- Alt oyuncu bilgisi -->
+        <div class="oyuncu-bilgi oyuncu-bilgi--alt">
+            <div class="oyuncu-bilgi__ad" id="oyuncu1-ad">Beyaz</div>
+            <div class="oyuncu-bilgi__durum" id="oyuncu1-durum"></div>
+        </div>
+
+        <!-- Oyun kontrol butonları -->
+        <div class="oyun-kontrol">
+            <button id="yeni-oyun-btn" class="kontrol-btn">Yeni Oyun</button>
+            <button id="hamle-geri-btn" class="kontrol-btn">Hamleyi Geri Al</button>
+        </div>
+
+        <!-- Durum mesajı -->
+        <div id="durum-mesaji" class="durum-mesaji" role="status" aria-live="polite"></div>
+    </main>
+
+    <!-- Ayarlar paneli -->
+    <div id="ayarlar-panel" class="ayarlar-panel gizli" role="dialog" aria-label="Ayarlar">
+        <div class="ayarlar-panel__ic">
+            <div class="ayarlar-panel__bas">
+                <h3>Ayarlar</h3>
+                <button id="ayarlar-kapat" class="arac-btn" aria-label="Ayarları kapat">
+                    <svg class="ikon" viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="ayar-satiri">
+                <span class="ayar-satiri__etiket">Tema</span>
+                <div class="secim-grubu">
+                    <button class="secim-btn aktif" data-ayar-tema="dark">Koyu</button>
+                    <button class="secim-btn" data-ayar-tema="light">Açık</button>
+                </div>
+            </div>
+
+            <div class="ayar-satiri">
+                <span class="ayar-satiri__etiket">Animasyon Hızı</span>
+                <div class="secim-grubu">
+                    <button class="secim-btn" data-ayar-animasyon="yavas">Yavaş</button>
+                    <button class="secim-btn aktif" data-ayar-animasyon="normal">Normal</button>
+                    <button class="secim-btn" data-ayar-animasyon="hizli">Hızlı</button>
+                </div>
+            </div>
+
+            <div class="ayar-satiri">
+                <span class="ayar-satiri__etiket">Ses Efektleri</span>
+                <div class="secim-grubu">
+                    <button class="secim-btn aktif" data-ayar-ses="acik">Açık</button>
+                    <button class="secim-btn" data-ayar-ses="kapali">Kapalı</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Oyun bitti penceresi -->
+    <div id="bitis-penceresi" class="bitis-penceresi gizli" role="dialog" aria-label="Oyun sonucu">
+        <div class="bitis-penceresi__ic">
+            <h2 id="bitis-baslik" class="bitis-baslik">Oyun Bitti</h2>
+            <p id="bitis-mesaji" class="bitis-mesaji"></p>
+            <button id="tekrar-oyna-btn" class="oyna-buton">Tekrar Oyna</button>
+        </div>
+    </div>
+
+    <!-- Ses efektleri -->
+    <audio id="ses-zar" src="../assets/sounds/zar.mp3" preload="auto"></audio>
+    <audio id="ses-hamle" src="../assets/sounds/hamle.mp3" preload="auto"></audio>
+    <audio id="ses-zafer" src="../assets/sounds/zafer.mp3" preload="auto"></audio>
+
+    <!-- Betikler: önce oyun mantığı, sonra yapay zeka, en son arayüz -->
+    <script src="js/game.js"></script>
+    <script src="js/ai.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>

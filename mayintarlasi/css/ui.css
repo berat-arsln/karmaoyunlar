@@ -1,0 +1,400 @@
+/* =====================================================
+   css/ui.css — UI Components (Part 1/3)
+   Difficulty Bar, Custom Panel
+   ===================================================== */
+
+/* ── Difficulty Bar ────────────────────────────────── */
+#difficulty-bar {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding: 12px 16px;
+  background: var(--color-surface);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
+  width: 100%;
+}
+
+.diff-btn {
+  padding: 8px 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+  background: transparent;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  transition:
+    color var(--transition),
+    background var(--transition),
+    border-color var(--transition),
+    box-shadow var(--transition);
+}
+
+.diff-btn:hover {
+  color: var(--color-text);
+  background: var(--color-panel);
+  border-color: var(--color-accent-2);
+}
+
+.diff-btn.active {
+  color: #fff;
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 12px rgba(233, 69, 96, 0.45);
+}
+
+/* ── Custom Panel ──────────────────────────────────── */
+#custom-panel {
+  width: 100%;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-border);
+  overflow: hidden;
+  animation: slideDown 0.22s ease;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+#custom-inner {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+  padding: 14px 20px;
+}
+
+.custom-field {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.custom-field label {
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+#custom-apply-btn {
+  padding: 8px 24px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  border: none;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition),
+    transform 0.1s;
+}
+
+#custom-apply-btn:hover {
+  background: #c73652;
+  box-shadow: 0 0 14px rgba(233, 69, 96, 0.5);
+}
+
+#custom-apply-btn:active {
+  transform: scale(0.97);
+}
+
+/* =====================================================
+   
+   Game Console, Status Bar, LCD Display, Reset Button
+   ===================================================== */
+
+/* ── Game Console ──────────────────────────────────── */
+#game-console {
+  margin: 28px auto;
+  background: var(--console-bg);
+  border-radius: var(--radius-sm);
+  padding: 12px;
+  box-shadow: var(--shadow-card);
+
+  /* Outer raised bevel */
+  border-top: 4px solid var(--bevel-light);
+  border-left: 4px solid var(--bevel-light);
+  border-right: 4px solid var(--bevel-darker);
+  border-bottom: 4px solid var(--bevel-darker);
+
+  display: inline-flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 10px;
+}
+
+/* ── Status Bar ────────────────────────────────────── */
+#status-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--console-bg);
+  padding: 6px 8px;
+
+  /* Inset bevel */
+  border-top: 3px solid var(--bevel-dark);
+  border-left: 3px solid var(--bevel-dark);
+  border-right: 3px solid var(--bevel-light);
+  border-bottom: 3px solid var(--bevel-light);
+
+  min-width: 220px;
+}
+
+/* ── LCD Display ───────────────────────────────────── */
+.lcd-display {
+  background: #1a0000;
+  border-radius: 2px;
+  padding: 4px 8px;
+  min-width: 64px;
+  text-align: center;
+
+  border-top: 2px solid #555;
+  border-left: 2px solid #555;
+  border-right: 2px solid #aaa;
+  border-bottom: 2px solid #aaa;
+}
+
+.lcd-display span {
+  font-family: var(--font-lcd);
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #ff1a1a;
+  letter-spacing: 0.12em;
+  display: block;
+  text-shadow: 0 0 6px rgba(255, 30, 30, 0.7);
+  min-width: 3ch;
+}
+
+/* ── Reset Button ──────────────────────────────────── */
+#reset-btn {
+  width: 42px;
+  height: 42px;
+  background: var(--console-bg);
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: filter 0.1s;
+
+  /* Raised bevel */
+  border-top: 3px solid var(--bevel-light);
+  border-left: 3px solid var(--bevel-light);
+  border-right: 3px solid var(--bevel-dark);
+  border-bottom: 3px solid var(--bevel-dark);
+}
+
+#reset-btn:hover {
+  filter: brightness(1.08);
+}
+
+#reset-btn:active {
+  /* Pressed bevel */
+  border-top: 3px solid var(--bevel-dark);
+  border-left: 3px solid var(--bevel-dark);
+  border-right: 3px solid var(--bevel-light);
+  border-bottom: 3px solid var(--bevel-light);
+}
+
+#reset-btn svg {
+  width: 28px;
+  height: 28px;
+  display: block;
+  pointer-events: none;
+}
+
+/* =====================================================
+   
+   Win/Lose Overlay, Stats, Responsive
+   ===================================================== */
+
+/* ── Overlay Backdrop ──────────────────────────────── */
+#overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 10, 25, 0.78);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* ── Overlay Box ───────────────────────────────────── */
+#overlay-box {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  padding: 40px 48px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.6);
+  animation: popIn 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+  min-width: 300px;
+  max-width: 420px;
+  width: 90vw;
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.82) translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ── Overlay Icon ──────────────────────────────────── */
+#overlay-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#overlay-icon svg {
+  width: 64px;
+  height: 64px;
+}
+
+/* ── Overlay Title ─────────────────────────────────── */
+#overlay-title {
+  font-size: 1.7rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-align: center;
+}
+
+#overlay-title.win  { color: var(--color-win); }
+#overlay-title.lose { color: var(--color-lose); }
+
+/* ── Overlay Message ───────────────────────────────── */
+#overlay-message {
+  font-size: 0.95rem;
+  color: var(--color-text-dim);
+  text-align: center;
+  line-height: 1.5;
+}
+
+/* ── Stats Row ─────────────────────────────────────── */
+#overlay-stats {
+  display: flex;
+  gap: 32px;
+  margin: 8px 0 4px;
+}
+
+.stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.stat-label {
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--color-text-dim);
+}
+
+.stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--color-text);
+  font-family: var(--font-lcd);
+}
+
+/* ── Restart Button ────────────────────────────────── */
+#overlay-restart-btn {
+  margin-top: 6px;
+  padding: 11px 36px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: #fff;
+  background: var(--color-accent);
+  border-radius: var(--radius-sm);
+  border: none;
+  transition:
+    background var(--transition),
+    box-shadow var(--transition),
+    transform 0.1s;
+}
+
+#overlay-restart-btn:hover {
+  background: #c73652;
+  box-shadow: 0 0 18px rgba(233, 69, 96, 0.55);
+}
+
+#overlay-restart-btn:active {
+  transform: scale(0.97);
+}
+
+/* ── Responsive ────────────────────────────────────── */
+@media (max-width: 600px) {
+  #game-console {
+    margin: 16px auto;
+    padding: 8px;
+  }
+
+  .lcd-display span {
+    font-size: 1.25rem;
+  }
+
+  #reset-btn {
+    width: 36px;
+    height: 36px;
+  }
+
+  #reset-btn svg {
+    width: 22px;
+    height: 22px;
+  }
+
+  #overlay-box {
+    padding: 28px 24px;
+  }
+
+  #overlay-title {
+    font-size: 1.35rem;
+  }
+
+  #overlay-stats {
+    gap: 20px;
+  }
+
+  .diff-btn {
+    padding: 7px 13px;
+    font-size: 0.78rem;
+  }
+}

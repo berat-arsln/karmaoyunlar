@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="theme-color" content="#2b1d12" />
+  <title>Türk Daması</title>
+
+  <!-- Stiller -->
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/board.css" />
+  <link rel="stylesheet" href="css/ui.css" />
+</head>
+
+<body data-theme="light">
+
+  <!-- ===================== ÜST BAR ===================== -->
+  <header class="topbar">
+    <div class="topbar__left">
+      <h1 class="topbar__title">Türk Daması</h1>
+    </div>
+
+    <div class="topbar__right">
+      <!-- Yeni Oyun butonu -->
+      <button id="btnNewGame" class="icon-btn" title="Yeni Oyun" aria-label="Yeni Oyun">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M12 5V2L7 7l5 5V8c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/>
+        </svg>
+      </button>
+
+      <!-- Ayarlar butonu -->
+      <button id="btnSettings" class="icon-btn" title="Ayarlar" aria-label="Ayarlar">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path fill="currentColor" d="M19.14 12.94a7.49 7.49 0 0 0 .05-.94 7.49 7.49 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.03 7.03 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54c-.59.24-1.13.56-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.26 8.84a.5.5 0 0 0 .12.64l2.03 1.58c-.03.31-.05.62-.05.94s.02.63.05.94l-2.03 1.58a.5.5 0 0 0-.12.64l1.92 3.32c.14.24.42.33.66.22l2.39-.96c.5.38 1.03.7 1.62.94l.36 2.54c.05.24.25.42.5.42h3.84c.25 0 .45-.18.5-.42l.36-2.54c.59-.24 1.12-.56 1.62-.94l2.39.96c.24.1.52.01.66-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.04-1.58zM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ===================== OYUN ALANI ===================== -->
+  <main class="game-area">
+
+    <!-- Skor / sıra bilgisi -->
+    <div class="status-bar">
+      <div class="status-bar__player status-bar__player--white" id="infoWhite">
+        <span class="status-bar__dot status-bar__dot--white"></span>
+        <span class="status-bar__name">Beyaz</span>
+        <span class="status-bar__count" id="countWhite">16</span>
+      </div>
+
+      <div class="status-bar__turn" id="turnIndicator">Beyazın sırası</div>
+
+      <div class="status-bar__player status-bar__player--black" id="infoBlack">
+        <span class="status-bar__count" id="countBlack">16</span>
+        <span class="status-bar__name">Siyah</span>
+        <span class="status-bar__dot status-bar__dot--black"></span>
+      </div>
+    </div>
+
+    <!-- Tahta sarmalayıcı (ahşap çerçeve) -->
+    <div class="board-frame">
+      <div class="board-wrap">
+        <div id="board" class="board" aria-label="Dama tahtası"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ===================== AYARLAR PANELİ ===================== -->
+  <aside id="settingsPanel" class="panel" aria-hidden="true">
+    <div class="panel__header">
+      <h2 class="panel__title">Ayarlar</h2>
+      <button id="btnCloseSettings" class="icon-btn icon-btn--ghost" title="Kapat" aria-label="Kapat">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M18.3 5.71 12 12.01 5.7 5.71 4.29 7.12 10.59 13.42 4.29 19.71 5.7 21.12 12 14.83l6.3 6.29 1.41-1.41-6.3-6.29 6.3-6.3z"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="panel__body">
+
+      <!-- Ses ayarı -->
+      <div class="setting-row">
+        <span class="setting-row__label">Ses</span>
+        <button id="btnSound" class="toggle-btn" data-state="on" aria-label="Ses aç/kapa">
+          <svg class="icon-sound-on" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path fill="currentColor" d="M3 9v6h4l5 5V4L7 9H3zm13.5 3a4.5 4.5 0 0 0-2.5-4.03v8.05A4.5 4.5 0 0 0 16.5 12zM14 3.23v2.06a7 7 0 0 1 0 13.42v2.06a9 9 0 0 0 0-17.54z"/>
+          </svg>
+          <svg class="icon-sound-off" viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+            <path fill="currentColor" d="M16.5 12a4.5 4.5 0 0 0-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zM19 12c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.96 8.96 0 0 0 21 12c0-4.28-3-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3 3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.21v2.06a8.99 8.99 0 0 0 3.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4 9.91 6.09 12 8.18V4z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- Tema ayarı -->
+      <div class="setting-row">
+        <span class="setting-row__label">Tema</span>
+        <div class="seg-control" id="themeControl">
+          <button class="seg-control__btn is-active" data-theme-value="light">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="currentColor" d="M12 7a5 5 0 1 0 0 10 5 5 0 0 0 0-10zM2 13h2a1 1 0 0 0 0-2H2a1 1 0 0 0 0 2zm18 0h2a1 1 0 0 0 0-2h-2a1 1 0 0 0 0 2zM11 2v2a1 1 0 0 0 2 0V2a1 1 0 0 0-2 0zm0 18v2a1 1 0 0 0 2 0v-2a1 1 0 0 0-2 0zM5.99 4.58a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41L5.99 4.58zm12.37 12.37a1 1 0 0 0-1.41 1.41l1.06 1.06a1 1 0 0 0 1.41-1.41l-1.06-1.06zm1.06-10.96a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06zM7.05 18.36a1 1 0 0 0-1.41-1.41l-1.06 1.06a1 1 0 0 0 1.41 1.41l1.06-1.06z"/>
+            </svg>
+            <span>Açık</span>
+          </button>
+          <button class="seg-control__btn" data-theme-value="dark">
+            <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true">
+              <path fill="currentColor" d="M12.74 2.02a1 1 0 0 0-1.1 1.32 7 7 0 0 1-9.34 9.34 1 1 0 0 0-1.32 1.1A10 10 0 1 0 12.74 2.02z"/>
+            </svg>
+            <span>Koyu</span>
+          </button>
+        </div>
+      </div>
+
+      <hr class="panel__divider" />
+
+      <!-- Nasıl oynanır -->
+      <button id="btnHowTo" class="panel-link-btn">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path fill="currentColor" d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm1 17h-2v-2h2v2zm1.07-7.75-.9.92C12.45 12.9 12 13.5 12 15h-2v-.5c0-1.1.45-2.1 1.17-2.83l1.24-1.26c.37-.36.59-.86.59-1.41a2 2 0 0 0-4 0H7a4 4 0 0 1 8 0c0 .88-.36 1.68-.93 2.25z"/>
+        </svg>
+        <span>Nasıl Oynanır?</span>
+      </button>
+    </div>
+  </aside>
+
+  <!-- Panel arka planı (overlay) -->
+  <div id="overlay" class="overlay" aria-hidden="true"></div>
+
+  <!-- ===================== YENİ OYUN MODALI ===================== -->
+  <div id="newGameModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__box">
+      <h2 class="modal__title">Yeni Oyun</h2>
+
+      <div class="modal__section">
+        <span class="modal__label">Oyun Modu</span>
+        <div class="seg-control seg-control--full" id="modeControl">
+          <button class="seg-control__btn is-active" data-mode="pvp">İki Kişi</button>
+          <button class="seg-control__btn" data-mode="cpu">Bilgisayara Karşı</button>
+        </div>
+      </div>
+
+      <div class="modal__section" id="difficultyWrap" hidden>
+        <span class="modal__label">Zorluk Seviyesi</span>
+        <div class="seg-control seg-control--grid" id="difficultyControl">
+          <button class="seg-control__btn" data-diff="easy">Kolay</button>
+          <button class="seg-control__btn is-active" data-diff="medium">Orta</button>
+          <button class="seg-control__btn" data-diff="hard">Zor</button>
+          <button class="seg-control__btn" data-diff="impossible">İmkansız</button>
+        </div>
+      </div>
+
+      <div class="modal__actions">
+        <button id="btnCancelNewGame" class="btn btn--ghost">Vazgeç</button>
+        <button id="btnStartGame" class="btn btn--primary">Başlat</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== NASIL OYNANIR MODALI ===================== -->
+  <div id="howToModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__box modal__box--scroll">
+      <div class="modal__header">
+        <h2 class="modal__title">Nasıl Oynanır?</h2>
+        <button id="btnCloseHowTo" class="icon-btn icon-btn--ghost" aria-label="Kapat">
+          <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+            <path fill="currentColor" d="M18.3 5.71 12 12.01 5.7 5.71 4.29 7.12 10.59 13.42 4.29 19.71 5.7 21.12 12 14.83l6.3 6.29 1.41-1.41-6.3-6.29 6.3-6.3z"/>
+          </svg>
+        </button>
+      </div>
+
+      <div class="how-to">
+        <h3>Amaç</h3>
+        <p>Rakibinizin tüm taşlarını yemek ya da onu hamle yapamaz hâle getirmek. Bunu başaran oyuncu kazanır.</p>
+
+        <h3>Kurulum</h3>
+        <p>Tahta 8×8'dir. Her oyuncunun <strong>16 taşı</strong> vardır. Taşlar en alttaki iki sıraya (en üstteki iki sıra rakip için), <strong>en arka sıra boş kalacak şekilde</strong> 2. ve 3. sıralara dizilir.</p>
+
+        <h3>Taş Hareketi</h3>
+        <ul>
+          <li>Normal taşlar <strong>düz</strong> hareket eder: <strong>ileri, sağa ve sola</strong> birer kare. Çapraz hareket <strong>yoktur</strong>.</li>
+          <li>Normal taşlar <strong>geri gidemez</strong>.</li>
+          <li>Her hamlede yalnızca bir kare ilerlenir (yeme hariç).</li>
+        </ul>
+
+        <h3>Taş Yeme</h3>
+        <ul>
+          <li>Yeme <strong>düz yönde</strong> (ileri, sağ, sol) yapılır; normal taş <strong>geriye doğru da yiyebilir</strong>.</li>
+          <li>Rakip taşın hemen arkasındaki kare boşsa, üzerinden atlayarak taş yenir.</li>
+          <li><strong>Yeme zorunludur.</strong> Yenebilecek bir taş varsa, mutlaka yemelisiniz.</li>
+          <li><strong>Zincirleme yeme:</strong> Bir yemeden sonra aynı taşla yeme devam edebiliyorsa, devam etmek zorunludur.</li>
+          <li>En çok taş yediren yolu seçmek zorunludur (çoklu yeme kuralı).</li>
+        </ul>
+
+        <h3>Dama (Ağa) Olma</h3>
+        <ul>
+          <li>Bir taş rakibin <strong>en son sırasına</strong> ulaşırsa <strong>dama (ağa)</strong> olur ve üzerinde <strong>taç işareti</strong> belirir.</li>
+          <li>Dama; <strong>yatay ve dikey</strong> yönlerde (sağ, sol, ileri, geri) istediği kadar kare hareket eder — tıpkı satrançtaki kale gibi.</li>
+          <li>Dama, önündeki boş kareler boyunca ilerleyip arkasında boşluk olan rakip taşı uzaktan yiyebilir.</li>
+        </ul>
+
+        <h3>Oyunun Bitişi</h3>
+        <ul>
+          <li>Rakibin tüm taşları yenince ya da hiç hamlesi kalmayınca oyun biter.</li>
+          <li>Her iki tarafta da hamle yoksa berabere sayılır.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===================== OYUN SONU MODALI ===================== -->
+  <div id="gameOverModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true">
+    <div class="modal__box modal__box--center">
+      <div class="trophy-icon">
+        <svg viewBox="0 0 24 24" width="56" height="56" aria-hidden="true">
+          <path fill="currentColor" d="M18 2h-2V0H8v2H6C4.9 2 4 2.9 4 4v2c0 2.55 1.92 4.63 4.39 4.94A5.01 5.01 0 0 0 11 13.9V16H8v2h8v-2h-3v-2.1a5.01 5.01 0 0 0 2.61-2.96C18.08 10.63 20 8.55 20 6V4c0-1.1-.9-2-2-2zM6 6V4h2v4.82C6.84 8.4 6 7.3 6 6zm12 0c0 1.3-.84 2.4-2 2.82V4h2v2zM6 22h12v-2H6v2z"/>
+        </svg>
+      </div>
+      <h2 class="modal__title" id="winnerText">Beyaz Kazandı!</h2>
+      <p class="modal__subtitle" id="winnerSub"></p>
+
+      <div class="modal__actions modal__actions--stack">
+        <button id="btnReplay" class="btn btn--primary">Tekrar Oyna</button>
+        <button id="btnPlayCpu" class="btn btn--secondary">Bilgisayara Karşı Oyna</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scriptler -->
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+</body>
+</html>

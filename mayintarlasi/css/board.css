@@ -1,0 +1,125 @@
+/* =====================================================
+   css/board.css — Board & Cell Styles
+   ===================================================== */
+
+/* ── Board Wrapper ─────────────────────────────────── */
+#board-wrapper {
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4px;
+}
+
+#board {
+  display: inline-grid;
+  border-top: 3px solid #7b7b7b;
+  border-left: 3px solid #7b7b7b;
+  border-right: 3px solid #fff;
+  border-bottom: 3px solid #fff;
+  background: #bdbdbd;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* ── Cell Base ─────────────────────────────────────── */
+.cell {
+  width: 32px;
+  height: 32px;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', Arial, sans-serif;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  position: relative;
+  transition: background 0.05s;
+
+  /* Raised (unrevealed) bevel */
+  background: #bdbdbd;
+  border-top: 3px solid #fff;
+  border-left: 3px solid #fff;
+  border-right: 3px solid #7b7b7b;
+  border-bottom: 3px solid #7b7b7b;
+}
+
+.cell:active:not(.revealed):not(.flagged) {
+  border-top: 2px solid #7b7b7b;
+  border-left: 2px solid #7b7b7b;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  background: #bdbdbd;
+}
+
+/* ── Revealed Cell ─────────────────────────────────── */
+.cell.revealed {
+  background: #c6c6c6;
+  border: 1px solid #999;
+  cursor: default;
+}
+
+/* ── Number Colors ─────────────────────────────────── */
+.cell.revealed[data-number="1"] { color: #0000ff; }
+.cell.revealed[data-number="2"] { color: #007b00; }
+.cell.revealed[data-number="3"] { color: #ff0000; }
+.cell.revealed[data-number="4"] { color: #00007b; }
+.cell.revealed[data-number="5"] { color: #7b0000; }
+.cell.revealed[data-number="6"] { color: #007b7b; }
+.cell.revealed[data-number="7"] { color: #000000; }
+.cell.revealed[data-number="8"] { color: #7b7b7b; }
+
+/* ── Flagged Cell ──────────────────────────────────── */
+.cell.flagged {
+  cursor: pointer;
+}
+
+/* ── Mine Cells (game over) ────────────────────────── */
+.cell.mine-revealed {
+  background: #bdbdbd;
+  border: 1px solid #999;
+  cursor: default;
+}
+
+.cell.mine-hit {
+  background: #ff4444;
+  border: 1px solid #999;
+  cursor: default;
+}
+
+/* Wrong flag (revealed as not a mine after loss) */
+.cell.wrong-flag {
+  background: #bdbdbd;
+  border: 1px solid #999;
+  cursor: default;
+}
+
+/* ── SVG Icons inside cells ────────────────────────── */
+.cell svg {
+  width: 20px;
+  height: 20px;
+  display: block;
+  pointer-events: none;
+}
+
+/* Slightly larger mine icon */
+.cell.mine-revealed svg,
+.cell.mine-hit svg {
+  width: 22px;
+  height: 22px;
+}
+
+/* ── Hover ─────────────────────────────────────────── */
+.cell:not(.revealed):not(.flagged):hover {
+  background: #cacaca;
+}
+
+/* ── Chord highlight (middle-click preview) ────────── */
+.cell.chord-highlight:not(.revealed) {
+  border-top: 2px solid #7b7b7b;
+  border-left: 2px solid #7b7b7b;
+  border-right: 2px solid #fff;
+  border-bottom: 2px solid #fff;
+  background: #bdbdbd;
+}

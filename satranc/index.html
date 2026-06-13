@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="tr" data-tema="koyu">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#16162a">
+<title>Satranç - Karma Oyunlar</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/board.css">
+<link rel="stylesheet" href="css/ui.css">
+</head>
+<body>
+
+<header id="ustBar">
+  <a href="../index.html" class="geriAnaSayfa" id="anaSayfaLink" title="Ana Sayfa">
+    <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+      <path d="M15 18l-6-6 6-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>Ana Sayfa</span>
+  </a>
+  <h1 id="baslik">Satranç</h1>
+  <button id="ayarlarAcBtn" class="ikonBtn" title="Ayarlar" aria-label="Ayarlar">
+    <svg viewBox="0 0 24 24" width="24" height="24" aria-hidden="true">
+      <path fill="currentColor" d="M19.14 12.94a7.49 7.49 0 0 0 .05-.94 7.49 7.49 0 0 0-.05-.94l2.03-1.58a.5.5 0 0 0 .12-.64l-1.92-3.32a.5.5 0 0 0-.6-.22l-2.39.96a7.3 7.3 0 0 0-1.62-.94l-.36-2.54a.5.5 0 0 0-.5-.42h-3.84a.5.5 0 0 0-.5.42l-.36 2.54a7.3 7.3 0 0 0-1.62.94l-2.39-.96a.5.5 0 0 0-.6.22L2.34 8.84a.5.5 0 0 0 .12.64l2.03 1.58a7.49 7.49 0 0 0 0 1.88L2.46 14.5a.5.5 0 0 0-.12.64l1.92 3.32a.5.5 0 0 0 .6.22l2.39-.96a7.3 7.3 0 0 0 1.62.94l.36 2.54a.5.5 0 0 0 .5.42h3.84a.5.5 0 0 0 .5-.42l.36-2.54a7.3 7.3 0 0 0 1.62-.94l2.39.96a.5.5 0 0 0 .6-.22l1.92-3.32a.5.5 0 0 0-.12-.64l-2.03-1.58ZM12 15.5A3.5 3.5 0 1 1 12 8.5a3.5 3.5 0 0 1 0 7Z"/>
+    </svg>
+  </button>
+</header>
+
+<main id="anaIcerik">
+
+  <section id="ayarEkrani" class="ekran aktif">
+    <div class="ayarKart">
+      <h2 class="ayarBaslik">Yeni Oyun</h2>
+
+      <div class="ayarGrup">
+        <label class="ayarEtiket">Oyun Modu</label>
+        <div class="secimGrup" id="modSecim" role="group">
+          <button class="secimBtn aktif" data-deger="ikiKisi">2 Kişilik</button>
+          <button class="secimBtn" data-deger="bilgisayar">Bilgisayara Karşı</button>
+        </div>
+      </div>
+
+      <div class="ayarGrup bilgisayarAyar" id="zorlukGrubu">
+        <label class="ayarEtiket">Zorluk</label>
+        <div class="secimGrup" id="zorlukSecim" role="group">
+          <button class="secimBtn" data-deger="kolay">Kolay</button>
+          <button class="secimBtn aktif" data-deger="orta">Orta</button>
+          <button class="secimBtn" data-deger="zor">Zor</button>
+          <button class="secimBtn" data-deger="imkansiz">İmkansız</button>
+        </div>
+      </div>
+
+      <div class="ayarGrup bilgisayarAyar" id="tasRengiGrubu">
+        <label class="ayarEtiket">Taş Rengin</label>
+        <div class="secimGrup" id="tasRengiSecim" role="group">
+          <button class="secimBtn aktif" data-deger="beyaz">Beyaz</button>
+          <button class="secimBtn" data-deger="siyah">Siyah</button>
+        </div>
+      </div>
+
+      <div class="ayarGrup">
+        <label class="ayarEtiket">Süre</label>
+        <div class="secimGrup" id="sureSecim" role="group">
+          <button class="secimBtn aktif" data-deger="suresiz">Süresiz</button>
+          <button class="secimBtn" data-deger="3">3 dk</button>
+          <button class="secimBtn" data-deger="5">5 dk</button>
+          <button class="secimBtn" data-deger="10">10 dk</button>
+          <button class="secimBtn" data-deger="15">15 dk</button>
+        </div>
+      </div>
+
+      <div class="ayarGrup" id="ekSureGrubu">
+        <label class="ayarEtiket">Hamle Başına Ek Süre</label>
+        <div class="secimGrup" id="ekSureSecim" role="group">
+          <button class="secimBtn aktif" data-deger="0">Yok</button>
+          <button class="secimBtn" data-deger="2">+2 sn</button>
+          <button class="secimBtn" data-deger="5">+5 sn</button>
+          <button class="secimBtn" data-deger="10">+10 sn</button>
+        </div>
+      </div>
+
+      <button id="oyunuBaslatBtn" class="anaBtn">Oyunu Başlat</button>
+    </div>
+  </section>
+
+  <section id="oyunEkrani" class="ekran">
+
+    <div class="oyuncuBar" id="ustOyuncuBar">
+      <button class="oyunBtn geriAlBtn" id="geriAlUst" title="Geri Al" aria-label="Geri Al">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M9 14L4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 9h11a5 5 0 0 1 5 5v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sureGosterge" id="sureUst" data-taraf="rakip">
+        <span class="sureEtiket" id="sureUstEtiket">Rakip</span>
+        <span class="sureDeger" id="sureUstDeger">05:00</span>
+      </div>
+      <button class="oyunBtn pesEtBtn" id="pesEtUst" title="Pes Et" aria-label="Pes Et">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M4 21V4m0 0h11l-1.5 4L15 12H4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="tahtaSarmal" id="tahtaSarmal">
+      <div id="tahta" class="tahta" role="grid" aria-label="Satranç Tahtası"></div>
+      <div id="durumMesaj" class="durumMesaj" aria-live="polite"></div>
+    </div>
+
+    <div class="oyuncuBar" id="altOyuncuBar">
+      <button class="oyunBtn geriAlBtn" id="geriAlAlt" title="Geri Al" aria-label="Geri Al">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M9 14L4 9l5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M4 9h11a5 5 0 0 1 5 5v1" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <div class="sureGosterge" id="sureAlt" data-taraf="oyuncu">
+        <span class="sureEtiket" id="sureAltEtiket">Oyuncu</span>
+        <span class="sureDeger" id="sureAltDeger">05:00</span>
+      </div>
+      <button class="oyunBtn pesEtBtn" id="pesEtAlt" title="Pes Et" aria-label="Pes Et">
+        <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+          <path d="M4 21V4m0 0h11l-1.5 4L15 12H4" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="hamleListesiSarmal" id="hamleListesiSarmal">
+      <h3 class="hamleBaslik">Hamleler</h3>
+      <div id="hamleListesi" class="hamleListesi" aria-live="polite"></div>
+    </div>
+
+  </section>
+
+</main>
+
+<aside id="ayarlarPanel" class="ayarlarPanel" aria-hidden="true">
+  <div class="ayarlarPanelBaslik">
+    <h2>Ayarlar</h2>
+    <button id="ayarlarKapatBtn" class="ikonBtn" title="Kapat" aria-label="Kapat">
+      <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+  <div class="ayarlarPanelIcerik">
+    <div class="panelSatir">
+      <span class="panelEtiket">Tema</span>
+      <button id="temaToggle" class="toggleBtn" role="switch" aria-checked="false">
+        <span class="toggleTopu"></span>
+      </button>
+    </div>
+    <div class="panelSatir">
+      <span class="panelEtiket">Ses Efektleri</span>
+      <button id="sesToggle" class="toggleBtn aktif" role="switch" aria-checked="true">
+        <span class="toggleTopu"></span>
+      </button>
+    </div>
+    <button id="nasilOynanirBtn" class="panelBtn">Nasıl Oynanır</button>
+    <button id="yeniOyunBtn" class="panelBtn vurguBtn">Yeni Oyun</button>
+  </div>
+</aside>
+<div id="panelOrtu" class="ortu" aria-hidden="true"></div>
+
+<div id="nasilOynanirModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="nasilOynanirModalBaslik">
+  <div class="modalIcerik">
+    <div class="modalBaslikBar">
+      <h2 id="nasilOynanirModalBaslik">Nasıl Oynanır</h2>
+      <button id="nasilOynanirKapatBtn" class="ikonBtn" title="Kapat" aria-label="Kapat">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modalGovde" id="nasilOynanirGovde"></div>
+  </div>
+</div>
+
+<div id="sonucModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="sonucModalBaslik">
+  <div class="modalIcerik sonucModalIcerik">
+    <div class="modalBaslikBar">
+      <h2 id="sonucModalBaslik">Oyun Bitti</h2>
+      <button id="sonucKapatBtn" class="ikonBtn" title="Kapat" aria-label="Kapat">
+        <svg viewBox="0 0 24 24" width="22" height="22" aria-hidden="true">
+          <path d="M6 6l12 12M18 6L6 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="modalGovde">
+      <div id="sonucIkon" class="sonucIkon"></div>
+      <p id="sonucMetin" class="sonucMetin"></p>
+      <p id="sonucAltMetin" class="sonucAltMetin"></p>
+    </div>
+    <div class="modalAyak">
+      <button id="sonucYeniOyunBtn" class="anaBtn">Yeni Oyun</button>
+    </div>
+  </div>
+</div>
+
+<div id="terfiModal" class="modal" aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="terfiModalBaslik">
+  <div class="modalIcerik terfiModalIcerik">
+    <div class="modalBaslikBar">
+      <h2 id="terfiModalBaslik">Piyon Terfisi</h2>
+    </div>
+    <div class="modalGovde">
+      <p class="terfiAciklama">Terfi edilecek taşı seçin</p>
+      <div id="terfiSecenekler" class="terfiSecenekler"></div>
+    </div>
+  </div>
+</div>
+
+<script src="js/game.js"></script>
+<script src="js/ai.js"></script>
+<script src="js/ui.js"></script>
+</body>
+</html>

@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sudoku - Karma Oyunlar</title>
+    <link rel="stylesheet" href="../css/main.css">
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/board.css">
+    <link rel="stylesheet" href="css/ui.css">
+</head>
+<body class="theme-classic">
+    <!-- Üst menü -->
+    <header class="topbar">
+        <div class="topbar__left">
+            <a href="../index.html" class="topbar__back" aria-label="Ana sayfaya dön">
+                <!-- Geri ikonu (SVG) -->
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                <span>Ana Sayfa</span>
+            </a>
+        </div>
+        <h1 class="topbar__title">Sudoku</h1>
+        <div class="topbar__right">
+            <button id="settingsBtn" class="topbar__icon-btn" aria-label="Ayarlar">
+                <!-- Ayarlar ikonu (SVG) -->
+                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="3"></circle>
+                    <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="game-container">
+        <!-- Zorluk seçim ekranı -->
+        <section id="difficultyScreen" class="difficulty-screen">
+            <h2 class="difficulty-screen__title">Zorluk Seçin</h2>
+            <div class="difficulty-screen__options">
+                <button class="difficulty-btn" data-difficulty="kolay">
+                    <span class="difficulty-btn__label">Kolay</span>
+                    <span class="difficulty-btn__desc">Daha fazla ipucu</span>
+                </button>
+                <button class="difficulty-btn" data-difficulty="orta">
+                    <span class="difficulty-btn__label">Orta</span>
+                    <span class="difficulty-btn__desc">Dengeli zorluk</span>
+                </button>
+                <button class="difficulty-btn" data-difficulty="zor">
+                    <span class="difficulty-btn__label">Zor</span>
+                    <span class="difficulty-btn__desc">Az ipucu</span>
+                </button>
+                <button class="difficulty-btn" data-difficulty="imkansiz">
+                    <span class="difficulty-btn__label">İmkansız</span>
+                    <span class="difficulty-btn__desc">Uzman seviyesi</span>
+                </button>
+            </div>
+        </section>
+
+        <!-- Oyun ekranı -->
+        <section id="gameScreen" class="game-screen hidden">
+            <!-- Bilgi paneli -->
+            <div class="game-info">
+                <div class="game-info__item">
+                    <span class="game-info__label">Zorluk</span>
+                    <span id="difficultyDisplay" class="game-info__value">-</span>
+                </div>
+                <div class="game-info__item">
+                    <span class="game-info__label">Süre</span>
+                    <span id="timerDisplay" class="game-info__value">00:00</span>
+                </div>
+                <div class="game-info__item">
+                    <span class="game-info__label">Hata</span>
+                    <span id="mistakesDisplay" class="game-info__value">0 / 3</span>
+                </div>
+            </div>
+
+            <!-- Sudoku tahtası -->
+            <div id="sudokuBoard" class="sudoku-board" aria-label="Sudoku tahtası"></div>
+
+            <!-- Sayı tuş takımı -->
+            <div class="number-pad">
+                <button class="number-pad__btn" data-number="1">1</button>
+                <button class="number-pad__btn" data-number="2">2</button>
+                <button class="number-pad__btn" data-number="3">3</button>
+                <button class="number-pad__btn" data-number="4">4</button>
+                <button class="number-pad__btn" data-number="5">5</button>
+                <button class="number-pad__btn" data-number="6">6</button>
+                <button class="number-pad__btn" data-number="7">7</button>
+                <button class="number-pad__btn" data-number="8">8</button>
+                <button class="number-pad__btn" data-number="9">9</button>
+            </div>
+
+            <!-- Eylem butonları -->
+            <div class="game-actions">
+                <button id="eraseBtn" class="game-actions__btn" aria-label="Sil">
+                    <!-- Silgi ikonu (SVG) -->
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M20 20H7L3 16a1 1 0 0 1 0-1.41l9.59-9.59a2 2 0 0 1 2.82 0l5.59 5.59a2 2 0 0 1 0 2.82L13 20"></path>
+                        <line x1="18" y1="9" x2="12" y2="15"></line>
+                    </svg>
+                    <span>Sil</span>
+                </button>
+                <button id="hintBtn" class="game-actions__btn" aria-label="İpucu">
+                    <!-- Ampul ikonu (SVG) -->
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M9 18h6"></path>
+                        <path d="M10 22h4"></path>
+                        <path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path>
+                    </svg>
+                    <span>İpucu</span>
+                </button>
+                <button id="notesBtn" class="game-actions__btn" aria-label="Notlar">
+                    <!-- Kalem ikonu (SVG) -->
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
+                    </svg>
+                    <span>Notlar</span>
+                </button>
+                <button id="newGameBtn" class="game-actions__btn" aria-label="Yeni Oyun">
+                    <!-- Yenile ikonu (SVG) -->
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <polyline points="23 4 23 10 17 10"></polyline>
+                        <polyline points="1 20 1 14 7 14"></polyline>
+                        <path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"></path>
+                    </svg>
+                    <span>Yeni</span>
+                </button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Ayarlar paneli -->
+    <div id="settingsPanel" class="settings-panel hidden" role="dialog" aria-label="Ayarlar">
+        <div class="settings-panel__overlay" id="settingsOverlay"></div>
+        <div class="settings-panel__content">
+            <div class="settings-panel__header">
+                <h2 class="settings-panel__title">Ayarlar</h2>
+                <button id="closeSettingsBtn" class="settings-panel__close" aria-label="Kapat">
+                    <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="18" y1="6" x2="6" y2="18"></line>
+                        <line x1="6" y1="6" x2="18" y2="18"></line>
+                    </svg>
+                </button>
+            </div>
+            <div class="settings-panel__body">
+                <!-- Tema ayarı -->
+                <div class="setting-item">
+                    <label class="setting-item__label">Görünüm</label>
+                    <div class="setting-item__control">
+                        <button class="theme-toggle" data-theme="dark">Koyu</button>
+                        <button class="theme-toggle" data-theme="light">Açık</button>
+                    </div>
+                </div>
+                <!-- Animasyon hızı ayarı -->
+                <div class="setting-item">
+                    <label class="setting-item__label">Animasyon Hızı</label>
+                    <div class="setting-item__control">
+                        <select id="animationSpeed" class="setting-item__select">
+                            <option value="slow">Yavaş</option>
+                            <option value="normal" selected>Normal</option>
+                            <option value="fast">Hızlı</option>
+                        </select>
+                    </div>
+                </div>
+                <!-- Ses efektleri ayarı -->
+                <div class="setting-item">
+                    <label class="setting-item__label">Ses Efektleri</label>
+                    <div class="setting-item__control">
+                        <label class="switch">
+                            <input type="checkbox" id="soundToggle" checked>
+                            <span class="switch__slider"></span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Oyun sonu modalı -->
+    <div id="resultModal" class="result-modal hidden" role="dialog" aria-label="Oyun sonucu">
+        <div class="result-modal__overlay"></div>
+        <div class="result-modal__content">
+            <h2 id="resultTitle" class="result-modal__title">Tebrikler!</h2>
+            <p id="resultMessage" class="result-modal__message">Sudoku'yu tamamladınız.</p>
+            <div class="result-modal__stats">
+                <div class="result-modal__stat">
+                    <span class="result-modal__stat-label">Süre</span>
+                    <span id="resultTime" class="result-modal__stat-value">00:00</span>
+                </div>
+                <div class="result-modal__stat">
+                    <span class="result-modal__stat-label">Hata</span>
+                    <span id="resultMistakes" class="result-modal__stat-value">0</span>
+                </div>
+            </div>
+            <div class="result-modal__actions">
+                <button id="resultNewGameBtn" class="result-modal__btn result-modal__btn--primary">Yeni Oyun</button>
+                <button id="resultHomeBtn" class="result-modal__btn">Ana Sayfa</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Betikler -->
+    <script src="../js/main.js"></script>
+    <script src="js/game.js"></script>
+    <script src="js/ui.js"></script>
+</body>
+</html>

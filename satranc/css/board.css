@@ -1,0 +1,269 @@
+/* board.css - Satranç tahtası, kareler, taşlar, vurgular */
+
+.tahtaSarmal {
+  width: 100%;
+  max-width: min(92vw, 92vmin);
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.tahta {
+  width: 100%;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  grid-template-rows: repeat(8, 1fr);
+  border: 4px solid var(--header);
+  border-radius: var(--radius-kucuk);
+  overflow: hidden;
+  box-shadow: 0 8px 28px var(--golge);
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: manipulation;
+}
+
+.kare {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.acikKare {
+  background: var(--kare-acik);
+}
+
+.koyuKare {
+  background: var(--kare-koyu);
+}
+
+/* Koordinat etiketleri (isteğe bağlı görünür yardım) */
+.kare .koordSatir,
+.kare .koordSutun {
+  position: absolute;
+  font-size: clamp(7px, 1.6vmin, 11px);
+  font-weight: 700;
+  line-height: 1;
+  pointer-events: none;
+  opacity: 0.55;
+  z-index: 1;
+}
+
+.kare .koordSatir {
+  top: 2px;
+  left: 3px;
+}
+
+.kare .koordSutun {
+  bottom: 2px;
+  right: 3px;
+}
+
+.acikKare .koordSatir,
+.acikKare .koordSutun {
+  color: var(--kare-koyu);
+}
+
+.koyuKare .koordSatir,
+.koyuKare .koordSutun {
+  color: var(--kare-acik);
+}
+
+/* Taş SVG */
+.kare svg {
+  position: relative;
+  z-index: 3;
+  width: 88%;
+  height: 88%;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 2px rgba(0, 0, 0, 0.35));
+  transition: transform var(--gecis);
+}
+
+.kare.tasli {
+  cursor: grab;
+}
+
+.kare svg.tasGiris {
+  animation: tasYerlesti 0.18s ease;
+}
+
+@keyframes tasYerlesti {
+  from {
+    transform: scale(0.82);
+    opacity: 0.4;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* Seçili kare (altın) */
+.kare.secili::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  opacity: 0.55;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Geçerli hamle - boş kareye nokta */
+.kare.gecerliHamle::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 30%;
+  height: 30%;
+  transform: translate(-50%, -50%);
+  background: rgba(20, 20, 20, 0.32);
+  border-radius: 50%;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Geçerli yeme - taş üzerinde halka */
+.kare.gecerliYeme::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border: 5px solid rgba(20, 20, 20, 0.32);
+  border-radius: 50%;
+  box-sizing: border-box;
+  z-index: 2;
+  pointer-events: none;
+}
+
+/* Son hamle vurgusu (açık yeşil) */
+.kare.sonHamle::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--basari);
+  opacity: 0.32;
+  z-index: 1;
+  pointer-events: none;
+}
+
+/* Seçili kare son hamle vurgusunun üstüne çıksın */
+.kare.secili.sonHamle::before {
+  background: var(--accent);
+  opacity: 0.55;
+}
+
+/* Şah altındaki kral karesi (kırmızı radial) */
+.kare.sahKaresi::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(
+    circle at center,
+    var(--uyari) 0%,
+    rgba(217, 83, 79, 0.65) 45%,
+    rgba(217, 83, 79, 0) 80%
+  );
+  z-index: 2;
+  pointer-events: none;
+  animation: sahNabiz 1.1s ease-in-out infinite;
+}
+
+@keyframes sahNabiz {
+  0%, 100% {
+    opacity: 0.85;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}
+
+/* Hover vurgusu (yalnızca işaretçi cihazlarda) */
+@media (hover: hover) {
+  .kare:hover {
+    box-shadow: inset 0 0 0 3px rgba(212, 168, 83, 0.6);
+  }
+  .kare.secili:hover,
+  .kare.gecerliHamle:hover,
+  .kare.gecerliYeme:hover {
+    box-shadow: inset 0 0 0 3px rgba(212, 168, 83, 0.9);
+  }
+}
+
+/* Tahta ters çevrildiğinde (siyah perspektifi) taşlar yine düz görünsün */
+.tahta.tersCevrik {
+  transform: rotate(180deg);
+}
+
+.tahta.tersCevrik .kare svg,
+.tahta.tersCevrik .kare .koordSatir,
+.tahta.tersCevrik .kare .koordSutun {
+  transform: rotate(180deg);
+}
+
+.tahta.tersCevrik .kare svg {
+  /* rotate sonrası ölçeklemeyi koru */
+  transform: rotate(180deg);
+}
+
+/* Durum mesajı (tahta altı) */
+.durumMesaj {
+  width: 100%;
+  max-width: min(92vw, 92vmin);
+  min-height: 1.6em;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--metin);
+  padding: 6px 10px;
+  background: var(--card);
+  border: 1px solid var(--kenar);
+  border-radius: var(--radius-kucuk);
+}
+
+.durumMesaj.sahDurumu {
+  color: var(--uyari);
+  border-color: var(--uyari);
+}
+
+.durumMesaj.bitisDurumu {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+/* Süre uyarısı animasyonu (board kareleri için referans; ana stiller ui.css'te) */
+.kare.sonHamle.sahKaresi::before {
+  background: radial-gradient(
+    circle at center,
+    var(--uyari) 0%,
+    rgba(217, 83, 79, 0.65) 45%,
+    rgba(217, 83, 79, 0) 80%
+  );
+  opacity: 1;
+}
+
+/* ≥768px masaüstü: sabit en boy korunan tahta */
+@media (min-width: 768px) {
+  .tahtaSarmal {
+    max-width: 560px;
+  }
+  .durumMesaj {
+    max-width: 560px;
+    font-size: 1rem;
+  }
+}
+
+/* Çok küçük ekranlar */
+@media (max-width: 360px) {
+  .kare .koordSatir,
+  .kare .koordSutun {
+    display: none;
+  }
+}

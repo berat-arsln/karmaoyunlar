@@ -1,0 +1,269 @@
+/* ========================================
+   Sudoku - Tahta Stilleri (board.css)
+   Klasik gri tema
+   ======================================== */
+
+/* Tahta kapsayıcısı */
+.sudoku-board-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  width: 100%;
+}
+
+/* Ana tahta - 9x9 grid */
+.sudoku-board {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  grid-template-rows: repeat(9, 1fr);
+  gap: 0;
+  width: min(90vw, 540px);
+  height: min(90vw, 540px);
+  aspect-ratio: 1 / 1;
+  background: var(--sudoku-grid-line, #1a1a1a);
+  border: 3px solid var(--sudoku-grid-line, #1a1a1a);
+  border-radius: 6px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* Tek hücre */
+.sudoku-cell {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--sudoku-cell-bg, #3a3a3a);
+  color: var(--sudoku-cell-text, #e0e0e0);
+  font-size: clamp(1.1rem, 4.5vw, 1.8rem);
+  font-weight: 600;
+  cursor: pointer;
+  position: relative;
+  border: 1px solid var(--sudoku-cell-border, #4a4a4a);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Açık mod hücre renkleri */
+body.light-mode .sudoku-cell {
+  background: var(--sudoku-cell-bg-light, #c0c0c0);
+  color: var(--sudoku-cell-text-light, #1a1a1a);
+  border-color: var(--sudoku-cell-border-light, #9a9a9a);
+}
+
+/* 3x3 blok kalın kenarlıkları */
+.sudoku-cell[data-col="2"],
+.sudoku-cell[data-col="5"] {
+  border-right: 2px solid var(--sudoku-grid-line, #1a1a1a);
+}
+
+.sudoku-cell[data-row="2"],
+.sudoku-cell[data-row="5"] {
+  border-bottom: 2px solid var(--sudoku-grid-line, #1a1a1a);
+}
+
+/* Sabit (başlangıç) rakamlar - değiştirilemez */
+.sudoku-cell.fixed {
+  font-weight: 800;
+  color: var(--sudoku-fixed-text, #ffffff);
+  cursor: default;
+}
+
+body.light-mode .sudoku-cell.fixed {
+  color: var(--sudoku-fixed-text-light, #000000);
+}
+
+/* Oyuncunun girdiği rakamlar */
+.sudoku-cell.player {
+  color: var(--sudoku-player-text, #5fa8d3);
+}
+
+body.light-mode .sudoku-cell.player {
+  color: var(--sudoku-player-text-light, #1565c0);
+}
+
+/* Seçili hücre */
+.sudoku-cell.selected {
+  background: var(--sudoku-selected-bg, #4a6a8a);
+}
+
+body.light-mode .sudoku-cell.selected {
+  background: var(--sudoku-selected-bg-light, #8fb8dd);
+}
+
+/* Aynı satır/sütun/blok vurgusu */
+.sudoku-cell.highlight {
+  background: var(--sudoku-highlight-bg, #45454f);
+}
+
+body.light-mode .sudoku-cell.highlight {
+  background: var(--sudoku-highlight-bg-light, #d4d4d4);
+}
+
+/* Aynı rakamların vurgusu */
+.sudoku-cell.same-number {
+  background: var(--sudoku-same-bg, #50506a);
+}
+
+body.light-mode .sudoku-cell.same-number {
+  background: var(--sudoku-same-bg-light, #b8c8dd);
+}
+
+/* Hatalı giriş */
+.sudoku-cell.error {
+  color: var(--sudoku-error-text, #ff5252);
+  background: var(--sudoku-error-bg, #4a2a2a);
+}
+
+body.light-mode .sudoku-cell.error {
+  color: var(--sudoku-error-text-light, #c62828);
+  background: var(--sudoku-error-bg-light, #f5c6c6);
+}
+
+/* İmleç hover efekti - sadece boş hücreler için */
+.sudoku-cell:not(.fixed):hover {
+  background: var(--sudoku-hover-bg, #444450);
+}
+
+body.light-mode .sudoku-cell:not(.fixed):hover {
+  background: var(--sudoku-hover-bg-light, #cccccc);
+}
+
+/* Notlar (küçük olası rakamlar) */
+.sudoku-cell .notes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.sudoku-cell .note {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(0.5rem, 1.6vw, 0.7rem);
+  font-weight: 400;
+  color: var(--sudoku-note-text, #909090);
+  line-height: 1;
+}
+
+body.light-mode .sudoku-cell .note {
+  color: var(--sudoku-note-text-light, #555555);
+}
+
+/* Tamamlanan satır/sütun/blok animasyonu */
+.sudoku-cell.completed {
+  animation: sudoku-complete-flash 0.6s ease;
+}
+
+@keyframes sudoku-complete-flash {
+  0% {
+    background: var(--sudoku-complete-bg, #2e7d32);
+  }
+  100% {
+    background: var(--sudoku-cell-bg, #3a3a3a);
+  }
+}
+
+body.light-mode .sudoku-cell.completed {
+  animation: sudoku-complete-flash-light 0.6s ease;
+}
+
+@keyframes sudoku-complete-flash-light {
+  0% {
+    background: var(--sudoku-complete-bg-light, #a5d6a7);
+  }
+  100% {
+    background: var(--sudoku-cell-bg-light, #c0c0c0);
+  }
+}
+
+/* Animasyon hızı: yavaş */
+body[data-anim-speed="yavas"] .sudoku-cell.completed {
+  animation-duration: 1s;
+}
+
+/* Animasyon hızı: hızlı */
+body[data-anim-speed="hizli"] .sudoku-cell.completed {
+  animation-duration: 0.3s;
+}
+
+/* Numara giriş paneli (tahta altı) */
+.sudoku-number-pad {
+  display: grid;
+  grid-template-columns: repeat(9, 1fr);
+  gap: 0.4rem;
+  width: min(90vw, 540px);
+  margin-top: 1rem;
+}
+
+.sudoku-number-pad .num-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  aspect-ratio: 1 / 1;
+  background: var(--sudoku-numpad-bg, #3a3a3a);
+  color: var(--sudoku-numpad-text, #e0e0e0);
+  border: 1px solid var(--sudoku-cell-border, #4a4a4a);
+  border-radius: 6px;
+  font-size: clamp(1rem, 3.5vw, 1.5rem);
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+.sudoku-number-pad .num-btn:hover {
+  background: var(--sudoku-numpad-hover, #4a4a4a);
+}
+
+.sudoku-number-pad .num-btn:active {
+  transform: scale(0.94);
+}
+
+body.light-mode .sudoku-number-pad .num-btn {
+  background: var(--sudoku-numpad-bg-light, #c0c0c0);
+  color: var(--sudoku-numpad-text-light, #1a1a1a);
+  border-color: var(--sudoku-cell-border-light, #9a9a9a);
+}
+
+body.light-mode .sudoku-number-pad .num-btn:hover {
+  background: var(--sudoku-numpad-hover-light, #cccccc);
+}
+
+/* Rakamı tamamen kullanılmış (9 kez girilmiş) buton */
+.sudoku-number-pad .num-btn.depleted {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.sudoku-number-pad .num-btn .num-count {
+  position: absolute;
+  bottom: 2px;
+  right: 4px;
+  font-size: 0.6rem;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+/* Responsive: küçük ekranlar */
+@media (max-width: 480px) {
+  .sudoku-board,
+  .sudoku-number-pad {
+    width: 96vw;
+  }
+
+  .sudoku-board {
+    height: 96vw;
+  }
+
+  .sudoku-number-pad {
+    gap: 0.25rem;
+  }
+
+  .sudoku-cell {
+    font-size: clamp(1rem, 5vw, 1.5rem);
+  }
+}

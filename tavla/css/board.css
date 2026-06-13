@@ -1,0 +1,535 @@
+/* Tavla Tahtası Stilleri - board.css */
+/* Ahşap tema ile tavla tahtası ve taşları */
+
+:root {
+  --tavla-ahsap-koyu: #5C3D11;
+  --tavla-ahsap-orta: #8B6914;
+  --tavla-ahsap-acik: #D4A853;
+  --tavla-tahta-kenar: #3a2608;
+  --tavla-ucgen-acik: #D4A853;
+  --tavla-ucgen-koyu: #8B6914;
+  --tavla-tas-beyaz: #f5f0e1;
+  --tavla-tas-siyah: #2a1a08;
+  --tavla-secili: rgba(80, 200, 120, 0.6);
+  --tavla-gecerli-hamle: rgba(80, 200, 120, 0.35);
+}
+
+/* Tahta dış kapsayıcı */
+.tavla-tahta-kapsayici {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  user-select: none;
+}
+
+/* Ana tahta - iki yarım ve bar dahil */
+.tavla-tahta {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  grid-template-rows: 1fr 1fr;
+  aspect-ratio: 12 / 10;
+  width: 100%;
+  background: linear-gradient(135deg, var(--tavla-ahsap-orta), var(--tavla-ahsap-koyu));
+  border: 14px solid var(--tavla-tahta-kenar);
+  border-radius: 8px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5), inset 0 0 40px rgba(0, 0, 0, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Sol üst, sol alt, sağ üst, sağ alt çeyrekler */
+.tavla-ceyrek {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  position: relative;
+}
+
+.tavla-ceyrek--sol-ust { grid-column: 1; grid-row: 1; }
+.tavla-ceyrek--sag-ust { grid-column: 3; grid-row: 1; }
+.tavla-ceyrek--sol-alt { grid-column: 1; grid-row: 2; }
+.tavla-ceyrek--sag-alt { grid-column: 3; grid-row: 2; }
+
+/* Orta bar (kapılan taşlar burada bekler) */
+.tavla-bar {
+  grid-column: 2;
+  grid-row: 1 / span 2;
+  width: 40px;
+  background: linear-gradient(180deg, var(--tavla-ahsap-koyu), var(--tavla-tahta-kenar));
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.6);
+  position: relative;
+  z-index: 2;
+}
+
+/* Bar üstündeki ve altındaki kırılmış taş alanları */
+.tavla-bar__bolme {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 0;
+  width: 100%;
+  min-height: 40%;
+}
+
+.tavla-bar__bolme--ust { justify-content: flex-start; }
+.tavla-bar__bolme--alt { justify-content: flex-end; }
+
+/* Üçgen (haneler) */
+.tavla-ucgen {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+  transition: filter 0.2s ease;
+}
+
+/* Üst sıradaki üçgenler aşağı bakar */
+.tavla-ucgen--ust::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 50% solid transparent;
+  border-right: 50% solid transparent;
+  border-top: 88% solid var(--tavla-ucgen-renk, var(--tavla-ucgen-acik));
+  width: 100%;
+  z-index: 0;
+}
+
+/* Alt sıradaki üçgenler yukarı bakar */
+.tavla-ucgen--alt::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 50% solid transparent;
+  border-right: 50% solid transparent;
+  border-bottom: 88% solid var(--tavla-ucgen-renk, var(--tavla-ucgen-acik));
+  width: 100%;
+  z-index: 0;
+}
+
+/* Açık ve koyu renk üçgenler dönüşümlü */
+.tavla-ucgen--renk-acik { --tavla-ucgen-renk: var(--tavla-ucgen-acik); }
+.tavla-ucgen--renk-koyu { --tavla-ucgen-renk: var(--tavla-ucgen-koyu); }
+
+/* Seçili üçgen vurgusu */
+.tavla-ucgen--secili {
+  filter: brightness(1.3);
+}
+
+/* Geçerli hamle olarak gösterilen üçgen */
+.tavla-ucgen--gecerli::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 60%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: var(--tavla-gecerli-hamle);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tavla-ucgen--vurusabilir::after {
+  background: rgba(220, 80, 80, 0.4);
+}
+
+/* Üçgen içindeki taşların dizilimi */
+.tavla-ucgen__taslar {
+  position: relative;
+  z-index: 3;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 4px 0;
+}
+
+.tavla-ucgen--ust .tavla-ucgen__taslar { justify-content: flex-start; }
+.tavla-ucgen--alt .tavla-ucgen__taslar { justify-content: flex-end; }
+
+/* Tek bir tavla taşı (pul) */
+.tavla-tas {
+  width: 82%;
+  aspect-ratio: 1;
+  max-width: 44px;
+  border-radius: 50%;
+  margin: -2px 0;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.3), inset 0 -2px 4px rgba(0, 0, 0, 0.4);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  position: relative;
+  z-index: 3;
+}
+
+/* Beyaz taş */
+.tavla-tas--beyaz {
+  background: radial-gradient(circle at 35% 30%, #ffffff, var(--tavla-tas-beyaz) 60%, #d8d0bc);
+  border: 1px solid #b8b0a0;
+}
+
+/* Siyah taş */
+.tavla-tas--siyah {
+  background: radial-gradient(circle at 35% 30%, #4a3520, var(--tavla-tas-siyah) 60%, #1a0f04);
+  border: 1px solid #000;
+}
+
+/* Sürüklenebilir / oynatılabilir taş */
+.tavla-tas--oynanabilir {
+  cursor: grab;
+}
+
+.tavla-tas--oynanabilir:hover {
+  transform: scale(1.08);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.6), inset 0 2px 4px rgba(255, 255, 255, 0.3);
+}
+
+.tavla-tas--suruklenen {
+  cursor: grabbing;
+  opacity: 0.7;
+  transform: scale(1.1);
+  z-index: 10;
+}
+
+/* Bir hanede 5'ten fazla taş varsa sayıyı gösteren rozet */
+.tavla-tas__sayac {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+  z-index: 4;
+  pointer-events: none;
+}
+
+.tavla-tas--beyaz .tavla-tas__sayac {
+  color: #2a1a08;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.5);
+}
+
+/* Toplama (bear off) alanları - sağ kenar */
+.tavla-toplama {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 50px;
+  margin-left: 8px;
+  align-self: stretch;
+}
+
+.tavla-toplama__bolme {
+  flex: 1;
+  background: linear-gradient(135deg, var(--tavla-ahsap-koyu), var(--tavla-tahta-kenar));
+  border: 2px solid var(--tavla-tahta-kenar);
+  border-radius: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 4px;
+  gap: 1px;
+  overflow: hidden;
+  position: relative;
+}
+
+.tavla-toplama__bolme--ust { margin-bottom: 4px; }
+.tavla-toplama__bolme--alt { margin-top: 4px; }
+
+/* Toplama alanındaki taşlar yatay çubuk olarak gösterilir */
+.tavla-toplama__tas {
+  width: 90%;
+  height: 8px;
+  border-radius: 3px;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+}
+
+.tavla-toplama__tas--beyaz {
+  background: linear-gradient(180deg, #ffffff, var(--tavla-tas-beyaz));
+}
+
+.tavla-toplama__tas--siyah {
+  background: linear-gradient(180deg, #4a3520, var(--tavla-tas-siyah));
+}
+
+.tavla-toplama__sayac {
+  position: absolute;
+  bottom: 4px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+/* Hane numaraları (1-24) */
+.tavla-hane-no {
+  position: absolute;
+  font-size: 0.65rem;
+  font-weight: 600;
+  color: rgba(255, 255, 255, 0.6);
+  z-index: 1;
+  pointer-events: none;
+}
+
+.tavla-ucgen--ust .tavla-hane-no { top: 2px; }
+.tavla-ucgen--alt .tavla-hane-no { bottom: 2px; }
+
+/* Zar alanı */
+.tavla-zar-alani {
+  display: flex;
+  gap: 16px;
+  justify-content: center;
+  align-items: center;
+  margin-top: 16px;
+  min-height: 60px;
+}
+
+/* Tek bir zar (2D) */
+.tavla-zar {
+  width: 48px;
+  height: 48px;
+  background:linear-gradient(145deg, #f5f0e1, #d8d0bc);
+  border-radius: 10px;
+  position: relative;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5), inset 0 2px 4px rgba(255, 255, 255, 0.5);
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 8px;
+  gap: 2px;
+}
+
+/* Zar üzerindeki noktalar */
+.tavla-zar__nokta {
+  width: 8px;
+  height: 8px;
+  background: var(--tavla-tas-siyah);
+  border-radius: 50%;
+  align-self: center;
+  justify-self: center;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* Nokta konumları - grid hücrelerine yerleşim */
+.tavla-zar__nokta--ust-sol { grid-column: 1; grid-row: 1; }
+.tavla-zar__nokta--ust-sag { grid-column: 3; grid-row: 1; }
+.tavla-zar__nokta--orta-sol { grid-column: 1; grid-row: 2; }
+.tavla-zar__nokta--orta { grid-column: 2; grid-row: 2; }
+.tavla-zar__nokta--orta-sag { grid-column: 3; grid-row: 2; }
+.tavla-zar__nokta--alt-sol { grid-column: 1; grid-row: 3; }
+.tavla-zar__nokta--alt-sag { grid-column: 3; grid-row: 3; }
+
+/* Zar atma animasyonu */
+.tavla-zar--atiliyor {
+  animation: tavla-zar-sallan 0.6s ease;
+}
+
+@keyframes tavla-zar-sallan {
+  0% { transform: rotate(0deg) scale(1); }
+  25% { transform: rotate(90deg) scale(1.15); }
+  50% { transform: rotate(180deg) scale(0.95); }
+  75% { transform: rotate(270deg) scale(1.1); }
+  100% { transform: rotate(360deg) scale(1); }
+}
+
+/* Kullanılmış (oynanan) zar soluk gösterilir */
+.tavla-zar--kullanildi {
+  opacity: 0.4;
+  filter: grayscale(0.6);
+}
+
+/* Çift atışta dört kez oynanabilen zarlar için ek gösterim */
+.tavla-zar--cift {
+  border: 2px solid var(--tavla-ucgen-acik);
+}
+
+/* 3D zar kapsayıcı (3D mod seçildiğinde kullanılır) */
+.tavla-zar-3d {
+  width: 52px;
+  height: 52px;
+  perspective: 240px;
+  margin: 4px;
+}
+
+.tavla-zar-3d__kup {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  transform-style: preserve-3d;
+  transition: transform 0.8s ease;
+}
+
+.tavla-zar-3d__kup.tavla-zar--atiliyor {
+  animation: tavla-zar3d-don 0.8s ease;
+}
+
+@keyframes tavla-zar3d-don {
+  0% { transform: rotateX(0) rotateY(0); }
+  100% { transform: rotateX(720deg) rotateY(720deg); }
+}
+
+/* 3D zar yüzeyleri */
+.tavla-zar-3d__yuz {
+  position: absolute;
+  width: 52px;
+  height: 52px;
+  background: linear-gradient(145deg, #f5f0e1, #d8d0bc);
+  border: 1px solid #b8b0a0;
+  border-radius: 8px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  padding: 6px;
+  box-shadow: inset 0 0 8px rgba(0, 0, 0, 0.2);
+}
+
+.tavla-zar-3d__yuz--on    { transform: translateZ(26px); }
+.tavla-zar-3d__yuz--arka  { transform: rotateY(180deg) translateZ(26px); }
+.tavla-zar-3d__yuz--sag   { transform: rotateY(90deg) translateZ(26px); }
+.tavla-zar-3d__yuz--sol   { transform: rotateY(-90deg) translateZ(26px); }
+.tavla-zar-3d__yuz--ust   { transform: rotateX(90deg) translateZ(26px); }
+.tavla-zar-3d__yuz--alt   { transform: rotateX(-90deg) translateZ(26px); }
+
+/* 3D zar nokta düzeni */
+.tavla-zar-3d__nokta {
+  width: 8px;
+  height: 8px;
+  background: var(--tavla-tas-siyah);
+  border-radius: 50%;
+  align-self: center;
+  justify-self: center;
+  box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.4);
+}
+
+/* Aktif oyuncu göstergesi */
+.tavla-oyuncu-gostergesi {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto 12px;
+  padding: 8px 16px;
+}
+
+.tavla-oyuncu {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.25);
+  transition: background 0.2s ease, box-shadow 0.2s ease;
+}
+
+.tavla-oyuncu--aktif {
+  background: rgba(212, 168, 83, 0.3);
+  box-shadow: 0 0 12px rgba(212, 168, 83, 0.5);
+}
+
+.tavla-oyuncu__renk {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.tavla-oyuncu__renk--beyaz {
+  background: radial-gradient(circle at 35% 30%, #ffffff, var(--tavla-tas-beyaz));
+}
+
+.tavla-oyuncu__renk--siyah {
+  background: radial-gradient(circle at 35% 30%, #4a3520, var(--tavla-tas-siyah));
+}
+
+.tavla-oyuncu__ad {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--tavla-tas-beyaz);
+}
+
+/* Sürükleme sırasında geçerli hedefin vurgulanması */
+.tavla-ucgen--hedef-aktif {
+  filter: brightness(1.4) drop-shadow(0 0 6px var(--tavla-secili));
+}
+
+/* Responsive düzenlemeler */
+@media (max-width: 768px) {
+  .tavla-bar { width: 28px; }
+
+  .tavla-tas { max-width: 32px; }
+
+  .tavla-zar,
+  .tavla-zar-3d,
+  .tavla-zar-3d__yuz {
+    width: 40px;
+    height: 40px;
+  }
+
+  .tavla-toplama { width: 36px; }
+
+  .tavla-hane-no { font-size: 0.55rem; }
+}
+
+@media (max-width: 480px) {
+  .tavla-tahta { border-width: 8px; }
+
+  .tavla-bar { width: 22px; }
+
+  .tavla-tas {
+    max-width: 24px;
+    margin: -1px 0;
+  }
+
+  .tavla-zar,
+  .tavla-zar-3d,
+  .tavla-zar-3d__yuz {
+    width: 34px;
+    height: 34px;
+  }
+
+  .tavla-zar__nokta,
+  .tavla-zar-3d__nokta {
+    width: 6px;
+    height: 6px;
+  }
+
+  .tavla-toplama { width: 28px; }
+
+  .tavla-oyuncu__ad { font-size: 0.8rem; }
+}
+
+/* Oyun bittiğinde tahta üzerine binen kazanan katmanı */
+.tavla-kazanan-katman {
+  position: absolute;
+  inset: 0;
+  background: rgba(26, 26, 46, 0.85);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  z-index: 20;
+  border-radius: 8px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4

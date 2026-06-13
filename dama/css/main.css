@@ -1,0 +1,400 @@
+/* ===================================================================
+   main.css — 1. Parça
+   Tema değişkenleri, reset, genel layout ve scroll/taşma kilidi
+   =================================================================== */
+
+/* ---------- Tema değişkenleri: AÇIK tema (varsayılan) ---------- */
+:root,
+[data-theme="light"] {
+  /* Sayfa */
+  --bg-page: #d9cbb8;
+  --bg-page-grad-1: #e4d8c5;
+  --bg-page-grad-2: #c9b89e;
+  --text-main: #2b1d12;
+  --text-soft: #5b4a37;
+
+  /* Üst bar */
+  --topbar-bg: #3a2817;
+  --topbar-text: #f3e9d8;
+  --topbar-border: rgba(0, 0, 0, 0.3);
+
+  /* Ahşap çerçeve */
+  --frame-light: #8a5a2b;
+  --frame-dark: #5e3a16;
+  --frame-darker: #3f2710;
+
+  /* Kareler */
+  --square-light: #e8d0a9;
+  --square-dark: #a9743f;
+  --coord-color: #2b1d12;
+
+  /* Vurgulama / ipuçları */
+  --sel-color: #f4d03f;
+  --hint-color: #2e7d32;
+  --hint-capture-color: #c0392b;
+  --last-move-color: rgba(244, 208, 63, 0.22);
+  --king-ring-color: rgba(240, 198, 74, 0.85);
+
+  /* UI yüzeyleri */
+  --surface: #f7efe2;
+  --surface-2: #ece0cd;
+  --surface-border: rgba(58, 40, 23, 0.18);
+  --surface-text: #2b1d12;
+  --surface-text-soft: #6b5942;
+
+  /* Butonlar */
+  --btn-primary-bg: #6b4423;
+  --btn-primary-text: #fdf6ea;
+  --btn-secondary-bg: #8a5a2b;
+  --btn-ghost-text: #5b4a37;
+
+  /* Overlay / gölge */
+  --overlay-bg: rgba(20, 12, 4, 0.5);
+  --shadow-panel: 0 18px 50px rgba(0, 0, 0, 0.35);
+
+  /* Durum çubuğu */
+  --status-bg: rgba(255, 255, 255, 0.45);
+  --status-active: #6b4423;
+}
+
+/* ---------- Tema değişkenleri: KOYU tema ---------- */
+[data-theme="dark"] {
+  /* Sayfa */
+  --bg-page: #1a1510;
+  --bg-page-grad-1: #221b13;
+  --bg-page-grad-2: #120d08;
+  --text-main: #f3e9d8;
+  --text-soft: #c2b29a;
+
+  /* Üst bar */
+  --topbar-bg: #120d08;
+  --topbar-text: #f3e9d8;
+  --topbar-border: rgba(255, 255, 255, 0.08);
+
+  /* Ahşap çerçeve */
+  --frame-light: #5a3a1c;
+  --frame-dark: #3a2410;
+  --frame-darker: #20150a;
+
+  /* Kareler */
+  --square-light: #b89968;
+  --square-dark: #6e4623;
+  --coord-color: #f3e9d8;
+
+  /* Vurgulama / ipuçları */
+  --sel-color: #f4d03f;
+  --hint-color: #4caf50;
+  --hint-capture-color: #e74c3c;
+  --last-move-color: rgba(244, 208, 63, 0.18);
+  --king-ring-color: rgba(240, 198, 74, 0.9);
+
+  /* UI yüzeyleri */
+  --surface: #251d14;
+  --surface-2: #1c160e;
+  --surface-border: rgba(255, 255, 255, 0.1);
+  --surface-text: #f3e9d8;
+  --surface-text-soft: #b3a48c;
+
+  /* Butonlar */
+  --btn-primary-bg: #8a5a2b;
+  --btn-primary-text: #fdf6ea;
+  --btn-secondary-bg: #6b4423;
+  --btn-ghost-text: #c2b29a;
+
+  /* Overlay / gölge */
+  --overlay-bg: rgba(0, 0, 0, 0.65);
+  --shadow-panel: 0 18px 50px rgba(0, 0, 0, 0.6);
+
+  /* Durum çubuğu */
+  --status-bg: rgba(255, 255, 255, 0.06);
+  --status-active: #f4d03f;
+}
+
+/* ---------- Reset ---------- */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ---------- Scroll / taşma kilidi & pull-to-refresh engeli ---------- */
+html,
+body {
+  width: 100%;
+  height: 100%;
+  height: 100dvh;
+  overflow: hidden;
+  position: fixed;
+  inset: 0;
+  overscroll-behavior: none;
+  touch-action: manipulation;
+  -webkit-overflow-scrolling: auto;
+}
+
+body {
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, Arial, sans-serif;
+  color: var(--text-main);
+  background:
+    radial-gradient(circle at 50% 0%,
+      var(--bg-page-grad-1) 0%,
+      var(--bg-page) 45%,
+      var(--bg-page-grad-2) 100%);
+  display: flex;
+  flex-direction: column;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* ---------- Üst bar ---------- */
+.topbar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px max(14px, env(safe-area-inset-right)) 10px max(14px, env(safe-area-inset-left));
+  padding-top: max(10px, env(safe-area-inset-top));
+  background: var(--topbar-bg);
+  color: var(--topbar-text);
+  border-bottom: 1px solid var(--topbar-border);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+}
+
+.topbar__left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.topbar__title {
+  font-size: clamp(16px, 4.2vw, 22px);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--topbar-text);
+}
+
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ---------- Oyun alanı (ortalanmış, taşmasız) ---------- */
+.game-area {
+  flex: 1 1 auto;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(8px, 1.8vmin, 16px);
+  padding: clamp(8px, 2vmin, 18px);
+  padding-bottom: max(clamp(8px, 2vmin, 18px), env(safe-area-inset-bottom));
+  overflow: hidden;
+}
+
+/* ---------- Durum çubuğu ---------- */
+.status-bar {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: clamp(8px, 3vw, 24px);
+  width: min(100%, var(--board-max, 92vmin));
+  padding: 8px 14px;
+  border-radius: 12px;
+  background: var(--status-bg);
+  backdrop-filter: blur(4px);
+}
+
+.status-bar__player {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(13px, 3.4vw, 16px);
+  font-weight: 600;
+  color: var(--text-main);
+  transition: opacity 0.2s ease;
+}
+
+.status-bar__dot {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex: 0 0 auto;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+.status-bar__dot--white {
+  background: radial-gradient(circle at 35% 30%, #fff, #c9c9c9);
+}
+
+.status-bar__dot--black {
+  background: radial-gradient(circle at 35% 30%, #555, #0a0a0a);
+}
+
+.status-bar__count {
+  min-width: 24px;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  padding: 2px 8px;
+  border-radius: 8px;
+  background: rgba(0, 0, 0, 0.12);
+}
+
+.status-bar__turn {
+  font-size: clamp(12px, 3vw, 15px);
+  font-weight: 700;
+  color: var(--status-active);
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Sırası gelmeyen oyuncu soluk */
+.status-bar__player.is-waiting {
+  opacity: 0.4;
+}
+
+/* ===================================================================
+   main.css — 2. Parça
+   Tahta boyut sınırlaması, responsive ayarlar ve yardımcı sınıflar
+   =================================================================== */
+
+/* ---------- Tahta boyutu: ekrana sığma garantisi ---------- */
+.board-frame {
+  width: min(var(--board-max, 92vmin), 100%);
+  max-width: 92vmin;
+  margin: 0 auto;
+  flex: 0 1 auto;
+}
+
+/* Tahta + durum çubuğu birlikte dikey alana sığsın diye
+   genişlik aynı zamanda yüksekliğe göre de sınırlanır */
+:root {
+  --board-max: min(92vmin, 560px);
+}
+
+/* ---------- Yatay ekran (manzara) uyarlaması ---------- */
+@media (orientation: landscape) {
+  :root {
+    --board-max: min(78vmin, 520px);
+  }
+
+  .game-area {
+    gap: clamp(6px, 1.4vmin, 12px);
+  }
+
+  .status-bar {
+    width: min(100%, var(--board-max));
+  }
+}
+
+/* Çok kısa ekranlarda (yatayda telefon) tahtayı yüksekliğe göre daralt */
+@media (orientation: landscape) and (max-height: 520px) {
+  :root {
+    --board-max: min(70vmin, 440px);
+  }
+
+  .topbar {
+    padding-top: 6px;
+    padding-bottom: 6px;
+  }
+
+  .topbar__title {
+    font-size: 16px;
+  }
+
+  .status-bar {
+    padding: 5px 12px;
+  }
+}
+
+/* ---------- Geniş ekran (masaüstü) ---------- */
+@media (min-width: 900px) and (orientation: landscape) {
+  :root {
+    --board-max: min(70vmin, 600px);
+  }
+}
+
+/* ---------- Dar ekran (küçük telefon) ---------- */
+@media (max-width: 360px) {
+  :root {
+    --board-max: 94vmin;
+  }
+
+  .status-bar {
+    padding: 6px 10px;
+    gap: 8px;
+  }
+
+  .status-bar__name {
+    display: none;
+  }
+}
+
+/* ---------- Çok dar + çok kısa güvenlik sınırı ---------- */
+@media (max-height: 600px) and (orientation: portrait) {
+  :root {
+    --board-max: min(88vmin, 78vh);
+  }
+}
+
+/* ---------- Yardımcı sınıflar ---------- */
+.is-hidden {
+  display: none !important;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+.no-transition,
+.no-transition * {
+  transition: none !important;
+}
+
+/* ---------- Odak görünürlüğü (erişilebilirlik) ---------- */
+:focus-visible {
+  outline: 2px solid var(--sel-color);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Fare/dokunma ile tıklamada odak halkası görünmesin */
+:focus:not(:focus-visible) {
+  outline: none;
+}
+
+/* ---------- Seçim engelleme (oyun alanında) ---------- */
+.board,
+.board * {
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+/* ---------- Kaydırma davranışı son güvenlik ---------- */
+.game-area,
+.board-frame,
+.board-wrap {
+  overscroll-behavior: contain;
+}
+
+/* ---------- Hareket azaltma tercihi ---------- */
+@media (prefers-reduced-motion: reduce) {
+  body,
+  .board,
+  .status-bar__player {
+    transition: none !important;
+  }
+}

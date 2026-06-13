@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mayın Tarlası</title>
+  <link rel="stylesheet" href="css/main.css" />
+  <link rel="stylesheet" href="css/ui.css" />
+  <link rel="stylesheet" href="css/board.css" />
+</head>
+<body>
+
+  <div id="app">
+
+    <!-- Header -->
+    <header id="game-header">
+      <div id="header-inner">
+        <h1 id="game-title">Mayın Tarlası</h1>
+      </div>
+    </header>
+
+    <!-- Difficulty Selector -->
+    <nav id="difficulty-bar">
+      <button class="diff-btn active" data-difficulty="easy">Kolay</button>
+      <button class="diff-btn" data-difficulty="medium">Orta</button>
+      <button class="diff-btn" data-difficulty="hard">Zor</button>
+      <button class="diff-btn" data-difficulty="impossible">İmkansız</button>
+      <button class="diff-btn" data-difficulty="custom">Özel</button>
+    </nav>
+
+    <!-- Custom Settings Panel -->
+    <div id="custom-panel" class="hidden">
+      <div id="custom-inner">
+        <div class="custom-field">
+          <label for="custom-rows">Satır</label>
+          <input type="number" id="custom-rows" min="5" max="30" value="10" />
+        </div>
+        <div class="custom-field">
+          <label for="custom-cols">Sütun</label>
+          <input type="number" id="custom-cols" min="5" max="50" value="10" />
+        </div>
+        <div class="custom-field">
+          <label for="custom-mines">Mayın</label>
+          <input type="number" id="custom-mines" min="1" max="500" value="15" />
+        </div>
+        <button id="custom-apply-btn">Uygula</button>
+      </div>
+    </div>
+
+    <!-- Game Console -->
+    <main id="game-console">
+
+      <!-- Status Bar -->
+      <div id="status-bar">
+
+        <!-- Mine Counter -->
+        <div id="mine-counter" class="lcd-display">
+          <span id="mine-count-display">000</span>
+        </div>
+
+        <!-- Reset Button -->
+        <button id="reset-btn" title="Yeni Oyun">
+          <!-- Face SVG injected by ui.js -->
+        </button>
+
+        <!-- Timer -->
+        <div id="timer-display" class="lcd-display">
+          <span id="timer-count-display">000</span>
+        </div>
+
+      </div>
+
+      <!-- Board Container -->
+      <div id="board-wrapper">
+        <div id="board"></div>
+      </div>
+
+    </main>
+
+    <!-- Win/Lose Overlay -->
+    <div id="overlay" class="hidden">
+      <div id="overlay-box">
+        <div id="overlay-icon"></div>
+        <h2 id="overlay-title"></h2>
+        <p id="overlay-message"></p>
+        <div id="overlay-stats">
+          <div class="stat">
+            <span class="stat-label">Süre</span>
+            <span class="stat-value" id="stat-time">—</span>
+          </div>
+          <div class="stat">
+            <span class="stat-label">Mayınlar</span>
+            <span class="stat-value" id="stat-mines">—</span>
+          </div>
+        </div>
+        <button id="overlay-restart-btn">Tekrar Oyna</button>
+      </div>
+    </div>
+
+  </div><!-- /#app -->
+
+  <script src="js/game.js"></script>
+  <script src="js/ui.js"></script>
+
+</body>
+</html>

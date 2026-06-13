@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Karma Oyunlar - Ücretsiz Türkçe web oyun platformu. Satranç, dama, sudoku, mayın tarlası ve daha fazlası tarayıcınızda.">
+    <title>Karma Oyunlar</title>
+    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="css/cards.css">
+    <script>
+        (function () {
+            try {
+                var kayit = localStorage.getItem('karmaOyunlarAyarlar');
+                var tema = 'dark';
+                if (kayit) {
+                    var ayar = JSON.parse(kayit);
+                    if (ayar && ayar.tema) tema = ayar.tema;
+                }
+                document.documentElement.setAttribute('data-tema', tema);
+            } catch (e) {
+                document.documentElement.setAttribute('data-tema', 'dark');
+            }
+        })();
+    </script>
+</head>
+<body>
+    <header class="site-header">
+        <div class="header-ic">
+            <a href="index.html" class="logo" aria-label="Karma Oyunlar ana sayfa">
+                <svg class="logo-ikon" width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M6.5 7.5h6a5.5 5.5 0 0 1 5.36 4.24l.92 3.92a2.2 2.2 0 0 1-4.06 1.6l-1.04-1.86a1.5 1.5 0 0 0-1.31-.77H8.18a1.5 1.5 0 0 0-1.31.77l-1.04 1.86a2.2 2.2 0 0 1-4.06-1.6l.92-3.92A5.5 5.5 0 0 1 6.5 7.5Z" fill="currentColor" fill-opacity="0.12" stroke="currentColor" stroke-width="1.4" stroke-linejoin="round"/>
+                    <line x1="6" y1="11.5" x2="9" y2="11.5" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <line x1="7.5" y1="10" x2="7.5" y2="13" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+                    <circle cx="15" cy="11" r="1" fill="currentColor"/>
+                    <circle cx="17" cy="13" r="1" fill="currentColor"/>
+                </svg>
+                <span class="logo-metin">Karma Oyunlar</span>
+            </a>
+            <button id="ayarlar-ac" class="ayarlar-btn" aria-label="Ayarları aç" title="Ayarlar">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                    <path d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" stroke="currentColor" stroke-width="1.6"/>
+                    <path d="M19.4 13a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09a1.65 1.65 0 0 0-1.08-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09a1.65 1.65 0 0 0 1.51-1.08 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <main class="site-main">
+        <section class="hero">
+            <p class="hero-aciklama">Klasik oyunların tamamı tek bir yerde, tamamen ücretsiz ve Türkçe. Hesap gerekmez, indirme yok — kartlardan birini seç ve hemen oynamaya başla.</p>
+        </section>
+
+        <section class="oyunlar" aria-label="Oyun listesi">
+            <div class="kart-izgara">
+
+                <a class="oyun-kart" href="mayintarlasi/index.html">
+                    <div class="kart-gorsel kart-gorsel--mayin">
+                        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                            <circle cx="32" cy="34" r="14" fill="#1b1b1b" stroke="#000" stroke-width="2"/>
+                            <circle cx="26" cy="28" r="4" fill="#ffffff" fill-opacity="0.25"/>
+                            <g stroke="#1b1b1b" stroke-width="3" stroke-linecap="round">
+                                <line x1="32" y1="20" x2="32" y2="10"/>
+                                <line x1="32" y1="48" x2="32" y2="58"/>
+                                <line x1="18" y1="34" x2="8" y2="34"/>
+                                <line x1="46" y1="34" x2="56" y2="34"/>
+                                <line x1="22" y1="24" x2="14" y2="16"/>
+                                <line x1="42" y1="24" x2="50" y2="16"/>
+                                <line x1="22" y1="44" x2="14" y2="52"/>
+                                <line x1="42" y1="44" x2="50" y2="52"/>
+                            </g>
+                            <path d="M30 8l3-4 3 4-3 3z" fill="#D4A853"/>
+                        </svg>
+                    </div>
+                    <div class="kart-icerik">
+                        <h2 class="kart-baslik">Mayın Tarlası</h2>
+                        <p class="kart-aciklama">Sayıların ipuçlarını kullanarak gizli mayınları bul. Klasik mantık ve sabır oyunu.</p>
+                        <div class="kart-etiketler">
+                            <span class="etiket">Mantık</span>
+                            <span class="etiket">Tek Kişilik</span>
+                        </div>
+                        <span class="oyna-btn">Oyna</span>
+                    </div>
+                </a>
+
+                <a class="oyun-kart" href="satranc/index.html">
+    <div class="kart-gorsel kart-gorsel--satranc">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <path d="M32 8c-3.3 0-6 2.7-6 6 0 2.2 1.2 4.1 3 5.1-1.5 3.4-4 6-4 11.9 0 4 1 7 2 9h10c1-2 2-5 2-9 0-5.9-2.5-8.5-4-11.9 1.8-1 3-2.9 3-5.1 0-3.3-2.7-6-6-6Z" fill="#f4f4f4" stroke="#1b1b1b" stroke-width="1.5" stroke-linejoin="round"/>
+            <path d="M22 40h20l3 6H19l3-6Z" fill="#e8e8e8" stroke="#1b1b1b" stroke-width="1.5" stroke-linejoin="round"/>
+            <rect x="17" y="46" width="30" height="8" rx="2" fill="#dcdcdc" stroke="#1b1b1b" stroke-width="1.5"/>
+        </svg>
+    </div>
+    <div class="kart-icerik">
+        <h2 class="kart-baslik">Satranç</h2>
+        <p class="kart-aciklama">Strateji oyunlarının kralı. Bilgisayara karşı veya iki kişilik modda zekânı sına.</p>
+        <div class="kart-etiketler">
+            <span class="etiket">Strateji</span>
+            <span class="etiket">2 Kişilik</span>
+        </div>
+        <span class="oyna-btn">Oyna</span>
+    </div>
+</a>
+
+               <a class="oyun-kart" href="dama/index.html">
+    <div class="kart-gorsel kart-gorsel--dama">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <ellipse cx="32" cy="44" rx="20" ry="6" fill="#000" fill-opacity="0.2"/>
+            <ellipse cx="32" cy="40" rx="20" ry="7" fill="#a32020" stroke="#1b1b1b" stroke-width="1.5"/>
+            <ellipse cx="32" cy="34" rx="20" ry="7" fill="#c92e2e" stroke="#1b1b1b" stroke-width="1.5"/>
+            <ellipse cx="32" cy="28" rx="20" ry="7" fill="#e23838" stroke="#1b1b1b" stroke-width="1.5"/>
+            <ellipse cx="32" cy="28" rx="11" ry="4" fill="#000" fill-opacity="0.15"/>
+        </svg>
+    </div>
+    <div class="kart-icerik">
+        <h2 class="kart-baslik">Dama</h2>
+        <p class="kart-aciklama">Hamlelerini iyi planla, rakibin taşlarını ele geçir ve kral ol.</p>
+        <div class="kart-etiketler">
+            <span class="etiket">Strateji</span>
+            <span class="etiket">2 Kişilik</span>
+        </div>
+        <span class="oyna-btn">Oyna</span>
+    </div>
+</a>
+
+                <a class="oyun-kart" href="tavla/index.html">
+    <div class="kart-gorsel kart-gorsel--zar">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+            <rect x="14" y="14" width="36" height="36" rx="8" fill="#f4f4f4" stroke="#1b1b1b" stroke-width="2"/>
+            <circle cx="24" cy="24" r="3.5" fill="#1b1b1b"/>
+            <circle cx="40" cy="24" r="3.5" fill="#1b1b1b"/>
+            <circle cx="24" cy="32" r="3.5" fill="#1b1b1b"/>
+            <circle cx="40" cy="32" r="3.5" fill="#1b1b1b"/>
+            <circle cx="24" cy="40" r="3.5" fill="#1b1b1b"/>
+            <circle cx="40" cy="40" r="3.5" fill="#1b1b1b"/>
+        </svg>
+    </div>
+    <div class="kart-icerik">
+        <h2 class="kart-baslik">Tavla</h2>
+        <p class="kart-aciklama">Zarları at, taşları taşı. 2 kişilik veya bilgisayara karşı oyna.</p>
+        <div class="kart-etiketler">
+            <span class="etiket">Strateji</span>
+            <span class="etiket">2 Kişilik</span>
+        </div>
+        <span class="oyna-btn">Oyna</span>
+    </div>
+</a>
+
+                <a class="oyun-kart" href="sudoku/index.html">
+    <div class="kart-gorsel kart-gorsel--sudoku">
+        <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <rect x="6" y="6" width="52" height="52" rx="4" fill="#f4f4f4" stroke="#1b1b1b" stroke-width="2"/>
+    <g stroke="#1b1b1b" stroke-width="1.8">
+        <line x1="23.3" y1="6" x2="23.3" y2="58"/>
+        <line x1="40.6" y1="6" x2="40.6" y2="58"/>
+        <line x1="6" y1="23.3" x2="58" y2="23.3"/>
+        <line x1="6" y1="40.6" x2="58" y2="40.6"/>
+    </g>
+    <text x="14.6" y="18" font-family="Segoe UI,sans-serif" font-size="8" font-weight="800" fill="#1b1b1b" text-anchor="middle">SU</text>
+    <text x="31.9" y="35.3" font-family="Segoe UI,sans-serif" font-size="8" font-weight="800" fill="#D4A853" text-anchor="middle">DO</text>
+    <text x="49.3" y="52.6" font-family="Segoe UI,sans-serif" font-size="8" font-weight="800" fill="#1b1b1b" text-anchor="middle">KU</text>
+</svg>
+    </div>
+    <div class="kart-icerik">
+        <h2 class="kart-baslik">Sudoku</h2>
+        <p class="kart-aciklama">9x9 ızgarayı rakamlarla doldur. Mantığını test eden klasik bulmaca.</p>
+        <div class="kart-etiketler">
+            <span class="etiket">Bulmaca</span>
+            <span class="etiket">Tek Kişilik</span>
+        </div>
+        <span class="oyna-btn">Oyna</span>
+    </div>
+</a>
+
+            </div>
+        </section>
+    </main>
+
+    <footer class="site-footer">
+        <p>&copy; 2026 Karma Oyunlar — Tüm oyunlar tarayıcında, ücretsiz.</p>
+    </footer>
+
+    <div id="ayarlar-modal" class="modal" hidden>
+        <div class="modal-overlay" data-kapat="true"></div>
+        <div class="modal-kutu" role="dialog" aria-modal="true" aria-labelledby="ayarlar-baslik">
+            <div class="modal-ust">
+                <h2 id="ayarlar-baslik" class="modal-baslik">Ayarlar</h2>
+                <button id="ayarlar-kapat" class="modal-kapat-btn" aria-label="Ayarları kapat" title="Kapat">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <line x1="6" y1="6" x2="18" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                        <line x1="18" y1="6" x2="6" y2="18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-govde">
+                <div class="ayar-satir">
+                    <div class="ayar-bilgi">
+                        <span class="ayar-ad">Açık Tema</span>
+                        <span class="ayar-not">Aydınlık görünüme geç</span>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="ayar-tema">
+                        <span class="toggle-iz"></span>
+                    </label>
+                </div>
+
+
+                <div class="ayar-satir">
+                    <div class="ayar-bilgi">
+                        <span class="ayar-ad">Ses Efektleri</span>
+                        <span class="ayar-not">Oyun içi sesleri aç/kapat</span>
+                    </div>
+                    <label class="toggle">
+                        <input type="checkbox" id="ayar-ses">
+                        <span class="toggle-iz"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
+</body>
+</html>

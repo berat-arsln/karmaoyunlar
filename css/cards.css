@@ -1,0 +1,176 @@
+/* css/cards.css - Karma Oyunlar oyun kartları */
+
+/* ===== Kart Izgarası ===== */
+.kart-izgara {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.25rem;
+}
+
+@media (min-width: 560px) {
+  .kart-izgara {
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  }
+}
+
+/* ===== Oyun Kartı (a ve div) ===== */
+.oyun-kart {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: 14px;
+  overflow: hidden;
+  text-decoration: none;
+  color: inherit;
+  box-shadow: 0 2px 8px var(--shadow-color);
+  transition: transform var(--anim-speed) ease,
+              border-color var(--anim-speed) ease,
+              box-shadow var(--anim-speed) ease,
+              background-color var(--anim-speed) ease;
+}
+
+.oyun-kart:hover {
+  transform: translateY(-6px);
+  border-color: var(--color-accent);
+  box-shadow: 0 12px 28px var(--shadow-color);
+  background-color: var(--bg-card-hover);
+}
+
+.oyun-kart:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+/* "Yakında" pasif kartlar */
+.oyun-kart--yakinda {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.oyun-kart--yakinda:hover {
+  transform: none;
+  border-color: var(--border-color);
+  box-shadow: 0 2px 8px var(--shadow-color);
+  background-color: var(--bg-card);
+}
+
+/* ===== Kart Görsel Alanı (üst SVG) ===== */
+.kart-gorsel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 160px;
+  padding: 1rem;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.kart-gorsel svg {
+  width: 100%;
+  max-width: 92px;
+  height: auto;
+  display: block;
+  filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.35));
+}
+
+/* Görsel gradient modifier'ları (SVG dolgularına dokunma) */
+.kart-gorsel--mayin {
+  background: linear-gradient(135deg, #3a3a5c 0%, #1f1f33 100%);
+}
+
+.kart-gorsel--satranc {
+  background: linear-gradient(135deg, #4a4a6a 0%, #26263f 100%);
+}
+
+.kart-gorsel--dama {
+  background: linear-gradient(135deg, #5a2f3a 0%, #2a1a24 100%);
+}
+
+.kart-gorsel--zar {
+  background: linear-gradient(135deg, #2f4a5a 0%, #1a2a33 100%);
+}
+
+.kart-gorsel--sudoku {
+  background: linear-gradient(135deg, #3f5a3a 0%, #1f2f1c 100%);
+}
+
+/* ===== Kart İçerik Alanı ===== */
+.kart-icerik {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 1.1rem 1.2rem 1.3rem;
+  flex: 1;
+}
+
+.kart-baslik {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.kart-aciklama {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--text-secondary);
+  flex: 1;
+}
+
+/* ===== Etiketler ===== */
+.kart-etiketler {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.2rem;
+}
+
+.etiket {
+  display: inline-block;
+  padding: 0.22rem 0.6rem;
+  font-size: 0.74rem;
+  font-weight: 500;
+  border-radius: 999px;
+  background-color: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+}
+
+.etiket--yakinda {
+  background-color: rgba(212, 168, 83, 0.12);
+  color: var(--color-accent);
+  border-color: rgba(212, 168, 83, 0.4);
+}
+
+/* ===== Oyna Butonu ===== */
+.oyna-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.7rem;
+  padding: 0.6rem 1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: 10px;
+  background-color: var(--color-accent);
+  color: #1a1a2e;
+  text-align: center;
+  transition: background-color var(--anim-speed) ease,
+              transform var(--anim-speed) ease;
+}
+
+.oyun-kart:hover .oyna-btn {
+  background-color: var(--color-accent-hover);
+}
+
+.oyna-btn--pasif {
+  background-color: var(--bg-secondary);
+  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  cursor: not-allowed;
+}
+
+.oyun-kart--yakinda:hover .oyna-btn--pasif {
+  background-color: var(--bg-secondary);
+}
