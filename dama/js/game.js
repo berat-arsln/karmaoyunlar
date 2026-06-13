@@ -252,7 +252,7 @@
      ZİNCİRLEME YEME
      =================================================================== */
 
-  function getCaptureChains(board, r, c) {
+  function getCaptureChains(board, r, c, startBannedAxis) {
     const piece = board[r][c];
     if (!piece) return [];
 
@@ -280,12 +280,10 @@
         nb[cr][cc] = null;
         nb[cap.to.r][cap.to.c] = moving;
 
-        // Ağa ise: bu adımda hangi eksen kullanıldı? Sonraki adımda o eksen yasak.
         let nextBanned = bannedAxis;
         if (moving && moving.king) {
           const dr = cap.to.r - cr;
           const dc = cap.to.c - cc;
-          // dr != 0 → dikey eksen kullanıldı → sonraki adımda dikey yasak
           nextBanned = (dr !== 0) ? "col" : "row";
         }
 
@@ -300,7 +298,7 @@
       }
     }
 
-    recurse(cloneBoard(board), r, c, [], 0, null);
+    recurse(cloneBoard(board), r, c, [], 0, startBannedAxis || null);
     return results;
   }
 
@@ -336,8 +334,25 @@
       if (Game.mustCaptureFrom.r !== r || Game.mustCaptureFrom.c !== c) {
         return [];
       }
-      // Zincir ortasında: yasak eksenle birlikte çağır
-      return getCapturesForPiece(Game.board, r, c, Game.mustCaptureFrom.bannedAxis || null);
+      // Zincir ortasında: bu noktadan itibaren maksimum uzantıyı bul,
+      // sadece o uzantıların ilk adımlarını göster (kısa yol kapansın)
+      const bannedAxis = Game.mustCaptureFrom.bannedAxis || null;
+      const subChains = getCaptureChains(Game.board, r, c, bannedAxis);
+      if (subChains.length === 0) return [];
+      let maxSub = 0;
+      for (let i = 0; i < subChains.length; i++) {
+        if (subChains[i].totalCaptured > maxSub) maxSub = subChains[i].totalCaptured;
+      }
+      const bestSub = subChains.filter(function (ch) { return ch.totalCaptured === maxSub; });
+      const firstSteps = [];
+      for (let i = 0; i < bestSub.length; i++) {
+        const first = bestSub[i].sequence[0];
+        const exists = firstSteps.some(function (m) {
+          return m.to.r === first.to.r && m.to.c === first.to.c;
+        });
+        if (!exists) firstSteps.push(first);
+      }
+      return firstSteps;
     }
 
     const bestChains = getBestCaptureChains(Game.board, Game.turn);
@@ -453,8 +468,9 @@
           const dc = toC - fromC;
           bannedAxis = (dr !== 0) ? "col" : "row";
         }
-        const more = TD.getCapturesForPiece(Game.board, toR, toC, bannedAxis);
-        if (more.length > 0) {
+        // Devam var mı? getCaptureChains ile kontrol et (bannedAxis dahil)
+        const subChains = TD.getCaptureChains(Game.board, toR, toC, bannedAxis);
+        if (subChains.length > 0) {
           result.continued = true;
           result.endsTurn = false;
           Game.mustCaptureFrom = { r: toR, c: toC, bannedAxis: bannedAxis };
