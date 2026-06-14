@@ -64,6 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
         mistakeEl.textContent = '0';
         winMsg.classList.remove('show');
 
+setTimeout(() => winMsg.classList.remove('show'), 3000);
+winMsg.addEventListener('click', () => winMsg.classList.remove('show'));
+document.addEventListener('click', () => winMsg.classList.remove('show'), { once: true });
+
         renderBoard();
         updateNumpad();
         startTimer();
