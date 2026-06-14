@@ -90,7 +90,7 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 8px;
     width: 100%;
-    max-width: calc(var(--cell-size) * 9);
+    max-width: calc(var(--cell-size) * 5);
 }
 
 .num-btn {
