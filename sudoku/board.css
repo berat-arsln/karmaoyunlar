@@ -1,0 +1,43 @@
+.sudoku-board {
+    display: grid;
+    grid-template-columns: repeat(9, var(--cell-size));
+    grid-template-rows: repeat(9, var(--cell-size));
+    border: 2px solid var(--border-color);
+    background-color: white;
+}
+
+.cell {
+    width: var(--cell-size);
+    height: var(--cell-size);
+    border: 1px solid #ccc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* 3x3 kutuları belirginleştirmek için kenarlıklar */
+.cell:nth-child(3n) {
+    border-right: 2px solid var(--border-color);
+}
+
+.cell:nth-child(9n) {
+    border-right: 1px solid #ccc;
+}
+
+.sudoku-board > div:nth-child(n+19):nth-child(-n+27),
+.sudoku-board > div:nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 2px solid var(--border-color);
+}
+
+.cell.selected {
+    background-color: #e1effe;
+}
+
+.cell.fixed {
+    background-color: #f8f9fa;
+    font-weight: bold;
+    color: #000;
+}
