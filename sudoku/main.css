@@ -1,32 +1,166 @@
 :root {
-    --bg-color: #f0f2f5;
-    --text-color: #333;
-    --accent-color: #4a90e2;
-    --border-color: #333;
-    --cell-size: 50px;
-    --font-main: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    --bg: #f0f2f5;
+    --surface: #ffffff;
+    --text: #1a1a2e;
+    --text-muted: #6b7280;
+    --accent: #3b82f6;
+    --accent-dark: #1d4ed8;
+    --accent-light: #dbeafe;
+    --fixed-bg: #f1f5f9;
+    --fixed-text: #0f172a;
+    --highlight-cross: #e8f0fe;
+    --highlight-box: #dbeafe;
+    --highlight-selected: #bfdbfe;
+    --error: #ef4444;
+    --success: #22c55e;
+    --border: #334155;
+    --cell-border: #cbd5e1;
+    --btn-radius: 10px;
+    --cell-size: clamp(36px, 9vw, 54px);
+    --font: 'Segoe UI', system-ui, -apple-system, sans-serif;
 }
 
-* {
+*, *::before, *::after {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
 }
 
-body {
-    font-family: var(--font-main);
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
+html, body {
+    height: 100%;
 }
 
-.container {
+body {
+    font-family: var(--font);
+    background-color: var(--bg);
+    color: var(--text);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    min-height: 100vh;
+    padding: 0 12px 32px;
+}
+
+/* ── HEADER ── */
+.header {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 4px 8px;
+    position: relative;
+}
+
+.header h1 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--text);
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.icon-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text);
+    transition: background 0.2s;
+    z-index: 1;
+}
+
+.icon-btn:hover {
+    background: var(--accent-light);
+    color: var(--accent-dark);
+}
+
+.icon-btn svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+    fill: none;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+/* ── CONTAINER ── */
+.container {
+    width: 100%;
+    max-width: 520px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+}
+
+/* ── MODAL (Ayarlar) ── */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.4);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-overlay.open {
+    display: flex;
+}
+
+.modal {
+    background: var(--surface);
+    border-radius: 16px;
+    padding: 28px 24px;
+    width: 90%;
+    max-width: 340px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+}
+
+.modal h2 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: var(--text);
+}
+
+.modal-close {
+    float: right;
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--text-muted);
+    line-height: 1;
+    padding: 0;
+    margin-top: -4px;
+}
+
+.modal-section {
+    margin-bottom: 20px;
+}
+
+.modal-section label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 400px) {
+    .header h1 {
+        font-size: 1.3rem;
+    }
 }
