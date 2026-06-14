@@ -3,29 +3,108 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sudoku Oyunu</title>
+    <title>Sudoku</title>
     <link rel="stylesheet" href="main.css">
     <link rel="stylesheet" href="board.css">
     <link rel="stylesheet" href="ui.css">
 </head>
 <body>
 
-    <div class="container">
+    <!-- HEADER -->
+    <div class="header">
+        <button class="icon-btn" id="back-btn" title="Ana Sayfaya Dön">
+            <svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg>
+        </button>
         <h1>Sudoku</h1>
-        
-        <div id="ui-controls">
-            <select id="difficulty" class="difficulty-select">
+        <button class="icon-btn" id="settings-btn" title="Ayarlar">
+            <svg viewBox="0 0 24 24">
+                <circle cx="12" cy="12" r="3"/>
+                <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- ANA CONTAINER -->
+    <div class="container">
+
+        <!-- KONTROLLER -->
+        <div class="controls">
+            <select class="difficulty-select" id="difficulty">
                 <option value="easy">Kolay</option>
                 <option value="medium">Orta</option>
                 <option value="hard">Zor</option>
                 <option value="expert">Efsanevi</option>
             </select>
-            <button id="new-game-btn">Yeni Oyun</button>
+            <button class="btn btn-primary" id="new-game-btn">Yeni Oyun</button>
         </div>
-        
-        <div id="sudoku-board" class="sudoku-board"></div>
-        
-        <div id="status-display"></div>
+
+        <!-- BİLGİ BARI -->
+        <div class="info-bar">
+            <div class="timer" id="timer">00:00</div>
+            <div class="mistakes">Hata: <span id="mistake-count">0</span>/3</div>
+        </div>
+
+        <!-- SUDOKU TAHTASI -->
+        <div class="sudoku-board" id="sudoku-board"></div>
+
+        <!-- GERİ AL -->
+        <div class="action-bar">
+            <button class="btn-undo" id="undo-btn">
+                <svg viewBox="0 0 24 24"><polyline points="9 14 4 9 9 4"/><path d="M20 20v-7a4 4 0 0 0-4-4H4"/></svg>
+                Geri Al
+            </button>
+        </div>
+
+        <!-- TUŞ TAKIMI -->
+        <div class="numpad" id="numpad">
+            <button class="num-btn" data-num="1">1</button>
+            <button class="num-btn" data-num="2">2</button>
+            <button class="num-btn" data-num="3">3</button>
+            <button class="num-btn" data-num="4">4</button>
+            <button class="num-btn" data-num="5">5</button>
+            <button class="num-btn" data-num="6">6</button>
+            <button class="num-btn" data-num="7">7</button>
+            <button class="num-btn" data-num="8">8</button>
+            <button class="num-btn" data-num="9">9</button>
+        </div>
+
+        <!-- KAZANMA MESAJI -->
+        <div class="win-message" id="win-message">
+            <h2>🎉 Tebrikler!</h2>
+            <p id="win-details">Sudoku'yu tamamladın!</p>
+        </div>
+
+    </div>
+
+    <!-- AYARLAR MODALİ -->
+    <div class="modal-overlay" id="settings-modal">
+        <div class="modal">
+            <button class="modal-close" id="modal-close-btn">✕</button>
+            <h2>Ayarlar</h2>
+            <div class="modal-section">
+                <div class="settings-option">
+                    <span>Hataları göster</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="show-errors" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <span>Satır/sütun vurgula</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="highlight-cross" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <span>Aynı rakamları vurgula</span>
+                    <label class="toggle">
+                        <input type="checkbox" id="highlight-same" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="game.js"></script>
