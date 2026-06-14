@@ -1,43 +1,97 @@
+/* ── SUDOKU TAHTASI ── */
 .sudoku-board {
     display: grid;
     grid-template-columns: repeat(9, var(--cell-size));
     grid-template-rows: repeat(9, var(--cell-size));
-    border: 2px solid var(--border-color);
-    background-color: white;
+    border: 3px solid var(--border);
+    background-color: var(--surface);
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.08);
 }
 
+/* ── HÜCRE ── */
 .cell {
     width: var(--cell-size);
     height: var(--cell-size);
-    border: 1px solid #ccc;
+    border: 1px solid var(--cell-border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.2rem;
+    font-size: clamp(0.95rem, 2.5vw, 1.3rem);
     cursor: pointer;
     user-select: none;
+    transition: background 0.15s;
+    position: relative;
 }
 
-/* 3x3 kutuları belirginleştirmek için kenarlıklar */
-.cell:nth-child(3n) {
-    border-right: 2px solid var(--border-color);
-}
-
-.cell:nth-child(9n) {
-    border-right: 1px solid #ccc;
-}
-
-.sudoku-board > div:nth-child(n+19):nth-child(-n+27),
-.sudoku-board > div:nth-child(n+46):nth-child(-n+54) {
-    border-bottom: 2px solid var(--border-color);
-}
-
-.cell.selected {
-    background-color: #e1effe;
-}
-
+/* ── SABİT RAKAMLAR (oyunun verdiği) ── */
 .cell.fixed {
-    background-color: #f8f9fa;
-    font-weight: bold;
-    color: #000;
+    background-color: var(--fixed-bg);
+    font-weight: 800;
+    color: var(--fixed-text);
+    cursor: default;
+}
+
+/* ── KULLANICI GİRİŞİ ── */
+.cell.user-input {
+    font-weight: 500;
+    color: var(--accent-dark);
+}
+
+/* ── HATALI GİRİŞ ── */
+.cell.error {
+    color: var(--error);
+    font-weight: 600;
+}
+
+/* ── HIGHLIGHT: satır ve sütun ── */
+.cell.highlight-cross {
+    background-color: var(--highlight-cross);
+}
+
+/* ── HIGHLIGHT: aynı 3x3 kutu ── */
+.cell.highlight-box {
+    background-color: var(--highlight-box);
+}
+
+/* ── HIGHLIGHT: seçili hücre ── */
+.cell.selected {
+    background-color: var(--highlight-selected);
+}
+
+/* ── HIGHLIGHT: aynı rakam ── */
+.cell.highlight-same {
+    background-color: #c7d2fe;
+}
+
+/* ── 3x3 KUTU SINIRLAR: sağ kenar (her 3. sütun) ── */
+.cell:nth-child(3n) {
+    border-right: 2.5px solid var(--border);
+}
+
+/* son sütunun sağ kenarını sıfırla (dış border zaten var) */
+.cell:nth-child(9n) {
+    border-right: 1px solid var(--cell-border);
+}
+
+/* ── 3x3 KUTU SINIRLAR: alt kenar (3. ve 6. satırlar) ── */
+/* 3. satır: index 19-27 */
+.sudoku-board > .cell:nth-child(n+19):nth-child(-n+27) {
+    border-bottom: 2.5px solid var(--border);
+}
+
+/* 6. satır: index 46-54 */
+.sudoku-board > .cell:nth-child(n+46):nth-child(-n+54) {
+    border-bottom: 2.5px solid var(--border);
+}
+
+/* ── HOVER (sadece sabit olmayanlar) ── */
+.cell:not(.fixed):hover {
+    background-color: var(--accent-light);
+}
+
+/* seçili hücre hover override */
+.cell.selected:hover {
+    background-color: var(--highlight-selected);
 }
