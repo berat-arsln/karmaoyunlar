@@ -87,10 +87,10 @@
 /* ── TUŞ TAKIMI ── */
 .numpad {
     display: grid;
-    grid-template-columns: repeat(9, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 6px;
     width: 100%;
-    max-width: calc(var(--cell-size) * 9);
+    max-width: calc(var(--cell-size) * 3 + 12px);
 }
 
 .num-btn {
