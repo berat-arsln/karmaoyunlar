@@ -166,9 +166,70 @@ Box="0 0 24 24">
     =========================================================== -->
     <section class="board-wrap">
       <div class="board" id="board">
-        <!-- Tahta haneleri ve bar Parça 3'te eklenecek -->
-      </div>
-    </section>
+
+  <!-- ÜST SOL ÇEYREK: 13–18 -->
+  <div class="quadrant q-top-left" id="qTopLeft">
+    <div class="point point-top" data-point="13"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="14"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="15"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="16"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="17"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="18"><div class="checkers"></div></div>
+  </div>
+
+  <!-- ÜST SAĞ ÇEYREK: 19–24 -->
+  <div class="quadrant q-top-right" id="qTopRight">
+    <div class="point point-top" data-point="19"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="20"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="21"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="22"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="23"><div class="checkers"></div></div>
+    <div class="point point-top" data-point="24"><div class="checkers"></div></div>
+  </div>
+
+  <!-- ORTA BAR -->
+  <div class="bar" id="bar">
+    <div class="bar-slot bar-top" id="barSlotP2" data-bar="2">
+      <div class="checkers"></div>
+    </div>
+    <div class="bar-divider"></div>
+    <div class="bar-slot bar-bottom" id="barSlotP1" data-bar="1">
+      <div class="checkers"></div>
+    </div>
+  </div>
+
+  <!-- ALT SOL ÇEYREK: 12–7 -->
+  <div class="quadrant q-bottom-left" id="qBottomLeft">
+    <div class="point point-bottom" data-point="12"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="11"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="10"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="9"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="8"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="7"><div class="checkers"></div></div>
+  </div>
+
+  <!-- ALT SAĞ ÇEYREK: 6–1 -->
+  <div class="quadrant q-bottom-right" id="qBottomRight">
+    <div class="point point-bottom" data-point="6"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="5"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="4"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="3"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="2"><div class="checkers"></div></div>
+    <div class="point point-bottom" data-point="1"><div class="checkers"></div></div>
+  </div>
+
+  <!-- BEAR-OFF TEPSİLERİ -->
+  <div class="bearoff" id="bearoff">
+    <div class="bearoff-tray tray-top" id="trayP2" data-tray="2">
+      <div class="checkers"></div>
+    </div>
+    <div class="bearoff-tray tray-bottom" id="trayP1" data-tray="1">
+      <div class="checkers"></div>
+    </div>
+  </div>
+
+</div>
+</section>
 
     <!-- ==========================================================
          OYUNCU 1 PANELİ + ZAR ALANI (sağ)
@@ -199,82 +260,7 @@ Box="0 0 24 24">
 
   </main>
 
-  <!-- ==========================================================
-       Parça 3: Tahta haneleri (24 point), bar bölmesi ve
-       toplama (bear-off) tepsileri.
-  =========================================================== -->
-  
-  
-  
-<!-- index.html — Parça 3/5 -->
 
-      <!-- Tahta haneleri ve bar bu konteynerin içine yerleşir.
-           Yapı: üst yarı (12 hane) + bar + alt yarı (12 hane).
-           Numaralandırma klasik tavla diziliminde JS tarafında
-           yapılır; burada DOM yer tutucuları oluşturulur. -->
-
-      <!-- ÜST SOL ÇEYREK: 13–18 numaralı haneler -->
-      <div class="quadrant q-top-left" id="qTopLeft">
-        <div class="point point-top" data-point="13"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="14"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="15"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="16"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="17"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="18"><div class="checkers"></div></div>
-      </div>
-
-      <!-- ÜST SAĞ ÇEYREK: 19–24 numaralı haneler -->
-      <div class="quadrant q-top-right" id="qTopRight">
-        <div class="point point-top" data-point="19"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="20"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="21"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="22"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="23"><div class="checkers"></div></div>
-        <div class="point point-top" data-point="24"><div class="checkers"></div></div>
-      </div>
-
-      <!-- ORTA BAR: vurulan (hit) pullar buraya düşer -->
-      <div class="bar" id="bar">
-        <div class="bar-slot bar-top" id="barSlotP2" data-bar="2">
-          <div class="checkers"></div>
-        </div>
-        <div class="bar-divider"></div>
-        <div class="bar-slot bar-bottom" id="barSlotP1" data-bar="1">
-          <div class="checkers"></div>
-        </div>
-      </div>
-
-      <!-- ALT SOL ÇEYREK: 12–7 numaralı haneler (sağdan sola) -->
-      <div class="quadrant q-bottom-left" id="qBottomLeft">
-        <div class="point point-bottom" data-point="12"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="11"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="10"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="9"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="8"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="7"><div class="checkers"></div></div>
-      </div>
-
-      <!-- ALT SAĞ ÇEYREK: 6–1 numaralı haneler (sağdan sola) -->
-      <div class="quadrant q-bottom-right" id="qBottomRight">
-        <div class="point point-bottom" data-point="6"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="5"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="4"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="3"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="2"><div class="checkers"></div></div>
-        <div class="point point-bottom" data-point="1"><div class="checkers"></div></div>
-      </div>
-
-      <!-- TOPLAMA (BEAR-OFF) TEPSİLERİ
-           Her oyuncu çıkardığı pulları kendi tepsisinde toplar.
-           Oyuncu 1 alt tepsi, Oyuncu 2 üst tepsi. -->
-      <div class="bearoff" id="bearoff">
-        <div class="bearoff-tray tray-top" id="trayP2" data-tray="2">
-          <div class="checkers"></div>
-        </div>
-        <div class="bearoff-tray tray-bottom" id="trayP1" data-tray="1">
-          <div class="checkers"></div>
-        </div>
-      </div>
 
   <!-- ==========================================================
        Parça 4: Zar alanının içeriği (otomatik mod zar yüzleri +
