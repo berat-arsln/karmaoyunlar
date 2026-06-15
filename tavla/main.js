@@ -1270,4 +1270,406 @@ function toast(msg, type = "info", duration = 2800) {
 
 
 
+/* ==========================================================
+   main.js — Parça 8 (DEVAM — Son Bölüm)
+   BÖLÜM 8: Ayarlar paneli, tema, localStorage
+   BÖLÜM 9: init() — her şeyi birbirine bağlayan giriş noktası
+========================================================== */
 
+/* ==========================================================
+   BÖLÜM 8: AYARLAR & TEMA
+========================================================== */
+
+/* ---------- TEMA UYGULA ---------- */
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  state.settings.theme = theme;
+
+  // Segmented butonları güncelle
+  $$(".seg-btn[data-theme-val]").forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.themeVal === theme);
+  });
+
+  try { localStorage.setItem("tavla_theme", theme); } catch (_) {}
+}
+
+/* ---------- SES TOGGLE ---------- */
+function applySound(on) {
+  state.settings.sound = on;
+  const toggle = $("#soundToggle");
+  if (toggle) {
+    toggle.dataset.on = String(on);
+    toggle.setAttribute("aria-checked", String(on));
+  }
+  const slider = $("#volumeSlider");
+  if (slider) slider.disabled = !on;
+
+  try { localStorage.setItem("tavla_sound", String(on)); } catch (_) {}
+}
+
+/* ---------- SES SEVİYESİ ---------- */
+function applyVolume(v) {
+  state.settings.volume = v / 100;
+  try { localStorage.setItem("tavla_volume", String(v)); } catch (_) {}
+}
+
+/* ---------- ZAR MODU ---------- */
+function applyDiceMode(player, mode) {
+  state.diceMode[player] = mode;
+
+  // Segmented butonları güncelle
+  $$(`.segmented[data-dice-player="${player}"] .seg-btn`).forEach(btn => {
+    btn.classList.toggle("active", btn.dataset.mode === mode);
+  });
+
+  // Aktif oyuncu ise alanı hemen güncelle
+  if (state.current === player) {
+    prepareDiceZoneForCurrent();
+  }
+
+  try {
+    localStorage.setItem(`tavla_dice_p${player}`, mode);
+  } catch (_) {}
+}
+
+/* ---------- AYARLAR PANELİNİ AÇ / KAPAT ---------- */
+function openSettings() {
+  const panel   = $("#settingsPanel");
+  const overlay = $("#settingsOverlay");
+  if (!panel || !overlay) return;
+  overlay.hidden = false;
+  panel.classList.add("open");
+  panel.removeAttribute("aria-hidden");
+  panel.focus?.();
+}
+
+function closeSettings() {
+  const panel   = $("#settingsPanel");
+  const overlay = $("#settingsOverlay");
+  if (!panel || !overlay) return;
+  panel.classList.remove("open");
+  panel.setAttribute("aria-hidden", "true");
+  // Overlay'i animasyon bittikten sonra gizle
+  setTimeout(() => { overlay.hidden = true; }, 260);
+}
+
+/* ---------- AYARLAR EVENT LİSTENER'LARI ---------- */
+function bindSettingsEvents() {
+  // Panel aç
+  $("#settingsBtn")?.addEventListener("click", openSettings);
+
+  // Panel kapat (X butonu)
+  $("#settingsCloseBtn")?.addEventListener("click", closeSettings);
+
+  // Overlay'e tıklayınca kapat
+  $("#settingsOverlay")?.addEventListener("click", closeSettings);
+
+  // ESC ile kapat
+  document.addEventListener("keydown", e => {
+    if (e.key === "Escape") closeSettings();
+  });
+
+  // Tema seçimi
+  $$("#themeSwitch .seg-btn").forEach(btn => {
+    btn.addEventListener("click", () => applyTheme(btn.dataset.themeVal));
+  });
+
+  // Ses toggle
+  $("#soundToggle")?.addEventListener("click", () => {
+    const current = state.settings.sound;
+    applySound(!current);
+  });
+
+  // Ses seviyesi slider
+  $("#volumeSlider")?.addEventListener("input", e => {
+    applyVolume(Number(e.target.value));
+  });
+
+  // Zar modu (oyuncu başına)
+  $$(".segmented[data-dice-player]").forEach(group => {
+    const player = Number(group.dataset.dicePlayer);
+    group.querySelectorAll(".seg-btn").forEach(btn => {
+      btn.addEventListener("click", () => applyDiceMode(player, btn.dataset.mode));
+    });
+  });
+}
+
+/* ---------- KAYITLI TERCİHLERİ YÜkLE ---------- */
+function loadPreferences() {
+  try {
+    const theme  = localStorage.getItem("tavla_theme");
+    const sound  = localStorage.getItem("tavla_sound");
+    const volume = localStorage.getItem("tavla_volume");
+    const diceP1 = localStorage.getItem("tavla_dice_p1");
+    const diceP2 = localStorage.getItem("tavla_dice_p2");
+
+    if (theme)  applyTheme(theme);
+    if (sound !== null) applySound(sound === "true");
+    if (volume !== null) {
+      const v = Number(volume);
+      applyVolume(v);
+      const slider = $("#volumeSlider");
+      if (slider) slider.value = String(v);
+    }
+    if (diceP1) applyDiceMode(P1, diceP1);
+    if (diceP2) applyDiceMode(P2, diceP2);
+  } catch (_) {
+    // localStorage erişim hatası — varsayılanlarla devam et
+  }
+}
+
+/* ==========================================================
+   BÖLÜM 9: 3D ZAR (Three.js) ENTEGRASYONU
+   ----------------------------------------------------------
+   window.Dice3D nesnesini oluşturur.
+   mount(container)   → canvas'ı verilen konteynere taşır
+   throwDice(cb)      → iki zar atar, sonucu cb(d1, d2) ile verir
+   isReady()          → sahne hazır mı?
+========================================================== */
+(function buildDice3D() {
+  if (typeof THREE === "undefined") {
+    // Three.js yüklenemedi — 3D mod devre dışı
+    window.Dice3D = { mount() {}, throwDice(cb) { cb(rollDie(), rollDie()); }, isReady() { return false; } };
+    return;
+  }
+
+  let scene, camera, renderer, container;
+  let dice3dObjects = [];
+  let animationId   = null;
+  let rolling        = false;
+  let velocities     = [];
+  let angularVels    = [];
+  let settleTimer    = null;
+  let onResult       = null;
+  let mounted        = false;
+
+  /* --- SAHNE KURULUMU --- */
+  function initScene(cont) {
+    container = cont;
+    const w = cont.clientWidth  || 180;
+    const h = cont.clientHeight || 130;
+
+    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(w, h);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+
+    // Mevcut canvas varsa değiştir, yoksa ekle
+    const existing = cont.querySelector("canvas");
+    if (existing) cont.replaceChild(renderer.domElement, existing);
+    else cont.appendChild(renderer.domElement);
+
+    scene  = new THREE.Scene();
+    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
+    camera.position.set(0, 6, 4);
+    camera.lookAt(0, 0, 0);
+
+    // Işık
+    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
+    scene.add(ambient);
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
+    dirLight.position.set(3, 8, 5);
+    dirLight.castShadow = true;
+    scene.add(dirLight);
+
+    // Zemin (görünmez, çarpışma için)
+    const floorGeo  = new THREE.PlaneGeometry(8, 6);
+    const floorMat  = new THREE.MeshStandardMaterial({ visible: false });
+    const floor     = new THREE.Mesh(floorGeo, floorMat);
+    floor.rotation.x = -Math.PI / 2;
+    floor.receiveShadow = true;
+    scene.add(floor);
+
+    // Duvarlar (görünmez sınırlar)
+    [
+      { pos: [0, 1, -3], rot: [0, 0, 0] },
+      { pos: [0, 1,  3], rot: [0, Math.PI, 0] },
+      { pos: [-4, 1, 0], rot: [0,  Math.PI / 2, 0] },
+      { pos: [ 4, 1, 0], rot: [0, -Math.PI / 2, 0] },
+    ].forEach(({ pos, rot }) => {
+      const wGeo = new THREE.PlaneGeometry(8, 3);
+      const wMat = new THREE.MeshStandardMaterial({ visible: false });
+      const wall = new THREE.Mesh(wGeo, wMat);
+      wall.position.set(...pos);
+      wall.rotation.set(...rot);
+      scene.add(wall);
+    });
+
+    buildDice();
+    mounted = true;
+  }
+
+  /* --- ZAR MESHLERİ --- */
+  function buildDice() {
+    dice3dObjects.forEach(d => scene.remove(d));
+    dice3dObjects = [];
+
+    const geo = new THREE.BoxGeometry(1, 1, 1);
+
+    [-0.8, 0.8].forEach((xOff, idx) => {
+      // Her yüz için farklı renk — basit beyaz mat
+      const mats = Array(6).fill(null).map(() =>
+        new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.4, metalness: 0.05 })
+      );
+      const mesh = new THREE.Mesh(geo, mats);
+      mesh.castShadow = true;
+      mesh.position.set(xOff, 1.5, 0);
+      scene.add(mesh);
+      dice3dObjects.push(mesh);
+    });
+  }
+
+  /* --- ANİMASYON DÖNGÜSÜ --- */
+  function animate() {
+    animationId = requestAnimationFrame(animate);
+
+    if (rolling) {
+      dice3dObjects.forEach((mesh, i) => {
+        // Yerçekimi
+        velocities[i].y -= 0.018;
+
+        // Konum güncelle
+        mesh.position.x += velocities[i].x;
+        mesh.position.y += velocities[i].y;
+        mesh.position.z += velocities[i].z;
+
+        // Dönüş
+        mesh.rotation.x += angularVels[i].x;
+        mesh.rotation.y += angularVels[i].y;
+        mesh.rotation.z += angularVels[i].z;
+
+        // Zemin çarpışması
+        if (mesh.position.y < 0.5) {
+          mesh.position.y = 0.5;
+          velocities[i].y *= -0.45;
+          velocities[i].x *= 0.78;
+          velocities[i].z *= 0.78;
+          angularVels[i].x *= 0.6;
+          angularVels[i].y *= 0.6;
+          angularVels[i].z *= 0.6;
+        }
+
+        // Duvar çarpışmaları
+        if (Math.abs(mesh.position.x) > 3.4) {
+          velocities[i].x *= -0.6;
+          mesh.position.x = Math.sign(mesh.position.x) * 3.4;
+        }
+        if (Math.abs(mesh.position.z) > 2.3) {
+          velocities[i].z *= -0.6;
+          mesh.position.z = Math.sign(mesh.position.z) * 2.3;
+        }
+      });
+
+      // Durma kontrolü
+      const totalKE = velocities.reduce((sum, v) =>
+        sum + v.x*v.x + v.y*v.y + v.z*v.z, 0);
+      if (totalKE < 0.0005 && !settleTimer) {
+        settleTimer = setTimeout(() => {
+          rolling = false;
+          const results = dice3dObjects.map(mesh => readDieFace(mesh));
+          if (onResult) onResult(results[0], results[1]);
+          settleTimer = null;
+        }, 400);
+      }
+    }
+
+    renderer?.render(scene, camera);
+  }
+
+  /* --- ZAR YÜZÜ OKU (rotasyondan yaklaşık değer) --- */
+  function readDieFace(mesh) {
+    // Rotation'dan en yakın yüzü bul — basit yaklaşım
+    // Gerçek değer rastgele üretilir; animasyon görseldir
+    return Math.floor(Math.random() * 6) + 1;
+  }
+
+  /* --- ZARLAR FİZİKSEL OLARAK AT --- */
+  function throwDice3D(callback) {
+    if (!mounted) { callback(rollDie(), rollDie()); return; }
+
+    onResult = callback;
+    rolling  = true;
+    if (settleTimer) { clearTimeout(settleTimer); settleTimer = null; }
+
+    dice3dObjects.forEach((mesh, i) => {
+      // Rastgele başlangıç konumu (üst köşelerden fırlatılır)
+      mesh.position.set(
+        (i === 0 ? -1 : 1) * (1.5 + Math.random() * 1.5),
+        2 + Math.random() * 1.5,
+        (Math.random() - 0.5) * 2
+      );
+      mesh.rotation.set(
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2,
+        Math.random() * Math.PI * 2
+      );
+
+      velocities[i] = {
+        x: (Math.random() - 0.5) * 0.18,
+        y:  0.05 + Math.random() * 0.08,
+        z: (Math.random() - 0.5) * 0.12
+      };
+      angularVels[i] = {
+        x: (Math.random() - 0.5) * 0.25,
+        y: (Math.random() - 0.5) * 0.25,
+        z: (Math.random() - 0.5) * 0.25
+      };
+    });
+  }
+
+  /* --- GENEL API --- */
+  window.Dice3D = {
+    mount(cont) {
+      if (!mounted) {
+        initScene(cont);
+        animate();
+      } else if (cont !== container) {
+        // Farklı konteynere taşı
+        container = cont;
+        const existing = cont.querySelector("canvas");
+        if (existing) cont.replaceChild(renderer.domElement, existing);
+        else cont.appendChild(renderer.domElement);
+        const w = cont.clientWidth  || 180;
+        const h = cont.clientHeight || 130;
+        renderer.setSize(w, h);
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+      }
+    },
+    throwDice(cb) { throwDice3D(cb); },
+    isReady()     { return mounted; }
+  };
+})();
+
+/* ==========================================================
+   BÖLÜM 10: BAŞLATMA (INIT)
+   ----------------------------------------------------------
+   Tüm modülleri sırayla bağlar ve oyunu başlatır.
+========================================================== */
+function init() {
+  // 1. Kayıtlı tercihler (tema, ses, zar modu)
+  loadPreferences();
+
+  // 2. Tahta ve DOM event'leri
+  bindBoardEvents();
+  bindSettingsEvents();
+
+  // 3. Zar alanını hazırla (ilk sıra P1, varsayılan mod)
+  prepareDiceZoneForCurrent();
+
+  // 4. İlk render
+  render();
+
+  // 5. Karşılama bildirimi
+  toast("Tavla başladı! Sıra Oyuncu 1'de — zar at.");
+
+  // 6. Pencere boyutu değişince 3D renderer'ı güncelle
+  window.addEventListener("resize", () => {
+    const cont = dom.diceZone;
+    if (!cont || !window.Dice3D?.isReady()) return;
+    window.Dice3D.mount(cont);
+  });
+}
+
+/* Sayfa yüklenince başlat */
+document.addEventListener("DOMContentLoaded", init);
