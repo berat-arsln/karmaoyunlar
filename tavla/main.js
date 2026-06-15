@@ -210,9 +210,7 @@ function renderStats() {
 
 /* ---------- SIRA GÖSTERGESİNİ GÜNCELLE ---------- */
 function renderTurn() {
-  const isP
-
-1 = state.current === P1;
+  const isP1 = state.current === P1;
   dom.turnDot.className = "turn-dot " + (isP1 ? "p1" : "p2");
   dom.turnText.textContent = isP1 ? "Sıra: Oyuncu 1" : "Sıra: Oyuncu 2";
 }
