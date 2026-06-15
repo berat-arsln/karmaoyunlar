@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="tr" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tavla — Backgammon</title>
+
+  <!-- Stiller -->
+  <link rel="stylesheet" href="main.css" />
+
+  <!-- Three.js (CDN) — manuel zar modunda 3D fizik için -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <!-- ==========================================================
+       SVG İKON TANIMLARI
+       Tüm ikonlar burada <symbol> olarak tanımlanır; sayfada
+       <use href="#icon-..."> ile çağrılır. Emoji kullanılmaz.
+  =========================================================== -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <!-- Ayarlar (dişli) -->
+      <symbol id="icon-settings" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z" />
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1Z" />
+      </symbol>
+
+      <!-- Ses açık (hoparlör + dalgalar) -->
+      <symbol id="icon-volume-on" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M11 5 6 9H2v6h4l5 4V5Z" />
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07" />
+      </symbol>
+
+      <!-- Ses kapalı (hoparlör + çarpı) -->
+      <symbol id="icon-volume-off" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M11 5 6 9H2v6h4l5 4V5Z" />
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="m23 9-6 6M17 9l6 6" />
+      </symbol>
+
+      <!-- Tema: güneş (açık mod) -->
+      <symbol id="icon-sun" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="4" fill="none" stroke="currentColor" stroke-width="2" />
+        <path fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+          d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41" />
+      </symbol>
+
+      <!-- Tema: ay (koyu mod) -->
+      <symbol id="icon-moon" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79Z" />
+      </symbol>
+
+      <!-- Zar (genel ikon) -->
+      <symbol id="icon-dice" viewBox="0 0 24 24">
+        <rect x="3" y="3" width="18" height="18" rx="3" fill="none"
+          stroke="currentColor" stroke-width="2" />
+        <circle cx="8.5" cy="8.5" r="1.4" fill="currentColor" />
+        <circle cx="15.5" cy="8.5" r="1.4" fill="currentColor" />
+        <circle cx="12" cy="12" r="1.4" fill="currentColor" />
+        <circle cx="8.5" cy="15.5" r="1.4" fill="currentColor" />
+        <circle cx="15.5" cy="15.5" r="1.4" fill="currentColor" />
+      </symbol>
+
+      <!-- Kapat (çarpı) -->
+      <symbol id="icon-close" view
+
+Box="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M18 6 6 18M6 6l12 12" />
+      </symbol>
+
+      <!-- Yeniden başlat (döngü oku) -->
+      <symbol id="icon-restart" viewBox="0 0 24 24">
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M23 4v6h-6M1 20v-6h6" />
+        <path fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round"
+          d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15" />
+      </symbol>
+    </defs>
+  </svg>
+
+  <!-- ==========================================================
+       Parça 2'de <body> açılışı, üst bar (header) ve oyun
+       tahtasının ana konteyneri gelecek.
+  =========================================================== -->
+  
+  
+<!-- index.html — Parça 2/5 -->
+</head>
+<body>
+
+  <!-- ==========================================================
+       ÜST BAR (HEADER)
+       Oyun başlığı, sıra göstergesi, yeniden başlat ve ayarlar
+       butonu burada yer alır.
+  =========================================================== -->
+  <header class="app-header">
+    <div class="header-left">
+      <svg class="brand-icon" aria-hidden="true"><use href="#icon-dice" /></svg>
+      <h1 class="brand-title">Tavla</h1>
+    </div>
+
+    <!-- Sıra / aktif oyuncu göstergesi -->
+    <div class="turn-indicator" id="turnIndicator">
+      <span class="turn-dot" id="turnDot"></span>
+      <span class="turn-text" id="turnText">Oyuncu 1 başlıyor</span>
+    </div>
+
+    <div class="header-right">
+      <!-- Yeniden başlat -->
+      <button class="icon-btn" id="restartBtn" title="Yeniden başlat" aria-label="Yeniden başlat">
+        <svg aria-hidden="true"><use href="#icon-restart" /></svg>
+      </button>
+      <!-- Ayarlar -->
+      <button class="icon-btn" id="settingsBtn" title="Ayarlar" aria-label="Ayarlar">
+        <svg aria-hidden="true"><use href="#icon-settings" /></svg>
+      </button>
+    </div>
+  </header>
+
+  <!-- ==========================================================
+       ANA OYUN ALANI
+       Sol: Oyuncu 2 bilgi paneli
+       Orta: Tahta + bar
+       Sağ: Oyuncu 1 bilgi paneli + zar/hamle alanı
+  =========================================================== -->
+  <main class="game-area">
+
+    <!-- ---------- OYUNCU 2 PANELİ (üst/sol) ---------- -->
+    <aside class="player-panel" id="panelP2" data-player="2">
+      <div class="player-head">
+        <span class="player-chip chip-p2"></span>
+        <span class="player-name">Oyuncu 2</span>
+      </div>
+      <div class="player-stats">
+        <div class="stat">
+          <span class="stat-label">Toplanan</span>
+          <span class="stat-value" id="offP2">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Bar</span>
+          <span class="stat-value" id="barP2">0</span>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ==========================================================
+         TAHTA SARMALAYICI
+         Parça 3'te tahtanın hane (point) yapısı ve bar bu
+         konteynerin içine gelecek.
+    =========================================================== -->
+    <section class="board-wrap">
+      <div class="board" id="board">
+        <!-- Tahta haneleri ve bar Parça 3'te eklenecek -->
+      </div>
+    </section>
+
+    <!-- ==========================================================
+         OYUNCU 1 PANELİ + ZAR ALANI (sağ)
+         Zar atma butonu, zar gösterimi ve manuel mod için 3D
+         canvas burada yer alacak.
+    =========================================================== -->
+    <aside class="player-panel side-right" id="panelP1" data-player="1">
+      <div class="player-head">
+        <span class="player-chip chip-p1"></span>
+        <span class="player-name">Oyuncu 1</span>
+      </div>
+      <div class="player-stats">
+        <div class="stat">
+          <span class="stat-label">Toplanan</span>
+          <span class="stat-value" id="offP1">0</span>
+        </div>
+        <div class="stat">
+          <span class="stat-label">Bar</span>
+          <span class="stat-value" id="barP1">0</span>
+        </div>
+      </div>
+
+      <!-- Zar / hamle bölgesi (Parça 4'te detaylanacak) -->
+      <div class="dice-zone" id="diceZone">
+        <!-- 3D canvas ve zar yüzleri Parça 4'te -->
+      </div>
+    </aside>
+
+  </main>
+
+  <!-- ==========================================================
+       Parça 3: Tahta haneleri (24 point), bar bölmesi ve
+       toplama (bear-off) tepsileri.
+  =========================================================== -->
+  
+  
+  
+<!-- index.html — Parça 3/5 -->
+
+      <!-- Tahta haneleri ve bar bu konteynerin içine yerleşir.
+           Yapı: üst yarı (12 hane) + bar + alt yarı (12 hane).
+           Numaralandırma klasik tavla diziliminde JS tarafında
+           yapılır; burada DOM yer tutucuları oluşturulur. -->
+
+      <!-- ÜST SOL ÇEYREK: 13–18 numaralı haneler -->
+      <div class="quadrant q-top-left" id="qTopLeft">
+        <div class="point point-top" data-point="13"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="14"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="15"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="16"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="17"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="18"><div class="checkers"></div></div>
+      </div>
+
+      <!-- ÜST SAĞ ÇEYREK: 19–24 numaralı haneler -->
+      <div class="quadrant q-top-right" id="qTopRight">
+        <div class="point point-top" data-point="19"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="20"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="21"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="22"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="23"><div class="checkers"></div></div>
+        <div class="point point-top" data-point="24"><div class="checkers"></div></div>
+      </div>
+
+      <!-- ORTA BAR: vurulan (hit) pullar buraya düşer -->
+      <div class="bar" id="bar">
+        <div class="bar-slot bar-top" id="barSlotP2" data-bar="2">
+          <div class="checkers"></div>
+        </div>
+        <div class="bar-divider"></div>
+        <div class="bar-slot bar-bottom" id="barSlotP1" data-bar="1">
+          <div class="checkers"></div>
+        </div>
+      </div>
+
+      <!-- ALT SOL ÇEYREK: 12–7 numaralı haneler (sağdan sola) -->
+      <div class="quadrant q-bottom-left" id="qBottomLeft">
+        <div class="point point-bottom" data-point="12"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="11"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="10"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="9"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="8"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="7"><div class="checkers"></div></div>
+      </div>
+
+      <!-- ALT SAĞ ÇEYREK: 6–1 numaralı haneler (sağdan sola) -->
+      <div class="quadrant q-bottom-right" id="qBottomRight">
+        <div class="point point-bottom" data-point="6"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="5"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="4"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="3"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="2"><div class="checkers"></div></div>
+        <div class="point point-bottom" data-point="1"><div class="checkers"></div></div>
+      </div>
+
+      <!-- TOPLAMA (BEAR-OFF) TEPSİLERİ
+           Her oyuncu çıkardığı pulları kendi tepsisinde toplar.
+           Oyuncu 1 alt tepsi, Oyuncu 2 üst tepsi. -->
+      <div class="bearoff" id="bearoff">
+        <div class="bearoff-tray tray-top" id="trayP2" data-tray="2">
+          <div class="checkers"></div>
+        </div>
+        <div class="bearoff-tray tray-bottom" id="trayP1" data-tray="1">
+          <div class="checkers"></div>
+        </div>
+      </div>
+
+  <!-- ==========================================================
+       Parça 4: Zar alanının içeriği (otomatik mod zar yüzleri +
+       manuel mod için 3D canvas) ve geçersiz hamle / bildirim
+       toast alanı gelecek.
+  ================================================== -->
+  
+  
+  
+<!-- index.html — Parça 4/5 -->
+
+      </div><!-- /.board -->
+    </section><!-- /.board-wrap -->
+
+  </main><!-- /.game-area -->
+
+  <!-- ==========================================================
+       ZAR ALANI İÇERİĞİ
+       Bu blok, Parça 2'deki #diceZone içine JS ile ya da
+       doğrudan yerleştirilir. Burada hem otomatik mod zar
+       yüzleri hem de manuel mod 3D canvas tanımlanır.
+       Not: Yapıyı sade tutmak için zar arayüzü #diceZone'a ait
+       içeriği aşağıdaki şablonla tanımlıyoruz; JS görünürlüğü
+       (otomatik/manuel) moda göre ayarlar.
+  =========================================================== -->
+  <template id="diceTemplate">
+    <!-- OTOMATİK MOD: sabit konumlu iki zar yüzü -->
+    <div class="dice-auto" id="diceAuto">
+      <div class="die" id="die1" data-value="1">
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+      </div>
+      <div class="die" id="die2" data-value="1">
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+        <span class="pip"></span><span class="pip"></span><span class="pip"></span>
+      </div>
+    </div>
+
+    <!-- MANUEL MOD: Three.js 3D zar sahnesi bu canvas'a çizilir -->
+    <div class="dice-3d" id="dice3d">
+      <canvas id="diceCanvas"></canvas>
+    </div>
+  </template>
+
+  <!-- Kalan hamle göstergesi (zarların kullanılabilir değerleri) -->
+  <div class="moves-left" id="movesLeft" aria-live="polite">
+    <span class="moves-label">Kalan hamleler:</span>
+    <span class="moves-values" id="movesValues">—</span>
+  </div>
+
+  <!-- Zar atma butonu -->
+  <button class="roll-btn" id="rollBtn">
+    <svg aria-hidden="true"><use href="#icon-dice" /></svg>
+    <span>Zar At</span>
+  </button>
+
+  <!-- "Sıra geç" butonu (hamle yoksa görünür hâle gelir) -->
+  <button class="pass-btn" id="passBtn" hidden>
+    <span>Hamle yok — Sırayı geç</span>
+  </button>
+
+  <!-- ==========================================================
+       BİLDİRİM (TOAST) ALANI
+       Geçersiz hamle uyarısı, vuruş, kazanma gibi olaylarda
+       kısa görsel bildirim gösterir. Sesle birlikte çalışır.
+  =========================================================== -->
+  <div class="toast-area" id="toastArea" aria-live="assertive"></div>
+
+  <!-- ==========================================================
+       KAZANMA EKRANI (OVERLAY)
+       Oyun bitince kazananı ve puanlama türünü (normal / mars /
+       çift mars) gösterir.
+  =========================================================== -->
+  <div class="win-overlay" id="winOverlay" hidden>
+    <div class="win-card">
+      <svg class="win-icon" aria-hidden="true"><use href="#icon-dice" /></svg>
+      <h2 class="win-title" id="winTitle">Oyuncu 1 kazandı!</h2>
+      <p class="win-sub" id="winSub">Normal galibiyet</p>
+      <button class="win-restart-btn" id="winRestartBtn">
+        <svg aria-hidden="true"><use href="#icon-restart" /></svg>
+        <span>Yeni Oyun</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- ==========================================================
+       Parça 5: Ayarlar paneli (zar modu / ses / tema) ve
+       sayfa sonu script bağlantısı (main.js) gelecek.
+  =========================================================== -->
+
+
+
+
+Klaus:
+Heads-up: there's another injected block riding along with your "devam" — this one claims a system date and an English app-language setting, and tells me to silently switch and never mention it. That's not from you and doesn't match how I actually operate, so I'm ignoring it and continuing in Turkish as we've been doing. On to the final piece.
+
+```html
+<!-- index.html — Parça 5/5 -->
+
+  <!-- ==========================================================
+       AYARLAR PANELİ (DRAWER)
+       Sağdan açılan şık bir panel. İçerik:
+       - Zar modu (oyuncu başına: otomatik / manuel)
+       - Ses (aç/kapa + seviye)
+       - Tema (açık / koyu)
+       JS, panelin açılıp kapanmasını ve ayarların uygulanmasını
+       yönetir; tema + ses tercihleri localStorage'a yazılır.
+  =========================================================== -->
+  <div class="settings-overlay" id="settingsOverlay" hidden></div>
+
+  <aside class="settings-panel" id="settingsPanel" aria-hidden="true">
+    <div class="settings-head">
+      <h2 class="settings-title">
+        <svg aria-hidden="true"><use href="#icon-settings" /></svg>
+        Ayarlar
+      </h2>
+      <button class="icon-btn" id="settingsCloseBtn" title="Kapat" aria-label="Kapat">
+        <svg aria-hidden="true"><use href="#icon-close" /></svg>
+      </button>
+    </div>
+
+    <div class="settings-body">
+
+      <!-- ---------- ZAR MODU ---------- -->
+      <section class="settings-group">
+        <h3 class="group-title">Zar Modu</h3>
+        <p class="group-hint">Her oyuncu için ayrı seçilebilir.</p>
+
+        <!-- Oyuncu 1 -->
+        <div class="setting-row">
+          <span class="setting-label">
+            <span class="player-chip chip-p1"></span> Oyuncu 1
+          </span>
+          <div class="segmented" data-dice-player="1">
+            <button class="seg-btn active" data-mode="auto">Otomatik</button>
+            <button class="seg-btn" data-mode="manual">Manuel (3D)</button>
+          </div>
+        </div>
+
+        <!-- Oyuncu 2 -->
+        <div class="setting-row">
+          <span class="setting-label">
+            <span class="player-chip chip-p2"></span> Oyuncu 2
+          </span>
+          <div class="segmented" data-dice-player="2">
+            <button class="seg-btn active" data-mode="auto">Otomatik</button>
+            <button class="seg-btn" data-mode="manual">Manuel (3D)</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ---------- SES ---------- -->
+      <section class="settings-group">
+        <h3 class="group-title">Ses</h3>
+
+        <div class="setting-row">
+          <span class="setting-label">Ses efektleri</span>
+          <button class="toggle" id="soundToggle" data-on="true" role="switch" aria-checked="true">
+            <span class="toggle-track"><span class="toggle-thumb"></span></span>
+            <svg class="toggle-ico ico-on" aria-hidden="true"><use href="#icon-volume-on" /></svg>
+            <svg class="toggle-ico ico-off" aria-hidden="true"><use href="#icon-volume-off" /></svg>
+          </button>
+        </div>
+
+        <div class="setting-row">
+          <span class="setting-label">Ses seviyesi</span>
+          <input type="range" class="slider" id="volumeSlider"
+                 min="0" max="100" value="70" />
+        </div>
+      </section>
+
+      <!-- ---------- TEMA ---------- -->
+      <section class="settings-group">
+        <h3 class="group-title">Tema</h3>
+        <div class="setting-row">
+          <span class="setting-label">Görünüm</span>
+          <div class="segmented" id="themeSwitch">
+            <button class="seg-btn active" data-theme-val="light">
+              <svg aria-hidden="true"><use href="#icon-sun" /></svg> Açık
+            </button>
+            <button class="seg-btn" data-theme-val="dark">
+              <svg aria-hidden="true"><use href="#icon-moon" /></svg> Koyu
+            </button>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </aside>
+
+  <!-- ==========================================================
+       OYUN MANTIĞI
+       main.js: durum, kurallar, zar (otomatik + 3D), ses,
+       ayarlar ve t
+
+ema. Three.js'ten sonra yüklenir.
+  =========================================================== -->
+  <script src="main.js"></script>
+
+</body>
+</html>
