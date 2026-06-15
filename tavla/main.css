@@ -131,9 +131,7 @@ body {
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
   transition: background var(--t-med), color var(--t-med);
-  over
-
-flow-x: hidden;
+  overflow-x: hidden;
 }
 
 button {
