@@ -1,109 +1,59 @@
-/* ==========================================================
-   main.js — Parça 1/?
-   BÖLÜM 1: Durum (state) & sabitler
-   ----------------------------------------------------------
-   Oyunun tüm verisi tek bir state nesnesinde tutulur.
-   Tahta dizilimi 1..24 numaralı haneler + bar + bear-off
-   üzerinden modellenir.
-
-   Oyuncu yönü (önemli):
-   - Oyuncu 1 (P1): pulları 24 → 1 yönünde hareket eder,
-     ev (home) bölgesi 1..6, bear-off'a 1'den çıkar.
-   - Oyuncu 2 (P2): pulları 1 → 24 yönünde hareket eder,
-     ev (home) bölgesi 19..24, bear-off'a 24'ten çıkar.
-========================================================== */
-
 "use strict";
+/* ==========================================================
+   main.js — Tavla
+   AI (kolay/orta/zor/efsane), sürükle-bırak, hamle geri alma,
+   bar girişi, yatay iki panelli düzen.
+========================================================== */
 
 /* ---------- SABİTLER ---------- */
-const P1 = 1;            // Oyuncu 1 (koyu pullar)
-const P2 = 2;            // Oyuncu 2 (açık pullar)
-const POINTS = 24;       // toplam hane sayısı
-const CHECKERS_PER = 15; // oyuncu başına pul sayısı
+const P1 = 1, P2 = 2;
+const POINTS = 24, CHECKERS_PER = 15;
 
-/* Her oyuncunun ev (home) bölgesi hane aralığı */
 const HOME = {
-  [P1]: { min: 1,  max: 6  },   // P1 evi: 1..6
-  [P2]: { min: 19, max: 24 }    // P2 evi: 19..24
+  [P1]: { min: 1,  max: 6  },
+  [P2]: { min: 19, max: 24 }
 };
 
-/* Her oyuncunun bardan tahtaya giriş yaptığı bölge
-   (rakibin evinin karşılığı). Zar değeri d için giriş hanesi:
-   - P1 için: 25 - d   (24,23,...,19)
-   - P2 için: d        (1,2,...,6)              */
-function entryPoint(player, dieValue) {
-  return player === P1 ? (25 - dieValue) : dieValue;
+function entryPoint(player, die) {
+  return player === P1 ? (25 - die) : die;
 }
 
-/* ---------- BAŞLANGIÇ DİZİLİMİ ----------
-   Klasik tavla açılışı. Anahtar = hane no, değer = { owner, count }.
-   P1 (24→1 yönünde) ve P2 (1→24 yönünde) simetrik dizilir. */
 function initialBoard() {
-  const board = {};
-  for (let i = 1; i <= POINTS; i++) board[i] = { owner: 0, count: 0 };
-
-  // Oyuncu 1 (P1) pulları
-  board[24] = { owner: P1, count: 2 };
-  board[13] = { owner: P1, count: 5 };
-  board[8]  = { owner: P1, count: 3 };
-  board[6]  = { owner: P1, count: 5 };
-
-  // Oyuncu 2 (P2) pulları (simetrik)
-  board[1]  = { owner: P2, count: 2 };
-  board[12] = { owner: P2, count: 5 };
-  board[17] = { owner: P2, count: 3 };
-  board[19] = { owner: P2, count: 5 };
-
-  return board;
+  const b = {};
+  for (let i = 1; i <= POINTS; i++) b[i] = { owner: 0, count: 0 };
+  b[24] = { owner: P1, count: 2 };
+  b[13] = { owner: P1, count: 5 };
+  b[8]  = { owner: P1, count: 3 };
+  b[6]  = { owner: P1, count: 5 };
+  b[1]  = { owner: P2, count: 2 };
+  b[12] = { owner: P2, count: 5 };
+  b[17] = { owner: P2, count: 3 };
+  b[19] = { owner: P2, count: 5 };
+  return b;
 }
 
-/* ---------- MERKEZİ STATE ---------- */
+/* ---------- STATE ---------- */
 const state = {
-  board: initialBoard(),
-
-  // Bardaki (vurulmuş) pullar
-  bar: { [P1]: 0, [P2]: 0 },
-
-  // Toplanan (bear-off edilmiş) pullar
-  borneOff: { [P1]: 0, [P2]: 0 },
-
-  // Sıradaki oyuncu
-  current: P1,
-
-  // Bu turda atılan zarlar ve kalan (kullanılabilir) hamle değerleri
-  dice: [],          // örn. [3, 5] veya çift gelince [4, 4, 4, 4]
-  movesLeft: [],     // kullanıldıkça çıkarılır
-
-  // Seçili kaynak hane (UI etkileşimi için)
-  selected: null,    // hane no | "bar" | null
-
-  // Oyun durumu
-  phase: "idle",     // "idle" | "rolling" | "moving" | "won"
-  winner: 0,
-
-  // Oyuncu başına zar modu ("auto" = CSS zar, "manual" = 3D)
-  diceMode: { [P1]: "auto", [P2]: "auto" },
-
-  // Ayarlar
-  settings: {
-    theme: "light",  // "light" | "dark"
-    sound: true,
-    volume: 0.6
-  }
+  board:      initialBoard(),
+  bar:        { [P1]: 0, [P2]: 0 },
+  borneOff:   { [P1]: 0, [P2]: 0 },
+  current:    P1,
+  dice:       [],
+  movesLeft:  [],
+  selected:   null,
+  phase:      "idle",
+  winner:     0,
+  history:    [],
+  gameMode:   "pvp",
+  aiDiff:     "easy",
+  theme:      "light",
+  sound:      true,
+  volume:     0.6
 };
 
-
-/* ==========================================================
-   main.js — Parça 2/?
-   BÖLÜM 2: DOM referansları & tahta render
-   ----------------------------------------------------------
-   State'ten okuyup ekrana çizen "tek yönlü" render mantığı:
-   state değişir → render() çağrılır → DOM güncellenir.
-========================================================== */
-
-/* ---------- DOM REFERANSLARI ---------- */
-const $ = (sel, root = document) => root.querySelector(sel);
-const $$ = (sel, root = document) => [...root.querySelectorAll(sel)];
+/* ---------- DOM ---------- */
+const $  = (s, r = document) => r.querySelector(s);
+const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 
 const dom = {
   board:        $("#board"),
@@ -113,147 +63,162 @@ const dom = {
   bearoff:      $("#bearoff"),
   trayP1:       $("#trayP1 .checkers"),
   trayP2:       $("#trayP2 .checkers"),
-
-  turnIndicator:$("#turnIndicator"),
   turnDot:      $("#turnDot"),
   turnText:     $("#turnText"),
-
+  aiThinking:   $("#aiThinking"),
   offP1:        $("#offP1"),
   offP2:        $("#offP2"),
   barCountP1:   $("#barP1"),
   barCountP2:   $("#barP2"),
   panelP1:      $("#panelP1"),
   panelP2:      $("#panelP2"),
-
-  diceZone:     $("#diceZone"),
-  movesValues:  $("#movesValues"),
-  rollBtn:      $("#rollBtn"),
-  passBtn:      $("#passBtn"),
-
+  aiBadgeP2:    $("#aiBadgeP2"),
+  diceZoneP1:   $("#diceZoneP1"),
+  diceZoneP2:   $("#diceZoneP2"),
+  movesValP1:   $("#movesValuesP1"),
+  movesValP2:   $("#movesValuesP2"),
+  rollBtnP1:    $("#rollBtnP1"),
+  rollBtnP2:    $("#rollBtnP2"),
+  passBtnP1:    $("#passBtnP1"),
+  passBtnP2:    $("#passBtnP2"),
+  undoBtnP1:    $("#undoBtnP1"),
+  undoBtnP2:    $("#undoBtnP2"),
   toastArea:    $("#toastArea"),
   winOverlay:   $("#winOverlay"),
   winTitle:     $("#winTitle"),
-  winSub:       $("#winSub")
+  winSub:       $("#winSub"),
+  aiDiffGroup:  $("#aiDiffGroup"),
+  diffHint:     $("#diffHint")
 };
 
-/* ---------- YARDIMCI: pul DOM elemanı oluştur ---------- */
-function makeChecker(owner, countLabel = null) {
+/* ==========================================================
+   RENDER
+========================================================== */
+function makeChecker(owner, label) {
   const el = document.createElement("div");
   el.className = "checker " + (owner === P1 ? "p1" : "p2");
-  if (countLabel) {
-    const c = document.createElement("span");
-    c.className = "count";
-    c.textContent = countLabel;
-    el.appendChild(c);
+  if (label) {
+    const s = document.createElement("span");
+    s.className = "count";
+    s.textContent = label;
+    el.appendChild(s);
   }
   return el;
 }
 
-/* ---------- HANELERİ ÇİZ ----------
-   Her hane için en fazla 5 pul gösterilir; fazlası sayaçla
-   ifade edilir (en üstteki pula "+N" yazılır). */
 function renderPoints() {
   for (let p = 1; p <= POINTS; p++) {
     const cell = $(`.point[data-point="${p}"] .checkers`, dom.board);
     if (!cell) continue;
     cell.innerHTML = "";
-
     const { owner, count } = state.board[p];
-    if (count === 0) continue;
-
-    const visible = Math.min(count, 5);
-    for (let i = 0; i < visible; i++) {
-      // Son görünen pula, taşma varsa toplam sayıyı yaz
-      const isTop = i === visible - 1;
-      const label = isTop && count > 5 ? String(count) : null;
-      cell.appendChild(makeChecker(owner, label));
+    if (!count) continue;
+    const vis = Math.min(count, 5);
+    for (let i = 0; i < vis; i++) {
+      const lbl = (i === vis - 1 && count > 5) ? String(count) : null;
+      const ch = makeChecker(owner, lbl);
+      ch.classList.add("placing");
+      cell.appendChild(ch);
     }
   }
 }
 
-/* ---------- BARI ÇİZ ---------- */
 function renderBar() {
   dom.barSlotP1.innerHTML = "";
   dom.barSlotP2.innerHTML = "";
-
-  for (let i = 0; i < state.bar[P1]; i++) {
-    dom.barSlotP1.appendChild(makeChecker(P1));
-  }
-  for (let i = 0; i < state.bar[P2]; i++) {
-    dom.barSlotP2.appendChild(makeChecker(P2));
-  }
+  for (let i = 0; i < state.bar[P1]; i++) dom.barSlotP1.appendChild(makeChecker(P1));
+  for (let i = 0; i < state.bar[P2]; i++) dom.barSlotP2.appendChild(makeChecker(P2));
 }
 
-/* ---------- BEAR-OFF (TOPLAMA) ÇİZ ---------- */
 function renderBearoff() {
   dom.trayP1.innerHTML = "";
   dom.trayP2.innerHTML = "";
-
-  for (let i = 0; i < state.borneOff[P1]; i++) {
-    dom.trayP1.appendChild(makeChecker(P1));
-  }
-  for (let i = 0; i < state.borneOff[P2]; i++) {
-    dom.trayP2.appendChild(makeChecker(P2));
-  }
+  for (let i = 0; i < state.borneOff[P1]; i++) dom.trayP1.appendChild(makeChecker(P1));
+  for (let i = 0; i < state.borneOff[P2]; i++) dom.trayP2.appendChild(makeChecker(P2));
 }
 
-/* ---------- SAYAÇ & PANELLERİ GÜNCELLE ---------- */
 function renderStats() {
-  dom.offP1.textContent = state.borneOff[P1];
-  dom.offP2.textContent = state.borneOff[P2];
+  dom.offP1.textContent      = state.borneOff[P1];
+  dom.offP2.textContent      = state.borneOff[P2];
   dom.barCountP1.textContent = state.bar[P1];
   dom.barCountP2.textContent = state.bar[P2];
-
   dom.panelP1.classList.toggle("is-active", state.current === P1);
   dom.panelP2.classList.toggle("is-active", state.current === P2);
 }
 
-/* ---------- SIRA GÖSTERGESİNİ GÜNCELLE ---------- */
 function renderTurn() {
   const isP1 = state.current === P1;
-  dom.turnDot.className = "turn-dot " + (isP1 ? "p1" : "p2");
+  dom.turnDot.className   = "turn-dot " + (isP1 ? "p1" : "p2");
   dom.turnText.textContent = isP1 ? "Sıra: Oyuncu 1" : "Sıra: Oyuncu 2";
 }
 
-/* ---------- KALAN HAMLELERİ ÇİZ ---------- */
 function renderMoves() {
-  dom.movesValues.innerHTML = "";
-  // Atılan tüm zarları göster; kullanılanları üstü çizili işaretle
-  const used = countUsed(state.dice, state.movesLeft);
-
-  state.dice.forEach((value) => {
-    const chip = document.createElement("span");
-    chip.className = "move-chip";
-    chip.textContent = value;
-    // Bu değerden kaç tane kullanıldıysa o kadarını "used" yap
-    if (used[value] > 0) {
-      chip.classList.add("used");
-      used[value]--;
+  [P1, P2].forEach(pl => {
+    const valEl = pl === P1 ? dom.movesValP1 : dom.movesValP2;
+    valEl.innerHTML = "";
+    if (state.current !== pl || !state.dice.length) {
+      valEl.textContent = "—";
+      return;
     }
-    dom.movesValues.appendChild(chip);
+    const usedMap = {};
+    state.dice.forEach(v => (usedMap[v] = (usedMap[v] || 0) + 1));
+    state.movesLeft.forEach(v => (usedMap[v] = (usedMap[v] || 0) - 1));
+
+    state.dice.forEach(v => {
+      const chip = document.createElement("span");
+      chip.className = "move-chip";
+      chip.textContent = v;
+      if ((usedMap[v] || 0) > 0) {
+        chip.classList.add("used");
+        usedMap[v]--;
+      }
+      valEl.appendChild(chip);
+    });
   });
 }
 
-/* Atılan vs. kalan hamleleri karşılaştırıp her değerden
-   kaç tanesinin kullanıldığını hesaplar. */
-function countUsed(dice, left) {
-  const tally = {};
-  dice.forEach((v) => (tally[v] = (tally[v] || 0) + 1));
-  left.forEach((v) => (tally[v] = (tally[v] || 0) - 1));
-  return tally; // value → kullanılan adet
-}
-
-/* ---------- BUTON DURUMLARI ---------- */
 function renderButtons() {
-  // "Zar At": yalnızca tur başında (zar atılmamışken) aktif
-  dom.rollBtn.disabled = state.dice.length > 0 || state.phase === "won";
+  const isAI    = state.gameMode === "ai" && state.current === P2;
+  const canRoll = state.dice.length === 0 && state.phase !== "won" && !isAI;
 
-  // "Sıra geç": zar atılmış ama oynanabilir hamle yokken aktif
-  const stuck = state.dice.length > 0 && !hasAnyLegalMove(state.current);
-  dom.passBtn.hidden = !stuck;
+  dom.rollBtnP1.disabled = !(state.current === P1 && canRoll);
+  dom.rollBtnP2.disabled = !(state.current === P2 && canRoll);
+
+  const stuck1 = state.current === P1 && state.dice.length > 0 && !hasAnyLegalMove(P1);
+  const stuck2 = state.current === P2 && state.dice.length > 0 && !hasAnyLegalMove(P2) && !isAI;
+  dom.passBtnP1.hidden = !stuck1;
+  dom.passBtnP2.hidden = !stuck2;
+
+  const canUndo = state.history.length > 0 && state.phase === "moving";
+  dom.undoBtnP1.disabled = !(state.current === P1 && canUndo && !isAI);
+  dom.undoBtnP2.disabled = !(state.current === P2 && canUndo && !isAI);
+
+  if (dom.aiBadgeP2) dom.aiBadgeP2.hidden = state.gameMode !== "ai";
+
+  dom.aiThinking.classList.toggle("visible",
+    state.gameMode === "ai" && state.current === P2 && state.phase !== "won");
 }
 
-/* ---------- ANA RENDER DÖNGÜSÜ ---------- */
+function ensureAutoDiceMounted(zone) {
+  if ($(".dice-auto", zone)) return;
+  const tpl = $("#diceTemplate");
+  if (!tpl) return;
+  zone.innerHTML = "";
+  zone.appendChild(tpl.content.cloneNode(true));
+}
+
+function renderDice() {
+  const zone = state.current === P1 ? dom.diceZoneP1 : dom.diceZoneP2;
+  ensureAutoDiceMounted(zone);
+  const dice = $$(".die", zone);
+  if (state.dice.length >= 2) {
+    if (dice[0]) dice[0].setAttribute("data-value", state.dice[0]);
+    if (dice[1]) dice[1].setAttribute("data-value", state.dice[1]);
+  } else {
+    dice.forEach(d => d.setAttribute("data-value", "0"));
+  }
+}
+
 function render() {
   renderPoints();
   renderBar();
@@ -262,238 +227,49 @@ function render() {
   renderTurn();
   renderMoves();
   renderButtons();
+  renderDice();
+  markMovable();
 }
-
-
 
 /* ==========================================================
-   main.js — Parça 3/?
-   BÖLÜM 3: Zar atma (otomatik + manuel), movesLeft üretimi,
-   sıra geçişi
-   ----------------------------------------------------------
-   Manuel (3D) mod, sonuç değerini Three.js sahnesinden
-   onResult(d1, d2) geri çağrısıyla verir; otomatik mod ise
-   doğrudan rastgele üretir. İki yol da applyRoll() ile
-   birleşir.
+   KURAL MOTORU
 ========================================================== */
-
-/* ---------- RASTGELE ZAR (1..6) ---------- */
-function rollDie() {
-  return Math.floor(Math.random() * 6) + 1;
-}
-
-/* ---------- ZAR SONUCUNU UYGULA ----------
-   d1, d2 değerlerinden movesLeft listesini kurar.
-   Çift (d1 === d2) gelirse dört hamle hakkı doğar. */
-function applyRoll(d1, d2) {
-  state.dice = (d1 === d2) ? [d1, d1, d1, d1] : [d1, d2];
-  state.movesLeft = [...state.dice];
-  state.phase = "moving";
-  state.selected = null;
-
-  // Bardan girişi zorunlu kıl: barı olan oyuncu önce girmeli
-  refreshBarConstraint();
-
-  render();
-  updateAutoDiceFaces(d1, d2);
-
-  // Hiç yasal hamle yoksa, kısa bekleyip otomatik "sıra geç" öner
-  if (!hasAnyLegalMove(state.current)) {
-    toast("Oynanabilir hamle yok — sırayı geçebilirsin.", "warn");
-  }
-}
-
-/* ---------- ANA ZAR ATMA AKIŞI ---------- */
-function doRoll() {
-  if (state.dice.length > 0 || state.phase === "won") return;
-
-  state.phase = "rolling";
-  dom.rollBtn.disabled = true;
-  playSound("roll");
-
-  const mode = state.diceMode[state.current];
-
-  if (mode === "manual" && window.Dice3D && window.Dice3D.isReady()) {
-    // MANUEL: 3D sahne sonucu geri çağrı ile verir
-    window.Dice3D.throwDice((d1, d2) => applyRoll(d1, d2));
-  } else {
-    // OTOMATİK: rastgele üret + kısa CSS animasyonu
-    const d1 = rollDie();
-    const d2 = rollDie();
-    animateAutoDice(() => applyRoll(d1, d2), d1, d2);
-  }
-}
-
-/* ---------- OTOMATİK ZAR ANİMASYONU ---------- */
-function animateAutoDice(done, d1, d2) {
-  ensureAutoDiceMounted();
-  const dice = $$(".die", dom.diceZone);
-
-  // Sallama animasyonu sırasında rastgele yüzler göster
-  let ticks = 0;
-  const iv = setInterval(() => {
-    dice.forEach((die) => die.setAttribute("data-value", rollDie()));
-    ticks++;
-    if (ticks >= 8) {
-      clearInterval(iv);
-      // Gerçek sonucu yerleştir
-      if (dice[0]) dice[0].setAttribute("data-value", d1);
-      if (dice[1]) dice[1].setAttribute("data-value", d2);
-      dice.forEach((die) => die.classList.remove("rolling", "used"));
-      done();
-    }
-  }, 55);
-
-  dice.forEach((die) => die.classList.add("rolling"));
-}
-
-/* ---------- OTOMATİK ZAR YÜZLERİNİ GÜNCELLE ---------- */
-function updateAutoDiceFaces(d1, d2) {
-  if (state.diceMode[state.current] !== "auto") return;
-  const dice = $$(".die", dom.diceZone);
-  if (dice[0]) dice[0].setAttribute("data-value", d1);
-  if (dice[1]) dice[1].setAttribute("data-value", d2);
-}
-
-/* Otomatik zar şablonunu (template) diceZone'a yerleştirir. */
-function ensureAutoDiceMounted() {
-  if ($(".dice-auto", dom.diceZone)) return; // zaten var
-  const tpl = $("#diceTemplate")?.content?.querySelector(".dice-auto");
-  if (tpl) {
-    dom.diceZone.innerHTML = "";
-    dom.diceZone.appendChild(tpl.cloneNode(true));
-  }
-}
-
-/* ---------- SIRA GEÇİŞİ ---------- */
-function endTurn() {
-  // Zar ve hamle durumunu temizle
-  state.dice = [];
-  state.movesLeft = [];
-  state.selected = null;
-  state.phase = "idle";
-
-  // Sırayı diğer oyuncuya devret
-  state.current = (state.current === P1) ? P2 : P1;
-
-  // Otomatik zar yüzlerini sıfırla / doğru modu hazırla
-  prepareDiceZoneForCurrent();
-
-  render();
-
-toast(state.current === P1 ? "Sıra Oyuncu 1'de." : "Sıra Oyuncu 2'de.");
-}
-
-/* "Sıra geç" butonu: yalnız oynanabilir hamle yokken anlamlı. */
-function doPass() {
-  if (state.dice.length === 0) return;          // önce zar atılmalı
-  if (hasAnyLegalMove(state.current)) {
-    toast("Hâlâ oynayabileceğin bir hamle var.", "warn");
-    return;
-  }
-  endTurn();
-}
-
-/* Aktif oyuncunun moduna göre zar alanını hazırlar:
-   otomatik → CSS zar şablonu; manuel → 3D canvas. */
-function prepareDiceZoneForCurrent() {
-  const mode = state.diceMode[state.current];
-  if (mode === "manual" && window.Dice3D) {
-    window.Dice3D.mount(dom.diceZone);
-  } else {
-    ensureAutoDiceMounted();
-    // Yüzleri nötr (boş) hâle getir
-    $$(".die", dom.diceZone).forEach((die) =>
-      die.setAttribute("data-value", "0")
-    );
-  }
-}
-
-
-/* ==========================================================
-   main.js — Parça 4/?
-   BÖLÜM 4: Kural motoru
-   ----------------------------------------------------------
-   isLegalMove      → tek bir hamlenin geçerliliği
-   hasAnyLegalMove  → oyuncunun en az bir hamlesi var mı
-   refreshBarConstraint → bar zorunluluğunu uygula
-   canBearOff       → bearing off koşulu sağlanıyor mu
-   bearOffPoint     → zar değerinden hedef hane hesabı
-========================================================== */
-
-/* ---------- BAR KISITI ----------
-   Barı olan oyuncu başka hiçbir hamle yapamaz;
-   yalnızca bardan giriş yapabilir. Bu fonksiyon state'e
-   doğrudan dokunmaz, render katmanı zaten bar slot'unu
-   seçili gösterir; ancak isLegalMove içinde kontrol edilir. */
-function refreshBarConstraint() {
-  // Barı varsa seçimi bar'a kilitle
-  if (state.bar[state.current] > 0) {
-    state.selected = "bar";
-  }
-}
-
-/* ---------- HANE SAHİPLİĞİ KONTROLÜ ----------
-   Bir hedef hane oynanabilir mi?
-   - Boşsa: evet
-   - Aktif oyuncunun pulları varsa: evet
-   - Rakibin tek pulu (blot) varsa: evet (hit yapılır)
-   - Rakibin 2+ pulu varsa: hayır (bloke) */
-function isOpenPoint(point, player) {
-  const cell = state.board[point];
+function isOpenPoint(pt, player) {
+  const cell = state.board[pt];
   if (!cell || cell.count === 0) return true;
-  if (cell.owner === player) return true;
-  if (cell.owner !== player && cell.count === 1) return true; // blot → hit
+  if (cell.owner === player)     return true;
+  if (cell.count === 1)          return true;
   return false;
 }
 
-/* ---------- BEARING OFF KOŞulu ----------
-   Oyuncu tüm pullarını ev bölgesine toplamışsa bearing off yapabilir. */
 function canBearOff(player) {
-  // Bar'da pul varsa hayır
   if (state.bar[player] > 0) return false;
-
   const h = HOME[player];
-  let total = 0;
+  let total = state.borneOff[player];
   for (let p = h.min; p <= h.max; p++) {
     if (state.board[p].owner === player) total += state.board[p].count;
   }
-  total += state.borneOff[player];
-  // Tüm 15 pul ev + dışarıda mı?
   return total === CHECKERS_PER;
 }
 
-/* ---------- BEARING OFF HEDEF NOKTA ----------
-   Zar değeri d için oyuncunun bearing off yapacağı hane.
-   P1: en yüksek hane önce (1'den çıkar, d=1 → hane 1)
-   P2: en düşük hane önce (24'ten çıkar, d=1 → hane 24)
-
-   Eğer tam eşleşen hane boşsa en yakın yüksek haneden çıkılır
-   (bearing off kuralı: yeterli zar değeriyle çıkış yapılabilir). */
-function bearOffLegal(player, dieValue) {
+function bearOffLegal(player, die) {
   if (!canBearOff(player)) return false;
   const h = HOME[player];
 
   if (player === P1) {
-    // P1: d → hane d. Hane doluysa doğrudan.
-    if (state.board[dieValue]?.owner === P1 && state.board[dieValue].count > 0) return true;
-    // Değer ev aralığının dışındaysa (d > 6) geçersiz
-    if (dieValue > 6) return false;
-    // "Yeterli zar" kuralı: d'den büyük hane yoksa, en yüksek dolu haneden çık
-    for (let p = dieValue + 1; p <= h.max; p++) {
+    if (die > 6) return false;
+    if (state.board[die]?.owner === P1 && state.board[die].count > 0) return true;
+    for (let p = die + 1; p <= h.max; p++) {
       if (state.board[p].owner === P1 && state.board[p].count > 0) return false;
     }
-    // d'ye eşit veya daha düşük dolu hane var mı?
     for (let p = h.min; p <= h.max; p++) {
       if (state.board[p].owner === P1 && state.board[p].count > 0) return true;
     }
   } else {
-    // P2: d → hane (25 - d). Örn. d=1 → hane 24.
-    const target = 25 - dieValue;
+    if (die > 6) return false;
+    const target = 25 - die;
     if (target >= h.min && target <= h.max &&
         state.board[target]?.owner === P2 && state.board[target].count > 0) return true;
-    if (dieValue > 6) return false;
-    // "Yeterli zar" kuralı (P2 için ters yön)
     for (let p = h.min; p < target; p++) {
       if (state.board[p].owner === P2 && state.board[p].count > 0) return false;
     }
@@ -504,115 +280,163 @@ function bearOffLegal(player, dieValue) {
   return false;
 }
 
-/* ---------- TEK HAMLENİN GEÇERLİLİĞİ ----------
-   from : hane no (1..24) | "bar"
-   die  : kullanılacak zar değeri
-   player: P1 | P2
-   Dönüş: { legal: bool, to: number|"bearoff", hit: bool } */
 function isLegalMove(from, die, player) {
   const opp = player === P1 ? P2 : P1;
 
-  /* --- BARDAN GİRİŞ --- */
   if (from === "bar") {
     if (state.bar[player] === 0) return { legal: false };
     const to = entryPoint(player, die);
-    if (to < 1 || to > 24) return { legal: false };
-    const open = isOpenPoint(to, player);
-    if (!open) return { legal: false };
+    if (to < 1 || to > 24)      return { legal: false };
+    if (!isOpenPoint(to, player)) return { legal: false };
     const hit = state.board[to].owner === opp && state.board[to].count === 1;
     return { legal: true, to, hit };
   }
 
-  /* --- BARDAN GİRİŞ ZORUNLULUĞU --- */
   if (state.bar[player] > 0) return { legal: false };
 
-  /* --- NORMAL HAMLE --- */
   const cell = state.board[from];
   if (!cell || cell.owner !== player || cell.count === 0) return { legal: false };
 
-  // Hedef hane hesabı (yön: P1 azalan, P2 artan)
   const to = player === P1 ? from - die : from + die;
 
-  /* --- BEARING OFF --- */
-  if (player === P1 && to < 1) {
-    return { legal: bearOffLegal(player, die), to: "bearoff", hit: false };
-  }
-  if (player === P2 && to > 24) {
-    return { legal: bearOffLegal(player, die), to: "bearoff", hit: false };
-  }
-
-  /* --- TAHTA İÇİ HAMLE --- */
-  if (to < 1 || to > 24) return { legal: false };
+  if (player === P1 && to < 1)  return { legal: bearOffLegal(player, die), to: "bearoff", hit: false };
+  if (player === P2 && to > 24) return { legal: bearOffLegal(player, die), to: "bearoff", hit: false };
+  if (to < 1 || to > 24)        return { legal: false };
   if (!isOpenPoint(to, player)) return { legal: false };
 
   const hit = state.board[to].owner === opp && state.board[to].count === 1;
   return { legal: true, to, hit };
 }
 
-/* ---------- EN AZ BİR YASAL HAMLE VAR MI ---------- */
 function hasAnyLegalMove(player) {
-  const movesAvail = [...new Set(state.movesLeft)]; // tekrarları çıkar
-
-  // Bar kontrolü önce
+  const unique = [...new Set(state.movesLeft)];
   if (state.bar[player] > 0) {
-    return movesAvail.some(d => isLegalMove("bar", d, player).legal);
+    return unique.some(d => isLegalMove("bar", d, player).legal);
   }
-
-  // Tüm haneleri tara
   for (let p = 1; p <= POINTS; p++) {
-    if (state.board[p].owner !== player || state.board[p].count === 0) continue;
-    if (movesAvail.some(d => isLegalMove(p, d, player).legal)) return true;
+    if (state.board[p].owner !== player || !state.board[p].count) continue;
+    if (unique.some(d => isLegalMove(p, d, player).legal)) return true;
   }
   return false;
 }
 
-/* ---------- BELİRLİ BİR FROM İÇİN OYNAYILACAK ZARLAR ----------
-   UI'ın "bu haneden hangi zarlarla gidilebilir?" sorusuna yanıt verir. */
 function legalDiceFor(from, player) {
-  const unique = [...new Set(state.movesLeft)];
-  return unique.filter(d => isLegalMove(from, d, player).legal);
+  return [...new Set(state.movesLeft)].filter(d => isLegalMove(from, d, player).legal);
 }
 
-/* ---------- BELİRLİ BİR FROM→TO İÇİN ZAR SEÇ ----------
-   Aynı from→to'yu sağlayan birden fazla zar varsa birini döndürür.
-   Öncelik: tam eşleşme, sonra bearing-off için en küçük yeterli değer. */
 function chooseDie(from, to, player) {
-  const unique = [...new Set(state.movesLeft)];
-  for (const d of unique) {
-    const result = isLegalMove(from, d, player);
-    if (!result.legal) continue;
-    if (result.to === to) return d;
+  for (const d of [...new Set(state.movesLeft)]) {
+    const r = isLegalMove(from, d, player);
+    if (r.legal && r.to === to) return d;
   }
   return null;
 }
 
+/* ==========================================================
+   ZAR & SIRA
+========================================================== */
+function rollDie() { return Math.floor(Math.random() * 6) + 1; }
 
+function applyRoll(d1, d2) {
+  state.dice      = (d1 === d2) ? [d1, d1, d1, d1] : [d1, d2];
+  state.movesLeft = [...state.dice];
+  state.phase     = "moving";
+  state.selected  = null;
+  state.history   = [];
+  if (state.bar[state.current] > 0) state.selected = "bar";
+  render();
+  if (!hasAnyLegalMove(state.current)) {
+    toast("Oynanabilir hamle yok — sırayı geç.", "warn");
+  }
+}
+
+function doRoll(player) {
+  if (state.current !== player) return;
+  if (state.dice.length > 0 || state.phase === "won") return;
+
+  state.phase = "rolling";
+  renderButtons();
+  playSound("roll");
+
+  const d1 = rollDie(), d2 = rollDie();
+
+  const zone = player === P1 ? dom.diceZoneP1 : dom.diceZoneP2;
+  ensureAutoDiceMounted(zone);
+  const diceEls = $$(".die", zone);
+  let ticks = 0;
+  const iv = setInterval(() => {
+    diceEls.forEach(d => d.setAttribute("data-value", rollDie()));
+    ticks++;
+    if (ticks >= 8) {
+      clearInterval(iv);
+      applyRoll(d1, d2);
+    }
+  }, 55);
+}
+
+function endTurn() {
+  state.dice      = [];
+  state.movesLeft = [];
+  state.selected  = null;
+  state.phase     = "idle";
+  state.history   = [];
+  state.current   = state.current === P1 ? P2 : P1;
+  clearHighlights();
+  render();
+  toast(state.current === P1 ? "Sıra Oyuncu 1'de." : "Sıra Oyuncu 2'de.");
+  if (state.gameMode === "ai" && state.current === P2 && state.phase !== "won") {
+    scheduleAITurn();
+  }
+}
+
+function doPass(player) {
+  if (state.current !== player || state.dice.length === 0) return;
+  if (hasAnyLegalMove(state.current)) {
+    toast("Hâlâ oynanabilecek hamle var.", "warn");
+    return;
+  }
+  endTurn();
+}
 
 /* ==========================================================
-   main.js — Parça 5/?
-   BÖLÜM 5: Hamle uygulama, hit, bearing off, kazanma
-   ----------------------------------------------------------
-   applyMove      → state'i günceller, sesi çalar, render eder
-   checkWin       → kazanma + mars/çift mars tespiti
-   consumeDie     → movesLeft'ten bir değer çıkarır
+   HAMLEYİ UYGULA
 ========================================================== */
-
-/* ---------- ZAR TÜKETİMİ ----------
-   movesLeft listesinden verilen değeri bir kez çıkarır. */
-function consumeDie(value) {
-  const idx = state.movesLeft.indexOf(value);
+function consumeDie(v) {
+  const idx = state.movesLeft.indexOf(v);
   if (idx !== -1) state.movesLeft.splice(idx, 1);
 }
 
-/* ---------- HAMLEYİ UYGULA ----------
-   from   : hane no (1..24) | "bar"
-   to     : hane no (1..24) | "bearoff"
-   die    : kullanılan zar değeri
-   player : P1 | P2                         */
+function saveSnapshot() {
+  state.history.push({
+    board:     JSON.parse(JSON.stringify(state.board)),
+    bar:       { ...state.bar },
+    borneOff:  { ...state.borneOff },
+    dice:      [...state.dice],
+    movesLeft: [...state.movesLeft],
+    selected:  state.selected,
+    phase:     state.phase
+  });
+}
+
+function undoMove() {
+  if (!state.history.length) return;
+  const snap = state.history.pop();
+  state.board     = snap.board;
+  state.bar       = snap.bar;
+  state.borneOff  = snap.borneOff;
+  state.dice      = snap.dice;
+  state.movesLeft = snap.movesLeft;
+  state.selected  = snap.selected;
+  state.phase     = snap.phase;
+  clearHighlights();
+  render();
+  toast("Hamle geri alındı.");
+}
+
 function applyMove(from, to, die, player) {
+  saveSnapshot();
   const opp = player === P1 ? P2 : P1;
 
-  /* --- KAYNAKTAN PUL KALDIR --- */
   if (from === "bar") {
     state.bar[player] = Math.max(0, state.bar[player] - 1);
   } else {
@@ -620,114 +444,91 @@ function applyMove(from, to, die, player) {
     if (state.board[from].count === 0) state.board[from].owner = 0;
   }
 
-  /* --- BEARING OFF --- */
   if (to === "bearoff") {
     state.borneOff[player]++;
     consumeDie(die);
     playSound("bearoff");
-
-    // Kazanma kontrolü
-    if (checkWin(player)) return; // render checkWin içinde yapılır
-
-    // Tüm hamleler bitti mi?
-    if (state.movesLeft.length === 0) {
-      setTimeout(endTurn, 400);
-    } else if (!hasAnyLegalMove(player)) {
-      toast("Başka hamle yok.", "warn");
-      setTimeout(endTurn, 600);
-    } else {
-      render();
+    if (checkWin(player)) return;
+    clearHighlights();
+    render();
+    if (!state.movesLeft.length || !hasAnyLegalMove(player)) {
+      setTimeout(endTurn, 420);
     }
     return;
   }
 
-  /* --- HIT: rakip blot'u bara düşür --- */
   if (state.board[to].owner === opp && state.board[to].count === 1) {
     state.board[to].count = 0;
     state.board[to].owner = 0;
     state.bar[opp]++;
     playSound("hit");
-    toast(
-      opp === P1 ? "Oyuncu 1'in pulu vuruldu!" : "Oyuncu 2'nin pulu vuruldu!",
-      "warn"
-    );
+    toast(opp === P1 ? "Oyuncu 1 vuruldu!" : "Oyuncu 2 vuruldu!", "warn");
   } else {
     playSound("place");
   }
 
-  /* --- HEDEFE PUL EKLE --- */
   state.board[to].owner = player;
   state.board[to].count++;
-
-  /* --- ZAR TÜKEt --- */
   consumeDie(die);
 
-  /* --- BAR KISITINI GÜNCELLE (opp için) --- */
-  // Opp'un barı varsa ve sıra onunkine geçecekse zaten endTurn halleder.
+  if (state.bar[player] > 0) {
+    state.selected = "bar";
+  } else {
+    state.selected = null;
+  }
 
-  /* --- SIRA/HAMLe KONTROLÜ --- */
-  if (state.movesLeft.length === 0) {
-    state.selected = null;
+  clearHighlights();
+
+  if (!state.movesLeft.length) {
     render();
-    setTimeout(endTurn, 400);
+    setTimeout(endTurn, 420);
   } else if (!hasAnyLegalMove(player)) {
-    state.selected = null;
     render();
     toast("Başka oynanabilir hamle yok.", "warn");
     setTimeout(endTurn, 700);
   } else {
-    // Bar zorunluluğunu güncelle (opp vurulduysa ilgisiz,
-    // ama aktif oyuncunun kendi barı varsa kilitle)
-    refreshBarConstraint();
-    state.selected = null;
     render();
   }
 }
 
-/* ---------- KAZANMA KONTROLÜ ----------
-   Tüm 15 pul toplanmışsa oyun biter.
-   Mars  (gammon)       : rakip hiç pul toplamadıysa.
-   Çift mars (backgammon): rakip ayrıca bar'da veya
-                           aktif oyuncunun ev bölgesinde pulu varsa. */
+/* ==========================================================
+   KAZANMA
+========================================================== */
 function checkWin(player) {
   if (state.borneOff[player] < CHECKERS_PER) return false;
 
-  state.phase = "won";
+  state.phase  = "won";
   state.winner = player;
 
-  const opp = player === P1 ? P2 : P1;
-  const oppOff = state.borneOff[opp];
-  const oppBar = state.bar[opp];
-
-  // Rakibin ev bölgesindeki pul sayısı (çift mars için)
-  const myHome = HOME[player];
-  let oppInMyHome = 0;
+  const opp      = player === P1 ? P2 : P1;
+  const oppOff   = state.borneOff[opp];
+  const oppBar   = state.bar[opp];
+  const myHome   = HOME[player];
+  let oppInHome  = 0;
   for (let p = myHome.min; p <= myHome.max; p++) {
-    if (state.board[p].owner === opp) oppInMyHome += state.board[p].count;
+    if (state.board[p].owner === opp) oppInHome += state.board[p].count;
   }
 
-  let resultType = "normal";
+  let type = "normal";
   if (oppOff === 0) {
-    resultType = (oppBar > 0 || oppInMyHome > 0) ? "backgammon" : "gammon";
+    type = (oppBar > 0 || oppInHome > 0) ? "backgammon" : "gammon";
   }
 
   const labels = {
-    normal:      "Normal galibiyet",
-    gammon:      "Mars! (Gammon)",
-    backgammon:  "Çift Mars! (Backgammon)"
+    normal:     "Normal galibiyet",
+    gammon:     "Mars! (Gammon)",
+    backgammon: "Çift Mars! (Backgammon)"
   };
 
-  const winnerName = player === P1 ? "Oyuncu 1" : "Oyuncu 2";
-  dom.winTitle.textContent = `${winnerName} kazandı!`;
-  dom.winSub.textContent   = labels[resultType];
+  const pName = player === P1 ? "Oyuncu 1" : (state.gameMode === "ai" ? "AI" : "Oyuncu 2");
+  dom.winTitle.textContent = pName + " kazandı!";
+  dom.winSub.textContent   = labels[type];
   dom.winOverlay.hidden    = false;
-
   playSound("win");
   render();
   return true;
 }
 
-/* ---------- YENİDEN BAŞLAT ---------- */
 function restartGame() {
   state.board     = initialBoard();
   state.bar       = { [P1]: 0, [P2]: 0 };
@@ -738,165 +539,160 @@ function restartGame() {
   state.selected  = null;
   state.phase     = "idle";
   state.winner    = 0;
-
+  state.history   = [];
   dom.winOverlay.hidden = true;
+  dom.aiThinking.classList.remove("visible");
   clearHighlights();
-  prepareDiceZoneForCurrent();
   render();
   toast("Yeni oyun başladı. Sıra Oyuncu 1'de.");
 }
 
-
-
 /* ==========================================================
-   main.js — Parça 6/?
-   BÖLÜM 6: UI etkileşimi — tıklama, seçim, vurgulama
-   ----------------------------------------------------------
-   handlePointClick  → hane tıklaması (seç / hamle yap)
-   handleBarClick    → bar tıklaması
-   handleBearoffClick→ bear-off tepsisi tıklaması
-   highlightTargets  → geçerli hedefleri yeşil vurgular
-   clearHighlights   → tüm vurguları temizler
+   VURGULAMA & HAREKETLİ PUL İŞARETLEME
 ========================================================== */
-
-/* ---------- VURGU TEMİZLE ---------- */
 function clearHighlights() {
-  $$(".point", dom.board).forEach(el => {
-    el.classList.remove("selected", "valid-target", "invalid-flash");
-  });
-  dom.bearoff?.classList.remove("valid-target");
-  dom.bar?.classList.remove("must-enter");
+  $$(".point", dom.board).forEach(el =>
+    el.classList.remove("selected", "valid-target", "invalid-flash", "drag-over"));
+  dom.bearoff?.classList.remove("valid-target", "drag-over");
+  dom.bar?.classList.remove("must-enter", "drag-over");
 }
 
-/* ---------- GEÇERLİ HEDEFLERİ VURGULA ----------
-   from: hane no | "bar"
-   Seçili kaynaktan gidilebilecek hane/bear-off'ları yeşil yapar. */
 function highlightTargets(from, player) {
   clearHighlights();
-
-  // Kaynak haneyi seçili göster
   if (from !== "bar") {
-    const srcEl = $(`.point[data-point="${from}"]`, dom.board);
-    if (srcEl) srcEl.classList.add("selected");
+    const src = $(`.point[data-point="${from}"]`, dom.board);
+    if (src) src.classList.add("selected");
   }
-
-  // Bar zorunluluğu varsa barı vurgula
-  if (state.bar[player] > 0) {
-    dom.bar?.classList.add("must-enter");
-  }
+  if (state.bar[player] > 0) dom.bar?.classList.add("must-enter");
 
   const unique = [...new Set(state.movesLeft)];
-  let anyTarget = false;
-
+  let any = false;
   unique.forEach(die => {
-    const result = isLegalMove(from, die, player);
-    if (!result.legal) return;
-
-    if (result.to === "bearoff") {
+    const r = isLegalMove(from, die, player);
+    if (!r.legal) return;
+    if (r.to === "bearoff") {
       dom.bearoff?.classList.add("valid-target");
-      anyTarget = true;
+      any = true;
     } else {
-      const el = $(`.point[data-point="${result.to}"]`, dom.board);
-      if (el) {
-        el.classList.add("valid-target");
-        anyTarget = true;
-      }
+      const el = $(`.point[data-point="${r.to}"]`, dom.board);
+      if (el) { el.classList.add("valid-target"); any = true; }
     }
   });
-
-  return anyTarget;
+  return any;
 }
 
-/* ---------- HANE TIKLAMA ---------- */
-function handlePointClick(pointNo) {
+function markMovable() {
+  $$(".checker", dom.board).forEach(el => el.classList.remove("movable"));
+  $$(".checker", dom.barSlotP1).forEach(el => el.classList.remove("movable"));
+  $$(".checker", dom.barSlotP2).forEach(el => el.classList.remove("movable"));
+
   if (state.phase !== "moving") return;
+  if (state.gameMode === "ai" && state.current === P2) return;
+
   const player = state.current;
 
-  // Bar'da pul varken hane tıklama engellenir
   if (state.bar[player] > 0) {
-    flashInvalid(null);
+    const slot = player === P1 ? dom.barSlotP1 : dom.barSlotP2;
+    const chs  = $$(".checker", slot);
+    if (chs.length) chs[chs.length - 1].classList.add("movable");
+    return;
+  }
+
+  for (let p = 1; p <= POINTS; p++) {
+    if (state.board[p].owner !== player || !state.board[p].count) continue;
+    if (legalDiceFor(p, player).length > 0) {
+      const chs = $$(`.point[data-point="${p}"] .checker`, dom.board);
+      if (chs.length) chs[chs.length - 1].classList.add("movable");
+    }
+  }
+}
+
+function flashInvalid(ptNo) {
+  if (ptNo === null) return;
+  const el = $(`.point[data-point="${ptNo}"]`, dom.board);
+  if (!el) return;
+  el.classList.remove("invalid-flash");
+  void el.offsetWidth;
+  el.classList.add("invalid-flash");
+  setTimeout(() => el.classList.remove("invalid-flash"), 450);
+}
+
+/* ==========================================================
+   TIKLAMA İŞLEYİCİLERİ
+========================================================== */
+function handlePointClick(ptNo) {
+  if (state.phase !== "moving") return;
+  if (state.gameMode === "ai" && state.current === P2) return;
+  const player = state.current;
+
+  if (state.bar[player] > 0) {
     toast("Önce bar'daki pulunu oyna.", "warn");
     playSound("invalid");
     return;
   }
 
-  /* --- SEÇİM YOK: bu haneyi seç --- */
   if (state.selected === null) {
-    const cell = state.board[pointNo];
-    if (cell.owner !== player || cell.count === 0) {
-      flashInvalid(pointNo);
+    const cell = state.board[ptNo];
+    if (cell.owner !== player || !cell.count) {
+      flashInvalid(ptNo);
       playSound("invalid");
       return;
     }
-    state.selected = pointNo;
-    const hasTargets = highlightTargets(pointNo, player);
-    if (!hasTargets) {
-      // Bu haneden hamle yapılamıyor
+    state.selected = ptNo;
+    if (!highlightTargets(ptNo, player)) {
       state.selected = null;
       clearHighlights();
-      flashInvalid(pointNo);
       toast("Bu haneden oynanabilecek hamle yok.", "warn");
       playSound("invalid");
     }
     return;
   }
 
-  /* --- AYNI HANE: seçimi iptal et --- */
-  if (state.selected === pointNo) {
+  if (state.selected === ptNo) {
     state.selected = null;
     clearHighlights();
     return;
   }
 
-  /* --- FARKLI HANE TIKLANDI --- */
   const from = state.selected;
+  const die  = chooseDie(from, ptNo, player);
 
-  // Hedef geçerli mi?
-  const die = chooseDie(from, pointNo, player);
   if (die === null) {
-    // Geçersiz hedef — ama belki aktif oyuncunun kendi pulu?
-    const cell = state.board[pointNo];
+    const cell = state.board[ptNo];
     if (cell.owner === player && cell.count > 0) {
-      // Kaynağı değiştir
-      state.selected = pointNo;
-      const hasTargets = highlightTargets(pointNo, player);
-      if (!hasTargets) {
+      state.selected = ptNo;
+      if (!highlightTargets(ptNo, player)) {
         state.selected = null;
         clearHighlights();
-        flashInvalid(pointNo);
         toast("Bu haneden oynanabilecek hamle yok.", "warn");
         playSound("invalid");
       }
     } else {
-      flashInvalid(pointNo);
+      flashInvalid(ptNo);
       playSound("invalid");
     }
     return;
   }
 
-  // Hamleyi uygula
   const result = isLegalMove(from, die, player);
   clearHighlights();
+  state.selected = null;
   applyMove(from, result.to, die, player);
 }
 
-/* ---------- BAR TIKLAMA ---------- */
 function handleBarClick() {
   if (state.phase !== "moving") return;
+  if (state.gameMode === "ai" && state.current === P2) return;
   const player = state.current;
-
-  if (state.bar[player] === 0) return; // barımız yok
+  if (!state.bar[player]) return;
 
   if (state.selected === "bar") {
-    // Zaten seçili — iptal
     state.selected = null;
     clearHighlights();
     return;
   }
-
   state.selected = "bar";
-  const hasTargets = highlightTargets("bar", player);
-  if (!hasTargets) {
+  if (!highlightTargets("bar", player)) {
     state.selected = null;
     clearHighlights();
     toast("Bar'dan giriş yapılacak hane kapalı.", "warn");
@@ -904,770 +700,609 @@ function handleBarClick() {
   }
 }
 
-/* ---------- BEAR-OFF TEPSİSİ TIKLAMA ---------- */
 function handleBearoffClick() {
   if (state.phase !== "moving") return;
+  if (state.gameMode === "ai" && state.current === P2) return;
   const player = state.current;
-
-  if (state.selected === null || state.selected === "bar") {
+  if (!state.selected || state.selected === "bar") {
     toast("Önce çıkaracağın pulu seç.", "warn");
     return;
   }
-
   const from = state.selected;
   const die  = chooseDie(from, "bearoff", player);
-
   if (die === null) {
-    flashInvalid(null);
     toast("Bu pulu şu an çıkaramazsın.", "warn");
     playSound("invalid");
     return;
   }
-
   clearHighlights();
+  state.selected = null;
   applyMove(from, "bearoff", die, player);
 }
 
-/* ---------- GEÇERSİZ HAMLE FLASH ----------
-   pointNo null ise tüm tahtayı değil sadece genel uyarı. */
-function flashInvalid(pointNo) {
-  if (pointNo === null) return;
-  const el = $(`.point[data-point="${pointNo}"]`, dom.board);
-  if (!el) return;
-  el.classList.remove("invalid-flash");
-  // reflow zorla ki animasyon yeniden tetiklensin
-  void el.offsetWidth;
-  el.classList.add("invalid-flash");
-  setTimeout(() => el.classList.remove("invalid-flash"), 450);
-}
+/* ==========================================================
+   SÜRÜKLE-BIRAK
+========================================================== */
+let dragState = null;
 
-/* ---------- MOVABLE PULları İŞARETLE ----------
-   Render sonrası aktif oyuncunun oynanabilir pullarına
-   .movable sınıfı ekler (hover efekti için). */
-function markMovable() {
-  // Tüm movable'ları temizle
-  $$(".checker.movable", dom.board).forEach(el => el.classList.remove("movable"));
-
+function startDrag(e, from, player) {
   if (state.phase !== "moving") return;
-  const player = state.current;
+  if (state.gameMode === "ai" && player === P2) return;
+  if (state.current !== player) return;
+  if (state.bar[player] > 0 && from !== "bar") return;
+  if (from !== "bar" && legalDiceFor(from, player).length === 0) return;
 
-  if (state.bar[player] > 0) {
-    // Sadece bar slot'undaki pullar
-    $$(player === P1 ? "#barSlotP1 .checker" : "#barSlotP2 .checker")
-      .forEach(el => el.classList.add("movable"));
-    return;
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+
+  const ghost = document.createElement("div");
+  ghost.className = "drag-ghost " + (player === P1 ? "p1" : "p2");
+  ghost.style.left = touch.clientX + "px";
+  ghost.style.top  = touch.clientY + "px";
+  document.body.appendChild(ghost);
+
+  dragState = { from, player, ghost };
+
+  state.selected = from;
+  highlightTargets(from, player);
+
+  const slot = from === "bar"
+    ? (player === P1 ? dom.barSlotP1 : dom.barSlotP2)
+    : null;
+  const chs = slot
+    ? $$(".checker", slot)
+    : $$(`.point[data-point="${from}"] .checker`, dom.board);
+  if (chs.length) chs[chs.length - 1].classList.add("dragging");
+}
+
+function moveDrag(e) {
+  if (!dragState) return;
+  e.preventDefault();
+  const touch = e.touches ? e.touches[0] : e;
+  dragState.ghost.style.left = touch.clientX + "px";
+  dragState.ghost.style.top  = touch.clientY + "px";
+
+  $$(".point.drag-over", dom.board).forEach(el => el.classList.remove("drag-over"));
+  dom.bearoff.classList.remove("drag-over");
+
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!el) return;
+  const pt = el.closest(".point[data-point]");
+  if (pt) {
+    const no  = parseInt(pt.dataset.point, 10);
+    const die = chooseDie(dragState.from, no, dragState.player);
+    if (die !== null) pt.classList.add("drag-over");
   }
-
-  for (let p = 1; p <= POINTS; p++) {
-    if (state.board[p].owner !== player || state.board[p].count === 0) continue;
-    if (legalDiceFor(p, player).length > 0) {
-      const checkers = $$(`.point[data-point="${p}"] .checker`, dom.board);
-      // En üstteki pul tıklanabilir
-      if (checkers.length > 0) checkers[checkers.length - 1].classList.add("movable");
-    }
+  const bo = el.closest(".bearoff");
+  if (bo && chooseDie(dragState.from, "bearoff", dragState.player) !== null) {
+    bo.classList.add("drag-over");
   }
 }
 
-/* ---------- EVENT LİSTENER'LARI BAĞLA ---------- */
+function endDrag(e) {
+  if (!dragState) return;
+  e.preventDefault();
+  const touch = e.changedTouches ? e.changedTouches[0] : e;
+  const { from, player, ghost } = dragState;
+
+  ghost.remove();
+  dragState = null;
+  $$(".checker.dragging").forEach(el => el.classList.remove("dragging"));
+  $$(".point.drag-over", dom.board).forEach(el => el.classList.remove("drag-over"));
+  dom.bearoff.classList.remove("drag-over");
+
+  const el = document.elementFromPoint(touch.clientX, touch.clientY);
+  if (!el) { clearHighlights(); state.selected = null; render(); return; }
+
+  const ptEl = el.closest(".point[data-point]");
+  const boEl = el.closest(".bearoff");
+
+  if (ptEl) {
+    const to  = parseInt(ptEl.dataset.point, 10);
+    const die = chooseDie(from, to, player);
+    if (die !== null) {
+      clearHighlights(); state.selected = null;
+      applyMove(from, to, die, player);
+      return;
+    }
+  }
+  if (boEl) {
+    const die = chooseDie(from, "bearoff", player);
+    if (die !== null) {
+      clearHighlights(); state.selected = null;
+      applyMove(from, "bearoff", die, player);
+      return;
+    }
+  }
+
+  clearHighlights();
+  state.selected = null;
+  render();
+}
+
+/* ==========================================================
+   EVENT BINDING
+========================================================== */
 function bindBoardEvents() {
-  // Hane tıklamaları (event delegation)
   dom.board.addEventListener("click", e => {
-    const pointEl = e.target.closest(".point[data-point]");
-    if (pointEl) {
-      handlePointClick(parseInt(pointEl.dataset.point, 10));
-      return;
-    }
-    const barSlot = e.target.closest(".bar-slot, .bar");
-    if (barSlot) {
-      handleBarClick();
-      return;
-    }
+    const ptEl  = e.target.closest(".point[data-point]");
+    if (ptEl) { handlePointClick(parseInt(ptEl.dataset.point, 10)); return; }
+    const barEl = e.target.closest(".bar, .bar-slot");
+    if (barEl) { handleBarClick(); return; }
   });
 
-  // Bear-off tepsisi tıklaması
   dom.bearoff?.addEventListener("click", handleBearoffClick);
 
-  // Zar at butonu
-  dom.rollBtn?.addEventListener("click", doRoll);
+  document.addEventListener("mousemove",  moveDrag);
+  document.addEventListener("mouseup",    endDrag);
+  document.addEventListener("touchmove",  moveDrag, { passive: false });
+  document.addEventListener("touchend",   endDrag,  { passive: false });
 
-  // Sıra geç butonu
-  dom.passBtn?.addEventListener("click", doPass);
+  // Sürükle olaylarını .movable pullara bağla — render sonrası MutationObserver ile
+  new MutationObserver(() => rebindDragListeners())
+    .observe(dom.board, { childList: true, subtree: true });
 
-  // Yeniden başlat butonu (header)
+  // Bar sürükle
+  const bindBarDrag = (slot, player) => {
+    slot.parentElement?.addEventListener("mousedown",  e => { if (e.button !== 0) return; startDrag(e, "bar", player); });
+    slot.parentElement?.addEventListener("touchstart", e => startDrag(e, "bar", player), { passive: false });
+  };
+  bindBarDrag(dom.barSlotP1, P1);
+  bindBarDrag(dom.barSlotP2, P2);
+}
+
+function rebindDragListeners() {
+  if (state.phase !== "moving") return;
+  if (state.gameMode === "ai" && state.current === P2) return;
+  const player = state.current;
+
+  $$(".checker.movable", dom.board).forEach(el => {
+    if (el._dragBound) return;
+    el._dragBound = true;
+    const ptEl = el.closest(".point[data-point]");
+    if (!ptEl) return;
+    const from = parseInt(ptEl.dataset.point, 10);
+    el.addEventListener("mousedown",  e => { if (e.button !== 0) return; startDrag(e, from, player); });
+    el.addEventListener("touchstart", e => startDrag(e, from, player), { passive: false });
+  });
+
+  const barSlot = player === P1 ? dom.barSlotP1 : dom.barSlotP2;
+  $$(".checker.movable", barSlot).forEach(el => {
+    if (el._dragBound) return;
+    el._dragBound = true;
+    el.addEventListener("mousedown",  e => { if (e.button !== 0) return; startDrag(e, "bar", player); });
+    el.addEventListener("touchstart", e => startDrag(e, "bar", player), { passive: false });
+  });
+}
+
+function bindPanelEvents() {
+  dom.rollBtnP1?.addEventListener("click", () => doRoll(P1));
+  dom.rollBtnP2?.addEventListener("click", () => doRoll(P2));
+  dom.passBtnP1?.addEventListener("click", () => doPass(P1));
+  dom.passBtnP2?.addEventListener("click", () => doPass(P2));
+  dom.undoBtnP1?.addEventListener("click", () => { if (state.current === P1) undoMove(); });
+  dom.undoBtnP2?.addEventListener("click", () => { if (state.current === P2) undoMove(); });
   $("#restartBtn")?.addEventListener("click", restartGame);
-
-  // Kazanma ekranı yeniden başlat
   $("#winRestartBtn")?.addEventListener("click", restartGame);
 }
 
-/* ==========================================================
-   main.js — Parça 7/?
-   BÖLÜM 7: Ses motoru (Web Audio API)
-   ----------------------------------------------------------
-   Tüm sesler kod ile üretilir; harici dosya yok.
-   playSound(name) → ilgili efekti çalar.
-   Olaylar: roll, place, hit, bearoff, invalid, win
-========================================================== */
+function bindSettingsEvents() {
+  $("#settingsBtn")?.addEventListener("click",      openSettings);
+  $("#settingsCloseBtn")?.addEventListener("click", closeSettings);
+  $("#settingsOverlay")?.addEventListener("click",  closeSettings);
+  document.addEventListener("keydown", e => { if (e.key === "Escape") closeSettings(); });
 
-/* ---------- AUDIO CONTEXT ---------- */
-let _audioCtx = null;
+  $$("#themeSwitch .seg-btn").forEach(btn =>
+    btn.addEventListener("click", () => applyTheme(btn.dataset.themeVal)));
 
-function getAudioCtx() {
-  if (!_audioCtx) {
-    _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-  }
-  // Tarayıcı otomatik oynatmayı askıya almışsa devam ettir
-  if (_audioCtx.state === "suspended") _audioCtx.resume();
-  return _audioCtx;
+  $("#soundToggle")?.addEventListener("click", () => applySound(!state.sound));
+  $("#volumeSlider")?.addEventListener("input", e => applyVolume(Number(e.target.value)));
+
+  $$("#gameModeSwitch .seg-btn").forEach(btn =>
+    btn.addEventListener("click", () => applyGameMode(btn.dataset.mode)));
+
+  $$("#aiDiffSwitch .seg-btn").forEach(btn =>
+    btn.addEventListener("click", () => applyAIDiff(btn.dataset.diff)));
 }
-
-/* ---------- YARDIMCI: zarf (envelope) uygula ----------
-   gain node'una hızlı attack → decay → sustain → release. */
-function applyEnvelope(gainNode, ctx, { attack = 0.005, decay = 0.1,
-                                        sustain = 0.3, release = 0.2,
-                                        peak = 1.0 } = {}) {
-  const now = ctx.currentTime;
-  gainNode.gain.setValueAtTime(0, now);
-  gainNode.gain.linearRampToValueAtTime(peak, now + attack);
-  gainNode.gain.linearRampToValueAtTime(sustain * peak, now + attack + decay);
-  gainNode.gain.setValueAtTime(sustain * peak, now + attack + decay);
-  gainNode.gain.linearRampToValueAtTime(0, now + attack + decay + release);
-  return now + attack + decay + release;
-}
-
-/* ---------- YARDIMCI: ses seviyesini uygula ---------- */
-function masterGain(ctx) {
-  const g = ctx.createGain();
-  g.gain.value = state.settings.sound ? state.settings.volume : 0;
-  g.connect(ctx.destination);
-  return g;
-}
-
-/* ============================================================
-   SES EFEKTLERİ
-   Her fonksiyon kendi oscillator/buffer zincirini kurar,
-   çalar ve otomatik temizler.
-============================================================ */
-
-/* --- ZAR ATIŞI: beyaz gürültü patlaması + hafif pitch --- */
-function sfx_roll() {
-  const ctx = getAudioCtx();
-  const mg  = masterGain(ctx);
-
-  // Beyaz gürültü buffer'ı
-  const bufLen = ctx.sampleRate * 0.18;
-  const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-  const data   = buf.getChannelData(0);
-  for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
-
-  const noise = ctx.createBufferSource();
-  noise.buffer = buf;
-
-  const filter = ctx.createBiquadFilter();
-  filter.type            = "bandpass";
-  filter.frequency.value = 800;
-  filter.Q.value         = 0.8;
-
-  const gainN = ctx.createGain();
-  const end   = applyEnvelope(gainN, ctx, {
-    attack: 0.01, decay: 0.06, sustain: 0.4, release: 0.12, peak: 0.55
-  });
-
-  noise.connect(filter);
-  filter.connect(gainN);
-  gainN.connect(mg);
-  noise.start();
-  noise.stop(ctx.currentTime + end + 0.02);
-
-  // Hafif "tık" sesi (zar masaya değiyor hissi)
-  for (let i = 0; i < 3; i++) {
-    setTimeout(() => {
-      const ctx2 = getAudioCtx();
-      const osc  = ctx2.createOscillator();
-      const gn   = ctx2.createGain();
-      osc.type            = "sine";
-      osc.frequency.value = 220 + Math.random() * 120;
-      applyEnvelope(gn, ctx2, {
-        attack: 0.002, decay: 0.04, sustain: 0, release: 0.03, peak: 0.3
-      });
-      osc.connect(gn);
-      gn.connect(masterGain(ctx2));
-      osc.start();
-      osc.stop(ctx2.currentTime + 0.08);
-    }, i * 55 + Math.random() * 30);
-  }
-}
-
-/* --- PUL YERLEŞTİRME: kısa, yumuşak "tık" --- */
-function sfx_place() {
-  const ctx = getAudioCtx();
-  const mg  = masterGain(ctx);
-
-  const osc = ctx.createOscillator();
-  const gn  = ctx.createGain();
-
-  osc.type = "sine";
-  osc.frequency.setValueAtTime(340, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + 0.07);
-
-  applyEnvelope(gn, ctx, {
-    attack: 0.003, decay: 0.05, sustain: 0.1, release: 0.08, peak: 0.45
-  });
-
-  osc.connect(gn);
-  gn.connect(mg);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.18);
-}
-
-/* --- VURUŞ (HIT): keskin, dikkat çekici darbe --- */
-function sfx_hit() {
-  const ctx = getAudioCtx();
-  const mg  = masterGain(ctx);
-
-  // Gürültü katmanı
-  const bufLen = ctx.sampleRate * 0.12;
-  const buf    = ctx.createBuffer(1, bufLen, ctx.sampleRate);
-  const data   = buf.getChannelData(0);
-  for (let i = 0; i < bufLen; i++) data[i] = Math.random() * 2 - 1;
-
-  const noise = ctx.createBufferSource();
-  noise.buffer = buf;
-
-  const filter = ctx.createBiquadFilter();
-  filter.type            = "highpass";
-  filter.frequency.value = 1200;
-
-  const gnN = ctx.createGain();
-  applyEnvelope(gnN, ctx, {
-    attack: 0.002, decay: 0.08, sustain: 0, release: 0.05, peak: 0.6
-  });
-
-  noise.connect(filter);
-  filter.connect(gnN);
-  gnN.connect(mg);
-  noise.start();
-  noise.stop(ctx.currentTime + 0.18);
-
-  // Tonal katman
-  const osc = ctx.createOscillator();
-  const gnO = ctx.createGain();
-  osc.type = "triangle";
-  osc.frequency.setValueAtTime(520, ctx.currentTime);
-  osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + 0.15);
-  applyEnvelope(gnO, ctx, {
-    attack: 0.002, decay: 0.1, sustain: 0, release: 0.05, peak: 0.35
-  });
-  osc.connect(gnO);
-  gnO.connect(mg);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.2);
-}
-
-/* --- BEARING OFF: hafif "pling" — pul dışarı çıkıyor --- */
-function sfx_bearoff() {
-  const ctx = getAudioCtx();
-  const mg  = masterGain(ctx);
-
-  [660, 880].forEach((freq, i) => {
-    setTimeout(() => {
-      const osc = ctx.createOscillator();
-      const gn  = ctx.createGain();
-      osc.type            = "sine";
-      osc.frequency.value = freq;
-      applyEnvelope(gn, ctx, {
-        attack: 0.005, decay: 0.08, sustain: 0.2, release: 0.25, peak: 0.4
-      });
-      osc.connect(gn);
-      gn.connect(mg);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.4);
-    }, i * 80);
-  });
-}
-
-/* --- GEÇERSİZ HAMLE: kısa, düşük "bzzzt" --- */
-function sfx_invalid() {
-  const ctx = getAudioCtx();
-  const mg  = masterGain(ctx);
-
-  const osc = ctx.createOscillator();
-  const gn  = ctx.createGain();
-
-  osc.type            = "sawtooth";
-  osc.frequency.value = 120;
-
-  applyEnvelope(gn, ctx, {
-    attack: 0.005, decay: 0.07, sustain: 0.1, release: 0.1, peak: 0.3
-  });
-
-  osc.connect(gn);
-  gn.connect(mg);
-  osc.start();
-  osc.stop(ctx.currentTime + 0.22);
-}
-
-/* --- KAZANMA: yükselen arpej --- */
-function sfx_win() {
-  const ctx   = getAudioCtx();
-  const mg    = masterGain(ctx);
-  const notes = [523, 659, 784, 1047]; // C5 E5 G5 C6
-
-  notes.forEach((freq, i) => {
-    setTimeout(() => {
-      const osc = ctx.createOscillator();
-      const gn  = ctx.createGain();
-      osc.type            = "sine";
-      osc.frequency.value = freq;
-      applyEnvelope(gn, ctx, {
-        attack: 0.01, decay: 0.1, sustain: 0.5, release: 0.35, peak: 0.5
-      });
-      osc.connect(gn);
-      gn.connect(mg);
-      osc.start();
-      osc.stop(ctx.currentTime + 0.55);
-    }, i * 130);
-  });
-}
-
-/* ---------- ANA OYNATICI ---------- */
-function playSound(name) {
-  if (!state.settings.sound) return;
-  try {
-    switch (name) {
-      case "roll":    sfx_roll();    break;
-      case "place":   sfx_place();   break;
-      case "hit":     sfx_hit();     break;
-      case "bearoff": sfx_bearoff(); break;
-      case "invalid": sfx_invalid(); break;
-      case "win":     sfx_win();     break;
-    }
-  } catch (e) {
-    // Ses hatası oyunu durdurmasın
-    console.warn("Ses efekti çalınamadı:", e);
-  }
-}
-
-/* ---------- TOAST BİLDİRİMİ ----------
-   (ses motorunun yanında buraya koymak mantıklı;
-    toast genellikle sesle birlikte tetiklenir)     */
-function toast(msg, type = "info", duration = 2800) {
-  const area = dom.toastArea;
-  if (!area) return;
-
-  const el = document.createElement("div");
-  el.className = "toast" + (type !== "info" ? ` toast-${type}` : "");
-  el.textContent = msg;
-  area.appendChild(el);
-
-  setTimeout(() => {
-    el.classList.add("out");
-    el.addEventListener("animationend", () => el.remove(), { once: true });
-  }, duration);
-}
-
-
 
 /* ==========================================================
-   main.js — Parça 8 (DEVAM — Son Bölüm)
-   BÖLÜM 8: Ayarlar paneli, tema, localStorage
-   BÖLÜM 9: init() — her şeyi birbirine bağlayan giriş noktası
+   AYARLAR
 ========================================================== */
-
-/* ==========================================================
-   BÖLÜM 8: AYARLAR & TEMA
-========================================================== */
-
-/* ---------- TEMA UYGULA ---------- */
-function applyTheme(theme) {
-  document.documentElement.setAttribute("data-theme", theme);
-  state.settings.theme = theme;
-
-  // Segmented butonları güncelle
-  $$(".seg-btn[data-theme-val]").forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.themeVal === theme);
-  });
-
-  try { localStorage.setItem("tavla_theme", theme); } catch (_) {}
-}
-
-/* ---------- SES TOGGLE ---------- */
-function applySound(on) {
-  state.settings.sound = on;
-  const toggle = $("#soundToggle");
-  if (toggle) {
-    toggle.dataset.on = String(on);
-    toggle.setAttribute("aria-checked", String(on));
-  }
-  const slider = $("#volumeSlider");
-  if (slider) slider.disabled = !on;
-
-  try { localStorage.setItem("tavla_sound", String(on)); } catch (_) {}
-}
-
-/* ---------- SES SEVİYESİ ---------- */
-function applyVolume(v) {
-  state.settings.volume = v / 100;
-  try { localStorage.setItem("tavla_volume", String(v)); } catch (_) {}
-}
-
-/* ---------- ZAR MODU ---------- */
-function applyDiceMode(player, mode) {
-  state.diceMode[player] = mode;
-
-  // Segmented butonları güncelle
-  $$(`.segmented[data-dice-player="${player}"] .seg-btn`).forEach(btn => {
-    btn.classList.toggle("active", btn.dataset.mode === mode);
-  });
-
-  // Aktif oyuncu ise alanı hemen güncelle
-  if (state.current === player) {
-    prepareDiceZoneForCurrent();
-  }
-
-  try {
-    localStorage.setItem(`tavla_dice_p${player}`, mode);
-  } catch (_) {}
-}
-
-/* ---------- AYARLAR PANELİNİ AÇ / KAPAT ---------- */
 function openSettings() {
-  const panel   = $("#settingsPanel");
-  const overlay = $("#settingsOverlay");
-  if (!panel || !overlay) return;
-  overlay.hidden = false;
-  panel.classList.add("open");
-  panel.removeAttribute("aria-hidden");
-  panel.focus?.();
+  const p = $("#settingsPanel"), o = $("#settingsOverlay");
+  if (!p || !o) return;
+  o.hidden = false;
+  p.classList.add("open");
+  p.removeAttribute("aria-hidden");
 }
 
 function closeSettings() {
-  const panel   = $("#settingsPanel");
-  const overlay = $("#settingsOverlay");
-  if (!panel || !overlay) return;
-  panel.classList.remove("open");
-  panel.setAttribute("aria-hidden", "true");
-  // Overlay'i animasyon bittikten sonra gizle
-  setTimeout(() => { overlay.hidden = true; }, 260);
+  const p = $("#settingsPanel"), o = $("#settingsOverlay");
+  if (!p || !o) return;
+  p.classList.remove("open");
+  p.setAttribute("aria-hidden", "true");
+  setTimeout(() => { o.hidden = true; }, 260);
 }
 
-/* ---------- AYARLAR EVENT LİSTENER'LARI ---------- */
-function bindSettingsEvents() {
-  // Panel aç
-  $("#settingsBtn")?.addEventListener("click", openSettings);
-
-  // Panel kapat (X butonu)
-  $("#settingsCloseBtn")?.addEventListener("click", closeSettings);
-
-  // Overlay'e tıklayınca kapat
-  $("#settingsOverlay")?.addEventListener("click", closeSettings);
-
-  // ESC ile kapat
-  document.addEventListener("keydown", e => {
-    if (e.key === "Escape") closeSettings();
-  });
-
-  // Tema seçimi
-  $$("#themeSwitch .seg-btn").forEach(btn => {
-    btn.addEventListener("click", () => applyTheme(btn.dataset.themeVal));
-  });
-
-  // Ses toggle
-  $("#soundToggle")?.addEventListener("click", () => {
-    const current = state.settings.sound;
-    applySound(!current);
-  });
-
-  // Ses seviyesi slider
-  $("#volumeSlider")?.addEventListener("input", e => {
-    applyVolume(Number(e.target.value));
-  });
-
-  // Zar modu (oyuncu başına)
-  $$(".segmented[data-dice-player]").forEach(group => {
-    const player = Number(group.dataset.dicePlayer);
-    group.querySelectorAll(".seg-btn").forEach(btn => {
-      btn.addEventListener("click", () => applyDiceMode(player, btn.dataset.mode));
-    });
-  });
+function applyTheme(theme) {
+  document.documentElement.setAttribute("data-theme", theme);
+  state.theme = theme;
+  $$("#themeSwitch .seg-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.themeVal === theme));
+  try { localStorage.setItem("tavla_theme", theme); } catch(_) {}
 }
 
-/* ---------- KAYITLI TERCİHLERİ YÜkLE ---------- */
+function applySound(on) {
+  state.sound = on;
+  const t = $("#soundToggle");
+  if (t) { t.dataset.on = String(on); t.setAttribute("aria-checked", String(on)); }
+  const s = $("#volumeSlider");
+  if (s) s.disabled = !on;
+  try { localStorage.setItem("tavla_sound", String(on)); } catch(_) {}
+}
+
+function applyVolume(v) {
+  state.volume = v / 100;
+  try { localStorage.setItem("tavla_volume", String(v)); } catch(_) {}
+}
+
+function applyGameMode(mode) {
+  state.gameMode = mode;
+  $$("#gameModeSwitch .seg-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.mode === mode));
+  if (dom.aiDiffGroup) dom.aiDiffGroup.style.display = mode === "ai" ? "" : "none";
+  const nameEl = $("#nameP2");
+  if (nameEl) nameEl.textContent = mode === "ai" ? "AI" : "Oyuncu 2";
+  try { localStorage.setItem("tavla_mode", mode); } catch(_) {}
+  restartGame();
+}
+
+function applyAIDiff(diff) {
+  state.aiDiff = diff;
+  $$("#aiDiffSwitch .seg-btn").forEach(b =>
+    b.classList.toggle("active", b.dataset.diff === diff));
+  const hints = {
+    easy:   "AI basit hamleler yapar.",
+    medium: "AI iyi hamleler düşünür.",
+    hard:   "AI gelişmiş strateji kullanır.",
+    legend: "AI neredeyse yenilmez."
+  };
+  if (dom.diffHint) dom.diffHint.textContent = hints[diff] || "";
+  try { localStorage.setItem("tavla_diff", diff); } catch(_) {}
+}
+
 function loadPreferences() {
   try {
     const theme  = localStorage.getItem("tavla_theme");
     const sound  = localStorage.getItem("tavla_sound");
     const volume = localStorage.getItem("tavla_volume");
-    const diceP1 = localStorage.getItem("tavla_dice_p1");
-    const diceP2 = localStorage.getItem("tavla_dice_p2");
-
-    if (theme)  applyTheme(theme);
-    if (sound !== null) applySound(sound === "true");
-    if (volume !== null) {
-      const v = Number(volume);
-      applyVolume(v);
-      const slider = $("#volumeSlider");
-      if (slider) slider.value = String(v);
+    const mode   = localStorage.getItem("tavla_mode");
+    const diff   = localStorage.getItem("tavla_diff");
+    if (theme)        applyTheme(theme);
+    if (sound != null) applySound(sound === "true");
+    if (volume != null) {
+      applyVolume(Number(volume));
+      const s = $("#volumeSlider");
+      if (s) s.value = volume;
     }
-    if (diceP1) applyDiceMode(P1, diceP1);
-    if (diceP2) applyDiceMode(P2, diceP2);
-  } catch (_) {
-    // localStorage erişim hatası — varsayılanlarla devam et
-  }
+    if (mode) {
+      state.gameMode = mode;
+      $$("#gameModeSwitch .seg-btn").forEach(b =>
+        b.classList.toggle("active", b.dataset.mode === mode));
+      if (dom.aiDiffGroup) dom.aiDiffGroup.style.display = mode === "ai" ? "" : "none";
+      const nameEl = $("#nameP2");
+      if (nameEl && mode === "ai") nameEl.textContent = "AI";
+    }
+    if (diff) applyAIDiff(diff);
+  } catch(_) {}
 }
 
 /* ==========================================================
-   BÖLÜM 9: 3D ZAR (Three.js) ENTEGRASYONU
-   ----------------------------------------------------------
-   window.Dice3D nesnesini oluşturur.
-   mount(container)   → canvas'ı verilen konteynere taşır
-   throwDice(cb)      → iki zar atar, sonucu cb(d1, d2) ile verir
-   isReady()          → sahne hazır mı?
+   YAPAY ZEKA
 ========================================================== */
-(function buildDice3D() {
-  if (typeof THREE === "undefined") {
-    // Three.js yüklenemedi — 3D mod devre dışı
-    window.Dice3D = { mount() {}, throwDice(cb) { cb(rollDie(), rollDie()); }, isReady() { return false; } };
+function aiDelay() {
+  return { easy: 600, medium: 900, hard: 1200, legend: 1500 }[state.aiDiff] || 800;
+}
+
+function scheduleAITurn() {
+  dom.aiThinking.classList.add("visible");
+  setTimeout(() => {
+    if (state.current !== P2 || state.phase !== "idle") return;
+    aiRollAndPlay();
+  }, aiDelay());
+}
+
+function aiRollAndPlay() {
+  if (state.current !== P2 || state.phase !== "idle") return;
+  playSound("roll");
+  const d1 = rollDie(), d2 = rollDie();
+  applyRoll(d1, d2);
+  setTimeout(aiPlayAllMoves, aiDelay());
+}
+
+function aiPlayAllMoves() {
+  if (state.current !== P2 || state.phase !== "moving") return;
+  if (!state.movesLeft.length || !hasAnyLegalMove(P2)) {
+    dom.aiThinking.classList.remove("visible");
+    endTurn();
     return;
   }
-
-  let scene, camera, renderer, container;
-  let dice3dObjects = [];
-  let animationId   = null;
-  let rolling        = false;
-  let velocities     = [];
-  let angularVels    = [];
-  let settleTimer    = null;
-  let onResult       = null;
-  let mounted        = false;
-
-  /* --- SAHNE KURULUMU --- */
-  function initScene(cont) {
-    container = cont;
-    const w = cont.clientWidth  || 180;
-    const h = cont.clientHeight || 130;
-
-    renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setSize(w, h);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.shadowMap.enabled = true;
-
-    // Mevcut canvas varsa değiştir, yoksa ekle
-    const existing = cont.querySelector("canvas");
-    if (existing) cont.replaceChild(renderer.domElement, existing);
-    else cont.appendChild(renderer.domElement);
-
-    scene  = new THREE.Scene();
-    camera = new THREE.PerspectiveCamera(45, w / h, 0.1, 100);
-    camera.position.set(0, 6, 4);
-    camera.lookAt(0, 0, 0);
-
-    // Işık
-    const ambient = new THREE.AmbientLight(0xffffff, 0.7);
-    scene.add(ambient);
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-    dirLight.position.set(3, 8, 5);
-    dirLight.castShadow = true;
-    scene.add(dirLight);
-
-    // Zemin (görünmez, çarpışma için)
-    const floorGeo  = new THREE.PlaneGeometry(8, 6);
-    const floorMat  = new THREE.MeshStandardMaterial({ visible: false });
-    const floor     = new THREE.Mesh(floorGeo, floorMat);
-    floor.rotation.x = -Math.PI / 2;
-    floor.receiveShadow = true;
-    scene.add(floor);
-
-    // Duvarlar (görünmez sınırlar)
-    [
-      { pos: [0, 1, -3], rot: [0, 0, 0] },
-      { pos: [0, 1,  3], rot: [0, Math.PI, 0] },
-      { pos: [-4, 1, 0], rot: [0,  Math.PI / 2, 0] },
-      { pos: [ 4, 1, 0], rot: [0, -Math.PI / 2, 0] },
-    ].forEach(({ pos, rot }) => {
-      const wGeo = new THREE.PlaneGeometry(8, 3);
-      const wMat = new THREE.MeshStandardMaterial({ visible: false });
-      const wall = new THREE.Mesh(wGeo, wMat);
-      wall.position.set(...pos);
-      wall.rotation.set(...rot);
-      scene.add(wall);
-    });
-
-    buildDice();
-    mounted = true;
+  const move = pickAIMove();
+  if (!move) {
+    dom.aiThinking.classList.remove("visible");
+    endTurn();
+    return;
   }
+  applyMoveAI(move);
+}
 
-  /* --- ZAR MESHLERİ --- */
-  function buildDice() {
-    dice3dObjects.forEach(d => scene.remove(d));
-    dice3dObjects = [];
-
-    const geo = new THREE.BoxGeometry(1, 1, 1);
-
-    [-0.8, 0.8].forEach((xOff, idx) => {
-      // Her yüz için farklı renk — basit beyaz mat
-      const mats = Array(6).fill(null).map(() =>
-        new THREE.MeshStandardMaterial({ color: 0xfafafa, roughness: 0.4, metalness: 0.05 })
-      );
-      const mesh = new THREE.Mesh(geo, mats);
-      mesh.castShadow = true;
-      mesh.position.set(xOff, 1.5, 0);
-      scene.add(mesh);
-      dice3dObjects.push(mesh);
-    });
-  }
-
-  /* --- ANİMASYON DÖNGÜSÜ --- */
-  function animate() {
-    animationId = requestAnimationFrame(animate);
-
-    if (rolling) {
-      dice3dObjects.forEach((mesh, i) => {
-        // Yerçekimi
-        velocities[i].y -= 0.018;
-
-        // Konum güncelle
-        mesh.position.x += velocities[i].x;
-        mesh.position.y += velocities[i].y;
-        mesh.position.z += velocities[i].z;
-
-        // Dönüş
-        mesh.rotation.x += angularVels[i].x;
-        mesh.rotation.y += angularVels[i].y;
-        mesh.rotation.z += angularVels[i].z;
-
-        // Zemin çarpışması
-        if (mesh.position.y < 0.5) {
-          mesh.position.y = 0.5;
-          velocities[i].y *= -0.45;
-          velocities[i].x *= 0.78;
-          velocities[i].z *= 0.78;
-          angularVels[i].x *= 0.6;
-          angularVels[i].y *= 0.6;
-          angularVels[i].z *= 0.6;
-        }
-
-        // Duvar çarpışmaları
-        if (Math.abs(mesh.position.x) > 3.4) {
-          velocities[i].x *= -0.6;
-          mesh.position.x = Math.sign(mesh.position.x) * 3.4;
-        }
-        if (Math.abs(mesh.position.z) > 2.3) {
-          velocities[i].z *= -0.6;
-          mesh.position.z = Math.sign(mesh.position.z) * 2.3;
-        }
-      });
-
-      // Durma kontrolü
-      const totalKE = velocities.reduce((sum, v) =>
-        sum + v.x*v.x + v.y*v.y + v.z*v.z, 0);
-      if (totalKE < 0.0005 && !settleTimer) {
-        settleTimer = setTimeout(() => {
-          rolling = false;
-          const results = dice3dObjects.map(mesh => readDieFace(mesh));
-          if (onResult) onResult(results[0], results[1]);
-          settleTimer = null;
-        }, 400);
+function applyMoveAI(move) {
+  // Hamleyi doğrudan uygula; sonra kalan varsa devam et
+  applyMove(move.from, move.to, move.die, P2);
+  setTimeout(() => {
+    if (state.current === P2 && state.phase === "moving" && state.movesLeft.length > 0) {
+      if (hasAnyLegalMove(P2)) {
+        aiPlayAllMoves();
+      } else {
+        dom.aiThinking.classList.remove("visible");
       }
+    } else {
+      dom.aiThinking.classList.remove("visible");
     }
+  }, Math.round(aiDelay() * 0.65));
+}
 
-    renderer?.render(scene, camera);
+function getAllLegalMoves(player) {
+  const unique = [...new Set(state.movesLeft)];
+  const moves  = [];
+  const froms  = [];
+
+  if (state.bar[player] > 0) {
+    froms.push("bar");
+  } else {
+    for (let p = 1; p <= POINTS; p++) {
+      if (state.board[p].owner === player && state.board[p].count > 0) froms.push(p);
+    }
   }
 
-  /* --- ZAR YÜZÜ OKU (rotasyondan yaklaşık değer) --- */
-  function readDieFace(mesh) {
-    // Rotation'dan en yakın yüzü bul — basit yaklaşım
-    // Gerçek değer rastgele üretilir; animasyon görseldir
-    return Math.floor(Math.random() * 6) + 1;
+  for (const from of froms) {
+    for (const die of unique) {
+      const r = isLegalMove(from, die, player);
+      if (r.legal) moves.push({ from, to: r.to, die, hit: r.hit });
+    }
+  }
+  return moves;
+}
+
+function pickAIMove() {
+  const moves = getAllLegalMoves(P2);
+  if (!moves.length) return null;
+
+  if (state.aiDiff === "easy") {
+    return moves[Math.floor(Math.random() * moves.length)];
+  }
+  if (state.aiDiff === "medium") {
+    const hits = moves.filter(m => m.hit);
+    if (hits.length) return hits[Math.floor(Math.random() * hits.length)];
+    return moves[Math.floor(Math.random() * moves.length)];
+  }
+  return scoreBestMove(moves, P2, state.aiDiff === "legend" ? 2 : 1);
+}
+
+function scoreMove(move, player) {
+  let score = 0;
+  const opp = player === P1 ? P2 : P1;
+  if (move.to === "bearoff") return 200;
+  if (move.hit)              score += 60;
+  if (move.from === "bar")   score += 50;
+  if (typeof move.to === "number") {
+    const cell = state.board[move.to];
+    if (cell.owner === player && cell.count >= 2) score += 20;
+    else if (!cell.count)                          score -= 10;
+    const progress = player === P2 ? move.to : (25 - move.to);
+    score += progress * 0.5;
+  }
+  if (typeof move.from === "number" && state.board[move.from].count === 1) score -= 8;
+  return score;
+}
+
+function scoreBestMove(moves, player, depth) {
+  let best = null, bestScore = -Infinity;
+  for (const m of moves) {
+    let s = scoreMove(m, player);
+    if (depth > 1) s += simulateScore(m, player);
+    if (s > bestScore) { bestScore = s; best = m; }
+  }
+  return best;
+}
+
+function simulateScore(move, player) {
+  const opp = player === P1 ? P2 : P1;
+  const savedBoard    = JSON.parse(JSON.stringify(state.board));
+  const savedBar      = { ...state.bar };
+  const savedBorneOff = { ...state.borneOff };
+  const savedLeft     = [...state.movesLeft];
+
+  let bonus = 0;
+
+  if (move.from === "bar") {
+    state.bar[player] = Math.max(0, state.bar[player] - 1);
+  } else if (typeof move.from === "number") {
+    state.board[move.from].count--;
+    if (!state.board[move.from].count) state.board[move.from].owner = 0;
+  }
+  if (move.to !== "bearoff" && typeof move.to === "number") {
+    if (state.board[move.to].owner === opp && state.board[move.to].count === 1) {
+      state.board[move.to].count = 0; state.board[move.to].owner = 0;
+      state.bar[opp]++; bonus += 30;
+    }
+    state.board[move.to].owner = player;
+    state.board[move.to].count++;
+  } else if (move.to === "bearoff") {
+    state.borneOff[player]++; bonus += 40;
+  }
+  const idx = state.movesLeft.indexOf(move.die);
+  if (idx !== -1) state.movesLeft.splice(idx, 1);
+
+  const nextMoves = getAllLegalMoves(player);
+  if (nextMoves.length) {
+    bonus += Math.max(...nextMoves.map(m => scoreMove(m, player))) * 0.3;
   }
 
-  /* --- ZARLAR FİZİKSEL OLARAK AT --- */
-  function throwDice3D(callback) {
-    if (!mounted) { callback(rollDie(), rollDie()); return; }
-
-    onResult = callback;
-    rolling  = true;
-    if (settleTimer) { clearTimeout(settleTimer); settleTimer = null; }
-
-    dice3dObjects.forEach((mesh, i) => {
-      // Rastgele başlangıç konumu (üst köşelerden fırlatılır)
-      mesh.position.set(
-        (i === 0 ? -1 : 1) * (1.5 + Math.random() * 1.5),
-        2 + Math.random() * 1.5,
-        (Math.random() - 0.5) * 2
-      );
-      mesh.rotation.set(
-        Math.random() * Math.PI * 2,
-        Math.random() * Math.PI * 2,
-        Math.random() * Math.PI * 2
-      );
-
-      velocities[i] = {
-        x: (Math.random() - 0.5) * 0.18,
-        y:  0.05 + Math.random() * 0.08,
-        z: (Math.random() - 0.5) * 0.12
-      };
-      angularVels[i] = {
-        x: (Math.random() - 0.5) * 0.25,
-        y: (Math.random() - 0.5) * 0.25,
-        z: (Math.random() - 0.5) * 0.25
-      };
-    });
-  }
-
-  /* --- GENEL API --- */
-  window.Dice3D = {
-    mount(cont) {
-      if (!mounted) {
-        initScene(cont);
-        animate();
-      } else if (cont !== container) {
-        // Farklı konteynere taşı
-        container = cont;
-        const existing = cont.querySelector("canvas");
-        if (existing) cont.replaceChild(renderer.domElement, existing);
-        else cont.appendChild(renderer.domElement);
-        const w = cont.clientWidth  || 180;
-        const h = cont.clientHeight || 130;
-        renderer.setSize(w, h);
-        camera.aspect = w / h;
-        camera.updateProjectionMatrix();
-      }
-    },
-    throwDice(cb) { throwDice3D(cb); },
-    isReady()     { return mounted; }
-  };
-})();
+  state.board     = savedBoard;
+  state.bar       = savedBar;
+  state.borneOff  = savedBorneOff;
+  state.movesLeft = savedLeft;
+  return bonus;
+}
 
 /* ==========================================================
-   BÖLÜM 10: BAŞLATMA (INIT)
-   ----------------------------------------------------------
-   Tüm modülleri sırayla bağlar ve oyunu başlatır.
+   SES
 ========================================================== */
-function init() {
-  // 1. Kayıtlı tercihler (tema, ses, zar modu)
-  loadPreferences();
+let _audioCtx = null;
+function getAudioCtx() {
+  if (!_audioCtx) _audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  if (_audioCtx.state === "suspended") _audioCtx.resume();
+  return _audioCtx;
+}
 
-  // 2. Tahta ve DOM event'leri
-  bindBoardEvents();
-  bindSettingsEvents();
+function masterGain(ctx) {
+  const g = ctx.createGain();
+  g.gain.value = state.sound ? state.volume : 0;
+  g.connect(ctx.destination);
+  return g;
+}
 
-  // 3. Zar alanını hazırla (ilk sıra P1, varsayılan mod)
-  prepareDiceZoneForCurrent();
+function applyEnv(gn, ctx, { attack=.005, decay=.1, sustain=.3, release=.2, peak=1 } = {}) {
+  const now = ctx.currentTime;
+  gn.gain.setValueAtTime(0, now);
+  gn.gain.linearRampToValueAtTime(peak, now + attack);
+  gn.gain.linearRampToValueAtTime(sustain * peak, now + attack + decay);
+  gn.gain.linearRampToValueAtTime(0, now + attack + decay + release);
+  return now + attack + decay + release;
+}
 
-  // 4. İlk render
-  render();
+function sfx_roll() {
+  const ctx = getAudioCtx(), mg = masterGain(ctx);
+  const buf  = ctx.createBuffer(1, ctx.sampleRate * .18, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource(); noise.buffer = buf;
+  const f = ctx.createBiquadFilter(); f.type = "bandpass"; f.frequency.value = 800; f.Q.value = .8;
+  const gn = ctx.createGain();
+  const end = applyEnv(gn, ctx, { attack:.01, decay:.06, sustain:.4, release:.12, peak:.55 });
+  noise.connect(f); f.connect(gn); gn.connect(mg);
+  noise.start(); noise.stop(ctx.currentTime + end + .02);
+}
 
-  // 5. Karşılama bildirimi
-  toast("Tavla başladı! Sıra Oyuncu 1'de — zar at.");
+function sfx_place() {
+  const ctx = getAudioCtx(), mg = masterGain(ctx);
+  const osc = ctx.createOscillator(), gn = ctx.createGain();
+  osc.type = "sine";
+  osc.frequency.setValueAtTime(340, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(180, ctx.currentTime + .07);
+  applyEnv(gn, ctx, { attack:.003, decay:.05, sustain:.1, release:.08, peak:.45 });
+  osc.connect(gn); gn.connect(mg);
+  osc.start(); osc.stop(ctx.currentTime + .18);
+}
 
-  // 6. Pencere boyutu değişince 3D renderer'ı güncelle
-  window.addEventListener("resize", () => {
-    const cont = dom.diceZone;
-    if (!cont || !window.Dice3D?.isReady()) return;
-    window.Dice3D.mount(cont);
+function sfx_hit() {
+  const ctx = getAudioCtx(), mg = masterGain(ctx);
+  const buf  = ctx.createBuffer(1, ctx.sampleRate * .12, ctx.sampleRate);
+  const data = buf.getChannelData(0);
+  for (let i = 0; i < data.length; i++) data[i] = Math.random() * 2 - 1;
+  const noise = ctx.createBufferSource(); noise.buffer = buf;
+  const f = ctx.createBiquadFilter(); f.type = "highpass"; f.frequency.value = 1200;
+  const gnN = ctx.createGain();
+  applyEnv(gnN, ctx, { attack:.002, decay:.08, sustain:0, release:.05, peak:.6 });
+  noise.connect(f); f.connect(gnN); gnN.connect(mg);
+  noise.start(); noise.stop(ctx.currentTime + .18);
+  const osc = ctx.createOscillator(), gnO = ctx.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(520, ctx.currentTime);
+  osc.frequency.exponentialRampToValueAtTime(160, ctx.currentTime + .15);
+  applyEnv(gnO, ctx, { attack:.002, decay:.1, sustain:0, release:.05, peak:.35 });
+  osc.connect(gnO); gnO.connect(mg);
+  osc.start(); osc.stop(ctx.currentTime + .2);
+}
+
+function sfx_bearoff() {
+  const ctx = getAudioCtx(), mg = masterGain(ctx);
+  [660, 880].forEach((freq, i) => {
+    setTimeout(() => {
+      const osc = ctx.createOscillator(), gn = ctx.createGain();
+      osc.type = "sine"; osc.frequency.value = freq;
+      applyEnv(gn, ctx, { attack:.005, decay:.08, sustain:.2, release:.25, peak:.4 });
+      osc.connect(gn); gn.connect(mg);
+      osc.start(); osc.stop(ctx.currentTime + .4);
+    }, i * 80);
   });
 }
 
-/* Sayfa yüklenince başlat */
+function sfx_invalid() {
+  const ctx = getAudioCtx(), mg = masterGain(ctx);
+  const osc = ctx.createOscillator(), gn = ctx.createGain();
+  osc.type = "sawtooth"; osc.frequency.value = 120;
+  applyEnv(gn, ctx, { attack:.005, decay:.07, sustain:.1, release:.1, peak:.3 });
+  osc.connect(gn); gn.connect(mg);
+  osc.start(); osc.stop(ctx.currentTime + .22);
+}
+
+function sfx_win() {
+  const ctx = getAudioCtx(), mg = masterGain(ctx);
+  [523, 659, 784, 1047].forEach((freq, i) => {
+    setTimeout(() => {
+      const osc = ctx.createOscillator(), gn = ctx.createGain();
+      osc.type = "sine"; osc.frequency.value = freq;
+      applyEnv(gn, ctx, { attack:.01, decay:.1, sustain:.5, release:.35, peak:.5 });
+      osc.connect(gn); gn.connect(mg);
+      osc.start(); osc.stop(ctx.currentTime + .55);
+    }, i * 130);
+  });
+}
+
+function playSound(name) {
+  if (!state.sound) return;
+  try {
+    if (name === "roll")    sfx_roll();
+    else if (name === "place")   sfx_place();
+    else if (name === "hit")     sfx_hit();
+    else if (name === "bearoff") sfx_bearoff();
+    else if (name === "invalid") sfx_invalid();
+    else if (name === "win")     sfx_win();
+  } catch(e) { console.warn("Ses:", e); }
+}
+
+/* ==========================================================
+   TOAST
+========================================================== */
+function toast(msg, type, duration) {
+  type     = type     || "info";
+  duration = duration || 2600;
+  const area = dom.toastArea;
+  if (!area) return;
+  const el = document.createElement("div");
+  el.className  = "toast" + (type !== "info" ? " toast-" + type : "");
+  el.textContent = msg;
+  area.appendChild(el);
+  setTimeout(function() {
+    el.classList.add("out");
+    el.addEventListener("animationend", function() { el.remove(); }, { once: true });
+  }, duration);
+}
+
+/* ==========================================================
+   INIT
+========================================================== */
+function init() {
+  loadPreferences();
+  bindBoardEvents();
+  bindPanelEvents();
+  bindSettingsEvents();
+  ensureAutoDiceMounted(dom.diceZoneP1);
+  ensureAutoDiceMounted(dom.diceZoneP2);
+  render();
+  toast("Tavla başladı! Sıra Oyuncu 1'de — zar at.");
+}
+
 document.addEventListener("DOMContentLoaded", init);
