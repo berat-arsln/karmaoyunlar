@@ -1,126 +1,119 @@
-
 /* ==========================================================
-   main.css — Parça 1/6
-   BÖLÜM: Tema değişkenleri, sıfırlama (reset) ve temel tipografi
-   ----------------------------------------------------------
-   Renkler CSS değişkenleriyle tanımlanır. [data-theme="dark"]
-   seçicisi koyu mod paletini devreye sokar. JS yalnızca
-   <html data-theme="..."> değerini değiştirir; tüm renkler
-   otomatik güncellenir.
+   main.css — Tavla (Backgammon)
+   Yatay (landscape) düzen, mobil öncelikli, sürükle-bırak
+   destekli, AI modları dahil.
 ========================================================== */
 
 /* ---------- AÇIK MOD (varsayılan) ---------- */
 :root {
-  /* Yüzeyler */
-  --bg:            #eef1f6;   /* sayfa arka planı */
-  --surface:       #ffffff;   /* panel/kart yüzeyi */
-  --surface-2:     #f4f6fa;   /* ikincil yüzey */
-  --surface-3:     #e8ecf3;   /* gömülü/iç yüzey */
+  --bg:            #eef1f6;
+  --surface:       #ffffff;
+  --surface-2:     #f4f6fa;
+  --surface-3:     #e8ecf3;
 
-  /* Metin */
-  --text:          #1c2430;   /* ana metin */
-  --text-soft:     #5a6675;   /* ikincil metin */
-  --text-faint:    #93a0b0;   /* ipucu / pasif metin */
+  --text:          #1c2430;
+  --text-soft:     #5a6675;
+  --text-faint:    #93a0b0;
 
-  /* Vurgu (marka) renkleri */
-  --accent:        #3b82f6;   /* birincil vurgu */
+  --accent:        #3b82f6;
   --accent-hover:  #2f6fe0;
-  --accent-soft:   rgba(59, 130, 246, 0.12);
+  --accent-soft:   rgba(59,130,246,0.14);
 
-  /* Durum renkleri */
-  --danger:        #ef4444;   /* geçersiz hamle / uyarı */
-  --success:       #22c55e;   /* kazanma / onay */
+  --danger:        #ef4444;
+  --danger-soft:   rgba(239,68,68,0.14);
+  --success:       #22c55e;
+  --success-soft:  rgba(34,197,94,0.14);
   --warn:          #f59e0b;
+  --warn-soft:     rgba(245,158,11,0.14);
 
-  /* Oyuncu renkleri (pullar) */
-  --p1:            #2b2f36;   /* Oyuncu 1 pulu (koyu) */
-  --p1-edge:       #000000;
+  --p1:            #1e2229;
+  --p1-edge:       #000;
+  --p1-top:        #3a4050;
   --p1-text:       #ffffff;
-  --p2:            #f8fafc;   /* Oyuncu 2 pulu (açık) */
-  --p2-edge:       #c7ced8;
+  --p2:            #f5f7fa;
+  --p2-edge:       #b8c2ce;
+  --p2-top:        #ffffff;
   --p2-text:       #1c2430;
 
-  /* Tahta renkleri */
-  --board-bg:      #c9a27a;   /* tahta zemini (ahşap tonu) */
-  --board-frame:   #8a6b4a;   /* çerçeve */
-  --point-a:       #e9d4b8;   /* açık renk hane */
-  --point-b:       #a9774f;   /* koyu renk hane */
-  --bar-bg:        #7c5d3f;   /* orta bar */
-  --tray-bg:       #b08d68;   /* toplama tepsisi */
+  --board-bg:      #c49a6c;
+  --board-frame:   #7a5630;
+  --point-a:       #e8d0b0;
+  --point-b:       #9e6840;
+  --bar-bg:        #6b4d2e;
+  --tray-bg:       #a07848;
 
-  /* Çizgi & gölge */
   --border:        #d7dde6;
   --border-strong: #c2cad6;
-  --shadow-sm:     0 1px 3px rgba(20, 30, 50, 0.08);
-  --shadow-md:     0 6px 18px rgba(20, 30, 50, 0.12);
-  --shadow-lg:     0 18px 50px rgba(20, 30, 50, 0.22);
+  --shadow-sm:     0 1px 3px rgba(20,30,50,.08);
+  --shadow-md:     0 4px 14px rgba(20,30,50,.13);
+  --shadow-lg:     0 16px 48px rgba(20,30,50,.22);
+  --shadow-xl:     0 24px 64px rgba(20,30,50,.30);
 
-  /* Yarıçap & geçiş */
-  --r-sm: 8px;
-  --r-md: 12px;
-  --r-lg: 18px;
+  --r-sm:   6px;
+  --r-md:   10px;
+  --r-lg:   16px;
   --r-pill: 999px;
-  --t-fast: 0.15s ease;
-  --t-med:  0.25s ease;
-  --t-slow: 0.4s ease;
+  --t-fast: .14s ease;
+  --t-med:  .24s ease;
+  --t-slow: .38s ease;
 
-  /* Ölçü */
-  --header-h: 64px;
+  --header-h: 52px;
+  /* Tahta içindeki kontrol paneli genişliği */
+  --ctrl-w: 130px;
 }
 
 /* ---------- KOYU MOD ---------- */
 [data-theme="dark"] {
-  --bg:            #0e1320;
-  --surface:       #1a2031;
-  --surface-2:     #222a3d;
-  --surface-3:     #2b344a;
+  --bg:            #0d1119;
+  --surface:       #182030;
+  --surface-2:     #1f2a3e;
+  --surface-3:     #283448;
 
-  --text:          #e8edf5;
-  --text-soft:     #a4b0c4;
-  --text-faint:    #6b788e;
+  --text:          #e6ecf5;
+  --text-soft:     #9aabbc;
+  --text-faint:    #60748a;
 
   --accent:        #5b9bff;
-  --accent-hover:  #79afff;
-  --accent-soft:   rgba(91, 155, 255, 0.16);
+  --accent-hover:  #7aafff;
+  --accent-soft:   rgba(91,155,255,.18);
 
   --danger:        #f87171;
+  --danger-soft:   rgba(248,113,113,.16);
   --success:       #4ade80;
+  --success-soft:  rgba(74,222,128,.16);
   --warn:          #fbbf24;
+  --warn-soft:     rgba(251,191,36,.16);
 
-  /* Pullar koyu modda da net kontrast korur */
-  --p1:            #11141a;
-  --p1-edge:       #000000;
-  --p1-text:       #e8edf5;
-  --p2:            #e7ecf4;
-  --p2-edge:       #aab4c6;
-  --p2-text:       #11141a;
+  --p1:            #0e1118;
+  --p1-edge:       #000;
+  --p1-top:        #2a3040;
+  --p1-text:       #e6ecf5;
+  --p2:            #dde4ee;
+  --p2-edge:       #9aa8b8;
+  --p2-top:        #f0f4fa;
+  --p2-text:       #0d1119;
 
-  /* Tahta koyu modda daha derin ahşap tonu */
-  --board-bg:      #3a2a18;
-  --board-frame:   #2c2114;
-  --point-a:       #6b5236;
-  --point-b:       #3e2c1a;
-  --bar-bg:        #241a10;
-  --tray-bg:       #4a3826;
+  --board-bg:      #3a2410;
+  --board-frame:   #241608;
+  --point-a:       #5e3e20;
+  --point-b:       #2e1c0a;
+  --bar-bg:        #1e1006;
+  --tray-bg:       #3a2814;
 
-  --border:        #2c3650;
-  --border-strong: #3a4660;
-  --shadow-sm:     0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md:     0 6px 18px rgba(0, 0, 0, 0.5);
-  --shadow-lg:     0 18px 50px rgba(0, 0, 0, 0.6);
+  --border:        #28364e;
+  --border-strong: #344260;
+  --shadow-sm:     0 1px 3px rgba(0,0,0,.4);
+  --shadow-md:     0 4px 14px rgba(0,0,0,.5);
+  --shadow-lg:     0 16px 48px rgba(0,0,0,.6);
+  --shadow-xl:     0 24px 64px rgba(0,0,0,.7);
 }
 
 /* ---------- RESET ---------- */
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
   height: 100%;
+  overflow: hidden; /* landscape'de kaydırma yok */
 }
 
 body {
@@ -129,9 +122,10 @@ body {
   color: var(--text);
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none; /* sürükle-bırak için */
   transition: background var(--t-med), color var(--t-med);
-  overflow-x: hidden;
 }
 
 button {
@@ -141,48 +135,38 @@ button {
   background: none;
   border: none;
   cursor: pointer;
-}
-
-h1, h2, h3 {
-  font-weight: 700;
-  line-height: 1.25;
+  -webkit-tap-highlight-color: transparent;
 }
 
 svg {
-  width: 22px;
-  height: 22px;
+  width: 20px;
+  height: 20px;
   display: inline-block;
   vertical-align: middle;
+  flex-shrink: 0;
 }
 
-/* Erişilebilirlik: klavye odak halkası */
-:focus-visible {
-  outline: 2px solid var(--accent);
-  outline-offset: 2px;
-}
-
-
-
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
 /* ==========================================================
-   main.css — Parça 2/6
-   BÖLÜM: Genel düzen (header, oyun alanı, oyuncu panelleri),
-   sıra göstergesi ve ikon butonları
+   GENEL DÜZENİ — yatay (landscape)
+   [Sol Kontrol P2] [TAHTA] [Sağ Kontrol P1]
+   Header en üstte sabit kalır.
 ========================================================== */
 
-/* ---------- ÜST BAR (HEADER) ---------- */
+/* ---------- HEADER ---------- */
 .app-header {
   height: var(--header-h);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
-  padding: 0 20px;
+  gap: 12px;
+  padding: 0 14px;
   background: var(--surface);
   border-bottom: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 0;
+  position: fixed;
+  top: 0; left: 0; right: 0;
   z-index: 40;
   transition: background var(--t-med), border-color var(--t-med);
 }
@@ -190,30 +174,86 @@ svg {
 .header-left {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
 }
 
-.brand-icon {
-  width: 26px;
-  height: 26px;
-  color: var(--accent);
-}
+.brand-icon { width: 24px; height: 24px; color: var(--accent); }
 
 .brand-title {
-  font-size: 1.25rem;
-  letter-spacing: 0.5px;
+  font-size: 1.1rem;
+  font-weight: 700;
+  letter-spacing: .3px;
 }
 
-.header-right {
+.header-center {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
+/* Sıra / oyuncu göstergesi */
+.turn-indicator {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 14px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-pill);
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: var(--text);
+  transition: background var(--t-med), border-color var(--t-med);
+}
+
+.turn-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--p1);
+  border: 2px solid var(--p1-edge);
+  flex-shrink: 0;
+  transition: background var(--t-fast), border-color var(--t-fast);
+}
+
+.turn-dot.p2 {
+  background: var(--p2);
+  border-color: var(--p2-edge);
+}
+
+/* AI düşünüyor göstergesi */
+.ai-thinking {
+  display: none;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.8rem;
+  color: var(--text-faint);
+  font-style: italic;
+}
+.ai-thinking.visible { display: flex; }
+.ai-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: aiPulse 1.2s ease infinite;
+}
+.ai-dot:nth-child(2) { animation-delay: .2s; }
+.ai-dot:nth-child(3) { animation-delay: .4s; }
+@keyframes aiPulse {
+  0%,100% { opacity: .3; transform: scale(.8); }
+  50%      { opacity: 1;  transform: scale(1.1); }
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
 /* ---------- İKON BUTONLARI ---------- */
 .icon-btn {
-  width: 40px;
-  height: 40px;
+  width: 38px;
+  height: 38px;
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -222,196 +262,345 @@ svg {
   background: transparent;
   transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast);
 }
+.icon-btn:hover  { background: var(--surface-2); color: var(--text); }
+.icon-btn:active { transform: scale(.93); }
 
-.icon-btn:hover {
-  background: var(--surface-2);
-  color: var(--text);
-}
-
-.icon-btn:active {
-  transform: scale(0.94);
-}
-
-/* ---------- SIRA / AKTİF OYUNCU GÖSTERGESİ ---------- */
-.turn-indicator {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 16px;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-pill);
-  font-weight: 600;
-  font-size: 0.95rem;
-  color: var(--text);
-  transition: background var(--t-med), border-color var(--t-med);
-}
-
-.turn-dot {
-  width: 14px;
-  height: 14px;
-  border-radius: 50%;
-  background: var(--p1);
-  border: 2px solid var(--p1-edge);
-  box-shadow: 0 0 0 0 var(--accent-soft);
-  transition: background var(--t-fast), border-color var(--t-fast), box-shadow var(--t-med);
-}
-
-/* Aktif oyuncuya göre nokta rengi (JS data-active ile değiştirir) */
-.turn-indicator[data-active="2"] .turn-dot {
-  background: var(--p2);
-  border-color: var(--p2-edge);
-}
-
-/* Sıra değişiminde nabız efekti */
-.turn-indicator.pulse .turn-dot {
-  animation: turnPulse 0.6s ease;
-}
-
-@keyframes turnPulse {
-  0%   { box-shadow: 0 0 0 0 var(--accent-soft); }
-  70%  { box-shadow: 0 0 0 10px transparent; }
-  100% { box-shadow: 0 0 0 0 transparent; }
-}
-
-/* ---------- ANA OYUN ALANI ---------- */
+/* ==========================================================
+   ANA OYUN ALANI
+   Header yüksekliği altında kalan tüm alan
+   Sol: P2 kontrol | Orta: Tahta | Sağ: P1 kontrol
+========================================================== */
 .game-area {
+  position: fixed;
+  top: var(--header-h);
+  left: 0; right: 0; bottom: 0;
   display: grid;
-  grid-template-columns: 200px minmax(0, 1fr) 240px;
-  gap: 18px;
-  align-items: start;
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 22px 20px 40px;
+  grid-template-columns: var(--ctrl-w) 1fr var(--ctrl-w);
+  grid-template-rows: 1fr;
+  grid-template-areas: "ctrl-p2 board ctrl-p1";
+  overflow: hidden;
 }
 
-/* ---------- OYUNCU PANELLERİ ---------- */
-.player-panel {
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--r-lg);
-  box-shadow: var(--shadow-sm);
-  padding: 16px;
+/* ==========================================================
+   KONTROL PANELLERİ (sol = P2, sağ = P1)
+   Her panel: oyuncu bilgisi + zar + butonlar
+========================================================== */
+.ctrl-panel {
   display: flex;
   flex-direction: column;
-  gap: 14px;
-  transition: background var(--t-med), border-color var(--t-med),
-              box-shadow var(--t-med), transform var(--t-fast);
+  align-items: stretch;
+  gap: 8px;
+  padding: 10px 8px;
+  background: var(--surface);
+  border: none;
+  overflow-y: auto;
+  transition: background var(--t-med);
 }
 
-/* Aktif oyuncunun paneli vurgulanır (JS .is-active ekler) */
-.player-panel.is-active {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 2px var(--accent-soft), var(--shadow-md);
+.ctrl-panel.ctrl-p2 {
+  grid-area: ctrl-p2;
+  border-right: 1px solid var(--border);
 }
 
+.ctrl-panel.ctrl-p1 {
+  grid-area: ctrl-p1;
+  border-left: 1px solid var(--border);
+}
+
+/* Aktif panelin vurgulama */
+.ctrl-panel.is-active {
+  background: var(--accent-soft);
+}
+
+/* ---------- OYUNCU BAŞLIĞI ---------- */
 .player-head {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 1.05rem;
+  gap: 7px;
+  padding: 6px 8px;
+  border-radius: var(--r-md);
+  background: var(--surface-2);
+  transition: background var(--t-med);
 }
 
-/* Oyuncu renk göstergesi (chip) */
 .player-chip {
-  width: 18px;
-  height: 18px;
+  width: 16px; height: 16px;
   border-radius: 50%;
-  flex: none;
-  display: inline-block;
+  flex-shrink: 0;
+}
+.chip-p1 { background: var(--p1); border: 2px solid var(--p1-edge); }
+.chip-p2 { background: var(--p2); border: 2px solid var(--p2-edge); }
+
+.player-name {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.chip-p1 {
-  background: var(--p1);
-  border: 2px solid var(--p1-edge);
+.ai-badge {
+  font-size: 0.65rem;
+  padding: 1px 5px;
+  border-radius: var(--r-pill);
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-weight: 700;
+  white-space: nowrap;
+  margin-left: auto;
 }
 
-.chip-p2 {
-  background: var(--p2);
-  border: 2px solid var(--p2-edge);
-}
-
-/* İstatistik satırları (toplanan / bar) */
+/* ---------- STAT SATIRLARI ---------- */
 .player-stats {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 5px;
 }
 
 .stat {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 10px 12px;
+  padding: 5px 8px;
   background: var(--surface-2);
-  border-radius: var(--r-md);
+  border-radius: var(--r-sm);
   transition: background var(--t-med);
 }
 
-.stat-label {
-  font-size: 0.85rem;
-  color: var(--text-soft);
+.stat-label { font-size: 0.72rem; color: var(--text-soft); }
+.stat-value { font-size: 0.95rem; font-weight: 700; color: var(--text); font-variant-numeric: tabular-nums; }
+
+/* ---------- ZAR ALANI (panel içi) ---------- */
+.dice-zone {
+  min-height: 80px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--r-md);
+  padding: 10px 6px;
+  position: relative;
+  transition: background var(--t-med), border-color var(--t-med);
 }
 
-.stat-value {
-  font-size: 1.1rem;
+/* Otomatik mod: iki zar yan yana */
+.dice-auto {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ZAR YÜZLERİ */
+.die {
+  width: 44px;
+  height: 44px;
+  background: linear-gradient(145deg, #fff, #e4e8f0);
+  border-radius: 10px;
+  box-shadow: var(--shadow-md),
+              inset 0 2px 3px rgba(255,255,255,.8),
+              inset 0 -2px 4px rgba(0,0,0,.15);
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  grid-template-rows: repeat(3,1fr);
+  padding: 7px;
+  gap: 2px;
+  transition: opacity var(--t-fast), filter var(--t-fast);
+}
+
+.die .pip {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: #1e2229;
+  align-self: center;
+  justify-self: center;
+  visibility: hidden;
+}
+
+/* Pip gösterimi */
+.die[data-value="1"] .pip:nth-child(5) { visibility: visible; }
+.die[data-value="2"] .pip:nth-child(1),
+.die[data-value="2"] .pip:nth-child(9) { visibility: visible; }
+.die[data-value="3"] .pip:nth-child(1),
+.die[data-value="3"] .pip:nth-child(5),
+.die[data-value="3"] .pip:nth-child(9) { visibility: visible; }
+.die[data-value="4"] .pip:nth-child(1),
+.die[data-value="4"] .pip:nth-child(3),
+.die[data-value="4"] .pip:nth-child(7),
+.die[data-value="4"] .pip:nth-child(9) { visibility: visible; }
+.die[data-value="5"] .pip:nth-child(1),
+.die[data-value="5"] .pip:nth-child(3),
+.die[data-value="5"] .pip:nth-child(5),
+.die[data-value="5"] .pip:nth-child(7),
+.die[data-value="5"] .pip:nth-child(9) { visibility: visible; }
+.die[data-value="6"] .pip:nth-child(1),
+.die[data-value="6"] .pip:nth-child(3),
+.die[data-value="6"] .pip:nth-child(4),
+.die[data-value="6"] .pip:nth-child(6),
+.die[data-value="6"] .pip:nth-child(7),
+.die[data-value="6"] .pip:nth-child(9) { visibility: visible; }
+
+.die.rolling { animation: dieShake .45s ease; }
+@keyframes dieShake {
+  0%   { transform: translateY(0) rotate(0); }
+  25%  { transform: translateY(-6px) rotate(-10deg); }
+  50%  { transform: translateY(0) rotate(8deg); }
+  75%  { transform: translateY(-3px) rotate(-5deg); }
+  100% { transform: translateY(0) rotate(0); }
+}
+
+.die.used { opacity: .35; filter: grayscale(.5); }
+
+/* ---------- KALAN HAMLE ROZETLERİ ---------- */
+.moves-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.moves-label {
+  font-size: 0.68rem;
+  color: var(--text-faint);
+  text-transform: uppercase;
+  letter-spacing: .4px;
+}
+
+.moves-values {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.move-chip {
+  min-width: 24px;
+  height: 24px;
+  padding: 0 5px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-radius: var(--r-sm);
+  font-size: 0.8rem;
   font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
+}
+.move-chip.used { opacity: .35; text-decoration: line-through; }
+
+/* ---------- PANEL BUTONLARI ---------- */
+.panel-btns {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: auto;
 }
 
+.roll-btn {
+  width: 100%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 10px 8px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  transition: background var(--t-fast), transform var(--t-fast),
+              box-shadow var(--t-fast), opacity var(--t-fast);
+}
+.roll-btn svg { color: #fff; width: 17px; height: 17px; }
+.roll-btn:hover { background: var(--accent-hover); box-shadow: var(--shadow-md); }
+.roll-btn:active { transform: scale(.96); }
+.roll-btn:disabled { opacity: .45; cursor: not-allowed; box-shadow: none; }
+
+.pass-btn {
+  width: 100%;
+  padding: 9px 8px;
+  background: var(--warn);
+  color: #1c1407;
+  font-weight: 700;
+  font-size: 0.78rem;
+  border-radius: var(--r-md);
+  box-shadow: var(--shadow-sm);
+  transition: transform var(--t-fast), filter var(--t-fast);
+  text-align: center;
+}
+.pass-btn:hover  { filter: brightness(1.07); }
+.pass-btn:active { transform: scale(.96); }
+
+.undo-btn {
+  width: 100%;
+  padding: 8px;
+  background: var(--surface-3);
+  color: var(--text-soft);
+  font-weight: 600;
+  font-size: 0.78rem;
+  border-radius: var(--r-md);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  transition: background var(--t-fast), color var(--t-fast), transform var(--t-fast);
+}
+.undo-btn:hover  { background: var(--border); color: var(--text); }
+.undo-btn:active { transform: scale(.96); }
+.undo-btn:disabled { opacity: .35; cursor: not-allowed; }
+.undo-btn svg { width: 15px; height: 15px; }
 
 /* ==========================================================
-   main.css — Parça 3/6
-   BÖLÜM: Tahta — zemin, çeyrekler, üçgen haneler (point),
-   bar, bear-off tepsileri ve pullar (checker)
+   TAHTA ALANI (ortada)
 ========================================================== */
-
-/* ---------- TAHTA SARMALAYICI ---------- */
 .board-wrap {
+  grid-area: board;
   display: flex;
-  justify-content: center;
   align-items: center;
-  width: 100%;
+  justify-content: center;
+  overflow: hidden;
+  padding: 6px 4px;
 }
 
-/* ---------- TAHTA ZEMİNİ ----------
-   Grid: üst yarı (12 hane) | bar | bear-off
-   Çeyrekler ve bar tek bir grid içinde konumlanır. */
+/* TAHTA
+   Grid alanları: üst çeyrekler | bar | bear-off
+   qtl qtr | bar | tray
+   qbl qbr | bar | tray            */
 .board {
-  --point-h: 40%;          /* hane (üçgen) yüksekliği */
+  --point-h: 42%;
   width: 100%;
-  max-width: 760px;
-  aspect-ratio: 13 / 10;
+  height: 100%;
+  max-height: 100%;
   background: var(--board-bg);
-  border: 10px solid var(--board-frame);
+  border: 8px solid var(--board-frame);
   border-radius: var(--r-md);
-  box-shadow: var(--shadow-lg);
+  box-shadow: var(--shadow-xl);
   display: grid;
-  grid-template-columns: 1fr 44px 1fr 56px;
+  grid-template-columns: 1fr 38px 1fr 48px;
   grid-template-rows: 1fr 1fr;
   grid-template-areas:
     "qtl bar qtr tray"
     "qbl bar qbr tray";
-  gap: 0;
   overflow: hidden;
   transition: background var(--t-med), border-color var(--t-med);
+  aspect-ratio: auto; /* tam yüksekliği kullan */
 }
 
 /* ---------- ÇEYREKLER ---------- */
 .quadrant {
   display: flex;
-  padding: 8px 4px;
+  padding: 6px 3px;
   gap: 2px;
 }
 
-.q-top-left     { grid-area: qtl; align-items: flex-start; }
-.q-top-right    { grid-area: qtr; align-items: flex-start; }
-.q-bottom-left  { grid-area: qbl; align-items: flex-end; }
-.q-bottom-right { grid-area: qbr; align-items: flex-end; }
+.q-top-left    { grid-area: qtl; align-items: flex-start; }
+.q-top-right   { grid-area: qtr; align-items: flex-start; }
+.q-bottom-left { grid-area: qbl; align-items: flex-end; }
+.q-bottom-right{ grid-area: qbr; align-items: flex-end; }
 
-/* ---------- HANELER (POINT — üçgen) ---------- */
+/* ---------- HANELER (üçgenler) ---------- */
 .point {
   position: relative;
   flex: 1;
@@ -423,50 +612,44 @@ svg {
   transition: filter var(--t-fast);
 }
 
-/* Üçgen görünümü ::before ile çizilir */
 .point::before {
   content: "";
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  width: 88%;
+  width: 90%;
   height: 100%;
   z-index: 0;
+  transition: box-shadow var(--t-fast), filter var(--t-fast);
 }
 
-.point-top::before {
-  top: 0;
-  clip-path: polygon(0 0, 100% 0, 50% 100%);
-}
+.point-top::before    { top: 0;    clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.point-bottom::before { bottom: 0; clip-path: polygon(50% 0, 0 100%, 100% 100%); }
 
-.point-bottom::before {
-  bottom: 0;
-  clip-path: polygon(50% 0, 0 100%, 100% 100%);
-}
-
-/* Üçgenlerin dönüşümlü renklendirilmesi (açık / koyu) */
 .point:nth-child(odd)::before  { background: var(--point-a); }
 .point:nth-child(even)::before { background: var(--point-b); }
 
-/* Geçerli hedef hane vurgusu (JS .valid-target ekler) */
+/* Vurgu durumları */
 .point.valid-target::before {
+  filter: brightness(1.18) saturate(1.2);
   box-shadow: inset 0 0 0 3px var(--success);
-  filter: brightness(1.08);
 }
-
-/* Seçili kaynak hane vurgusu */
 .point.selected::before {
   box-shadow: inset 0 0 0 3px var(--accent);
+  filter: brightness(1.1);
 }
-
-/* Geçersiz hedefe tıklama animasyonu */
 .point.invalid-flash::before {
-  animation: invalidFlash 0.4s ease;
+  animation: invalidFlash .4s ease;
+}
+@keyframes invalidFlash {
+  0%,100% { box-shadow: none; }
+  50%      { box-shadow: inset 0 0 0 3px var(--danger); }
 }
 
-@keyframes invalidFlash {
-  0%, 100% { box-shadow: inset 0 0 0 0 transparent; }
-  50%      { box-shadow: inset 0 0 0 3px var(--danger); }
+/* Sürükle bırak hedef vurgusu */
+.point.drag-over::before {
+  box-shadow: inset 0 0 0 4px var(--success);
+  filter: brightness(1.25);
 }
 
 /* ---------- PUL KONTEYNERİ ---------- */
@@ -476,67 +659,101 @@ svg {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 1px;
   width: 100%;
   height: 100%;
 }
+.point-bottom .checkers { flex-direction: column-reverse; }
 
-/* Alt çeyrekte pullar aşağıdan yukarı dizilir */
-.point-bottom .checkers {
-  flex-direction: column-reverse;
-}
-
-/* ---------- PULLAR (CHECKER) ---------- */
+/* ---------- PULLAR ---------- */
 .checker {
-  width: 86%;
-  max-width: 30px;
+  width: 84%;
+  max-width: 28px;
   aspect-ratio: 1;
   border-radius: 50%;
   flex: none;
   position: relative;
-  box-shadow: var(--shadow-sm), inset 0 2px 3px rgba(255,255,255,0.25),
-              inset 0 -3px 4px rgba(0,0,0,0.25);
-  transition: transform var(--t-fast), box-shadow var(--t-fast);
+  box-shadow: var(--shadow-sm),
+              inset 0 2px 3px rgba(255,255,255,.25),
+              inset 0 -2px 4px rgba(0,0,0,.25);
+  transition: transform var(--t-fast), box-shadow var(--t-fast), opacity var(--t-fast);
+  cursor: default;
 }
 
 .checker.p1 {
-  background: radial-gradient(circle at 35% 30%, #4a525e, var(--p1));
-  border: 1px solid var(--p1-edge);
+  background: radial-gradient(circle at 35% 30%, var(--p1-top), var(--p1));
+  border: 1.5px solid var(--p1-edge);
 }
-
 .checker.p2 {
-  background: radial-gradient(circle at 35% 30%, #ffffff, var(--p2));
-  border: 1px solid var(--p2-edge);
+  background: radial-gradient(circle at 35% 30%, var(--p2-top), var(--p2));
+  border: 1.5px solid var(--p2-edge);
 }
 
-/* Hareket edebilir pul (aktif oyuncunun, seçilebilir) */
-.checker.movable {
-  cursor: grab;
+/* Oynanabilir pul */
+.checker.movable { cursor: grab; }
+.checker.movable:hover {
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: var(--shadow-md),
+              inset 0 2px 3px rgba(255,255,255,.3),
+              inset 0 -2px 4px rgba(0,0,0,.3);
 }
 
-.ch
-
-ecker.movable:hover {
-  transform: translateY(-2px) scale(1.04);
-  box-shadow: var(--shadow-md), inset 0 2px 3px rgba(255,255,255,0.25),
-              inset 0 -3px 4px rgba(0,0,0,0.25);
+/* Sürükleniyor */
+.checker.dragging {
+  opacity: .3;
+  cursor: grabbing;
 }
 
-/* Üst üste binen pullar için fazlalık sayacı (örn. "5") */
+/* Hayalet (sürüklenen kopya) */
+.drag-ghost {
+  position: fixed;
+  pointer-events: none;
+  z-index: 1000;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  box-shadow: var(--shadow-xl);
+  transform: translate(-50%, -50%) scale(1.15);
+  transition: none;
+}
+.drag-ghost.p1 {
+  background: radial-gradient(circle at 35% 30%, var(--p1-top), var(--p1));
+  border: 2px solid var(--p1-edge);
+}
+.drag-ghost.p2 {
+  background: radial-gradient(circle at 35% 30%, var(--p2-top), var(--p2));
+  border: 2px solid var(--p2-edge);
+}
+
+/* Sayaç etiketi (5+ pul) */
 .checker .count {
   position: absolute;
   inset: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 700;
 }
-
 .checker.p1 .count { color: var(--p1-text); }
 .checker.p2 .count { color: var(--p2-text); }
 
-/* ---------- ORTA BAR ---------- */
+/* Yerleşme animasyonu */
+.checker.placing { animation: checkerPlace .22s ease; }
+@keyframes checkerPlace {
+  from { transform: scale(.35); opacity: 0; }
+  to   { transform: scale(1);   opacity: 1; }
+}
+
+/* Vurulan animasyon */
+.checker.hit-anim { animation: checkerHit .3s ease; }
+@keyframes checkerHit {
+  0%   { transform: scale(1); }
+  45%  { transform: scale(1.35) rotate(18deg); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- BAR (orta şerit) ---------- */
 .bar {
   grid-area: bar;
   background: var(--bar-bg);
@@ -544,9 +761,13 @@ ecker.movable:hover {
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 2px;
-  transition: background var(--t-med);
+  padding: 6px 2px;
+  transition: background var(--t-med), box-shadow var(--t-fast);
+  cursor: pointer;
 }
+
+.bar.must-enter  { box-shadow: inset 0 0 0 3px var(--warn); }
+.bar.drag-over   { box-shadow: inset 0 0 0 3px var(--success); }
 
 .bar-slot {
   width: 100%;
@@ -556,324 +777,73 @@ ecker.movable:hover {
   align-items: center;
   gap: 2px;
 }
-
 .bar-slot.bar-bottom { flex-direction: column-reverse; }
 
 .bar-divider {
-  width: 70%;
-  height: 2px;
-  background: rgba(0,0,0,0.25);
+  width: 65%;
+  height: 1.5px;
+  background: rgba(0,0,0,.28);
   border-radius: 2px;
   margin: 4px 0;
+  flex-shrink: 0;
 }
 
-/* Bardan giriş zorunluyken bar vurgusu */
-.bar.must-enter {
-  box-shadow: inset 0 0 0 3px var(--warn);
-}
-
-/* ---------- BEAR-OFF (TOPLAMA) TEPSİLERİ ---------- */
+/* ---------- BEAR-OFF TEPSİLERİ ---------- */
 .bearoff {
   grid-area: tray;
   display: flex;
   flex-direction: column;
   background: var(--tray-bg);
   border-left: 4px solid var(--board-frame);
-  padding: 8px 6px;
-  gap: 6px;
-  transition: background var(--t-med);
+  padding: 6px 4px;
+  gap: 4px;
+  cursor: pointer;
+  transition: background var(--t-med), box-shadow var(--t-fast);
 }
+.bearoff.valid-target { box-shadow: inset 0 0 0 3px var(--success); }
+.bearoff.drag-over    { box-shadow: inset 0 0 0 4px var(--success); filter: brightness(1.1); }
 
 .bearoff-tray {
   flex: 1;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 3px;
+  gap: 2px;
   border-radius: var(--r-sm);
-  background: rgba(0,0,0,0.08);
-  padding: 6px 0;
+  background: rgba(0,0,0,.1);
+  padding: 4px 0;
 }
-
 .bearoff-tray.tray-bottom { flex-direction: column-reverse; }
 
-/* Bear-off geçerli hedefken vurgu */
-.bearoff.valid-target {
-  box-shadow: inset 0 0 0 3px var(--success);
-}
-
-/* Tepsideki pullar yatık disk gibi gösterilir */
+/* Bear-off içindeki pullar yassı disk */
 .bearoff-tray .checker {
-  width: 70%;
-  max-width: 26px;
-  aspect-ratio: 2.6 / 1;
-  border-radius: 4px;
+  width: 75%;
+  max-width: 24px;
+  aspect-ratio: 2.8 / 1;
+  border-radius: 3px;
 }
-
-
 
 /* ==========================================================
-   main.css — Parça 4/6
-   BÖLÜM: Zar alanı (otomatik mod yüzleri + pip yerleşimi),
-   3D canvas, "Zar At" / "Sıra geç" butonları, kalan hamle
-   göstergesi
+   AYARLAR PANELİ
 ========================================================== */
-
-/* ---------- ZAR BÖLGESİ ---------- */
-.dice-zone {
-  position: relative;
-  min-height: 130px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--surface-2);
-  border: 1px solid var(--border);
-  border-radius: var(--r-md);
-  padding: 14px;
-  transition: background var(--t-med), border-color var(--t-med);
-}
-
-/* ---------- OTOMATİK MOD: SABİT ZAR YÜZLERİ ---------- */
-.dice-auto {
-  display: flex;
-  gap: 16px;
-  align-items: center;
-  justify-content: center;
-}
-
-.die {
-  width: 52px;
-  height: 52px;
-  background: linear-gradient(145deg, #ffffff, #e6e9ef);
-  border-radius: 12px;
-  box-shadow: var(--shadow-md), inset 0 2px 4px rgba(255,255,255,0.8),
-              inset 0 -3px 5px rgba(0,0,0,0.15);
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  grid-template-rows: repeat(3, 1fr);
-  padding: 8px;
-  gap: 2px;
-}
-
-/* Pip (zar noktası) — varsayılan gizli, değere göre açılır */
-.die .pip {
-  width: 9px;
-  height: 9px;
-  border-radius: 50%;
-  background: #2b2f36;
-  align-self: center;
-  justify-self: center;
-  visibility: hidden;
-}
-
-/* Pip yerleşimi: 9 hücreli grid (1..9 sırasıyla) 
-   Konumlar:  1 2 3
-              4 5 6
-              7 8 9
-*/
-
-/* Değer 1 → merkez (5) */
-.die[data-value="1"] .pip:nth-child(5) { visibility: visible; }
-
-/* Değer 2 → köşeler (1,9) */
-.die[data-value="2"] .pip:nth-child(1),
-.die[data-value="2"] .pip:nth-child(9) { visibility: visible; }
-
-/* Değer 3 → (1,5,9) */
-.die[data-value="3"] .pip:nth-child(1),
-.die[data-value="3"] .pip:nth-child(5),
-.die[data-value="3"] .pip:nth-child(9) { visibility: visible; }
-
-/* Değer 4 → (1,3,7,9) */
-.die[data-value="4"] .pip:nth-child(1),
-.die[data-value="4"] .pip:nth-child(3),
-.die[data-value="4"] .pip:nth-child(7),
-.die[data-value="4"] .pip:nth-child(9) { visibility: visible; }
-
-/* Değer 5 → (1,3,5,7,9) */
-.die[data-value="5"] .pip:nth-child(1),
-.die[data-value="5"] .pip:nth-child(3),
-.die[data-value="5"] .pip:nth-child(5),
-.die[data-value="5"] .pip:nth-child(7),
-.die[data-value="5"] .pip:nth-child(9) { visibility: visible; }
-
-/* Değer 6 → (1,3,4,6,7,9) — iki sütun üçer */
-.die[data-value="6"] .pip:nth-child(1),
-.die[data-value="6"] .pip:nth-child(3),
-.die[data-value="6"] .pip:nth-child(4),
-.die[data-value="6"] .pip:nth-child(6),
-.die[data-value="6"] .pip:nth-child(7),
-.die[data-value="6"] .pip:nth-child(9) { visibility: visible; }
-
-/* Otomatik mod atış animasyonu (kısa, sabit konumlu) */
-.die.rolling {
-  animation: dieShake 0.5s ease;
-}
-
-@keyframes dieShake {
-  0%   { transform: translateY(0) rotate(0deg); }
-  25%  { transform: translateY(-8px) rotate(-12deg); }
-  50%  { transform: translateY(0) rotate(10deg); }
-  75%  { transform: translateY(-4px) rotate(-6deg); }
-  100% { transform: translateY(0) rotate(0deg); }
-}
-
-/* Kullanılmış zar değeri soluklaşır */
-.die.used {
-  opacity: 0.35;
-  filter: grayscale(0.6);
-}
-
-/* ---------- MANUEL MOD: 3D CANVAS ---------- */
-.dice-3d {
-  width: 100%;
-  height: 100%;
-  position: absolute;
-  inset: 0;
-  border-radius: var(--r-md);
-  overflow: hidden;
-}
-
-.dice-3d canvas {
-  width: 100% !important;
-  height: 100% !important;
-  display: block;
-}
-
-/* Manuel modda "tahtaya at" ipucu metni */
-.dice-3d .throw-hint {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  font-size: 0.78rem;
-  color: var(--text-faint);
-  pointer-events: none;
-  white-space: nowrap;
-}
-
-/* ---------- KALAN HAMLE GÖSTERGESİ ---------- */
-.moves-left {
-  margin-top: 14px;
-  display: flex;
-  align-items: center;
-  justify-
-
-content: center;
-  gap: 8px;
-  font-size: 0.9rem;
-  color: var(--text-soft);
-}
-
-.moves-values {
-  display: inline-flex;
-  gap: 6px;
-  font-weight: 700;
-  color: var(--text);
-  font-variant-numeric: tabular-nums;
-}
-
-/* Tek tek hamle değeri rozeti */
-.move-chip {
-  min-width: 26px;
-  height: 26px;
-  padding: 0 6px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-radius: var(--r-sm);
-  font-size: 0.85rem;
-}
-
-.move-chip.used {
-  opacity: 0.4;
-  text-decoration: line-through;
-}
-
-/* ---------- "ZAR AT" BUTONU ---------- */
-.roll-btn {
-  margin-top: 16px;
-  width: 100%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  padding: 13px 18px;
-  background: var(--accent);
-  color: #fff;
-  font-weight: 700;
-  font-size: 1rem;
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-sm);
-  transition: background var(--t-fast), transform var(--t-fast),
-              box-shadow var(--t-fast), opacity var(--t-fast);
-}
-
-.roll-btn svg { color: #fff; }
-
-.roll-btn:hover {
-  background: var(--accent-hover);
-  box-shadow: var(--shadow-md);
-}
-
-.roll-btn:active { transform: scale(0.97); }
-
-.roll-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-  box-shadow: none;
-}
-
-/* ---------- "SIRA GEÇ" BUTONU ---------- */
-.pass-btn {
-  margin-top: 10px;
-  width: 100%;
-  padding: 11px 16px;
-  background: var(--warn);
-  color: #1c1407;
-  font-weight: 700;
-  border-radius: var(--r-md);
-  box-shadow: var(--shadow-sm);
-  transition: transform var(--t-fast), filter var(--t-fast);
-}
-
-.pass-btn:hover { filter: brightness(1.06); }
-.pass-btn:active { transform: scale(0.97); }
-
-
-/* ==========================================================
-   main.css — Parça 5/6
-   BÖLÜM: Ayarlar paneli (drawer + overlay), segmented
-   butonlar, toggle switch, ses seviyesi slider'ı
-========================================================== */
-
-/* ---------- ARKA KARARTMA (OVERLAY) ---------- */
 .settings-overlay {
   position: fixed;
   inset: 0;
-  background: rgba(8, 12, 20, 0.45);
-  backdrop-filter: blur(2px);
+  background: rgba(8,12,20,.5);
+  backdrop-filter: blur(3px);
   z-index: 50;
   opacity: 0;
   animation: fadeIn var(--t-med) forwards;
 }
-
 .settings-overlay[hidden] { display: none; }
+@keyframes fadeIn { to { opacity: 1; } }
 
-@keyframes fadeIn {
-  to { opacity: 1; }
-}
-
-/* ---------- AYARLAR PANELİ (DRAWER) ---------- */
 .settings-panel {
   position: fixed;
-  top: 0;
-  right: 0;
+  top: 0; right: 0;
   height: 100%;
-  width: 360px;
-  max-width: 90vw;
+  width: 340px;
+  max-width: 92vw;
   background: var(--surface);
   border-left: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
@@ -883,72 +853,67 @@ content: center;
   transform: translateX(100%);
   transition: transform var(--t-med);
 }
+.settings-panel.open { transform: translateX(0); }
 
-/* Açık durum (JS .open ekler) */
-.settings-panel.open {
-  transform: translateX(0);
-}
-
-/* ---------- PANEL BAŞLIĞI ---------- */
 .settings-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 18px 20px;
+  padding: 16px 18px;
   border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
 }
 
 .settings-title {
   display: flex;
   align-items: center;
-  gap: 10px;
-  font-size: 1.15rem;
+  gap: 8px;
+  font-size: 1.05rem;
+  font-weight: 700;
 }
-
 .settings-title svg { color: var(--accent); }
 
-/* ---------- PANEL GÖVDESİ ---------- */
 .settings-body {
   flex: 1;
   overflow-y: auto;
-  padding: 20px;
+  padding: 18px;
   display: flex;
   flex-direction: column;
-  gap: 26px;
+  gap: 22px;
 }
 
-/* ---------- AYAR GRUBU ---------- */
 .settings-group {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 10px;
 }
 
 .group-title {
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: .5px;
 }
 
 .group-hint {
-  font-size: 0.8rem;
+  font-size: 0.78rem;
   color: var(--text-faint);
-  margin-top: -6px;
+  margin-top: -4px;
 }
 
-/* ---------- AYAR SATIRI ---------- */
 .setting-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 12px;
+  gap: 10px;
 }
 
 .setting-label {
   display: flex;
   align-items: center;
-  gap: 8px;
-  font-size: 0.9rem;
+  gap: 6px;
+  font-size: 0.85rem;
   color: var(--text-soft);
 }
 
@@ -964,182 +929,123 @@ content: center;
 .seg-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 7px 12px;
-  font-size: 0.82rem;
+  gap: 5px;
+  padding: 6px 10px;
+  font-size: 0.78rem;
   font-weight: 600;
   color: var(--text-soft);
   border-radius: var(--r-sm);
   white-space: nowrap;
   transition: background var(--t-fast), color var(--t-fast);
 }
-
-.seg-btn svg { width: 16px; height: 16px; }
-
+.seg-btn svg { width: 14px; height: 14px; }
 .seg-btn:hover { color: var(--text); }
-
-/* Aktif segment (JS .active ekler) */
 .seg-btn.active {
   background: var(--surface);
   color: var(--accent);
   box-shadow: var(--shadow-sm);
 }
 
-/* ---------- TOGGLE SWITCH (SES AÇ/KAPA) ---------- */
+/* ---------- TOGGLE SWITCH ---------- */
 .toggle {
   position: relative;
   display: inline-flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
 }
-
 .toggle-track {
-  width: 46px;
-  height: 26px;
+  width: 42px; height: 24px;
   border-radius: var(--r-pill);
   background: var(--border-strong);
   position: relative;
   transition: background var(--t-fast);
 }
-
 .toggle-thumb {
   position: absolute;
-  top: 3px;
-  left: 3px;
-  width: 20px;
-  height: 20px;
+  top: 3px; left: 3px;
+  width: 18px; height: 18px;
   border-radius: 50%;
   background: #fff;
   box-shadow: var(--shadow-sm);
   transition: transform var(--t-fast);
 }
+.toggle[data-on="true"] .toggle-track { background: var(--accent); }
+.toggle[data-on="true"] .toggle-thumb { transform: translateX(18px); }
 
-/* Açık durum */
-.toggle[data-on="true"] .toggle-track {
-  background: var(--accent);
-}
-
-.toggle[data-on="true"] .toggle-thumb {
-  transform: translateX(20px);
-}
-
-/* Toggle yanındaki durum ikonları */
-.toggle-ico {
-  width: 18px;
-  height: 18px;
-  color: var(--text-faint);
-}
-
+.toggle-ico { width: 16px; height: 16px; color: var(--text-faint); }
 .toggle[data-on="true"]  .ico-off { display: none; }
 .toggle[data-on="true"]  .ico-on  { display: inline-block; color: var(--accent); }
 .toggle[data-on="false"] .ico-on  { display: none; }
 .toggle[data-on="false"] .ico-off { display: inline-block; }
 
-/* ---------- SES SE
-
-VİYESİ SLIDER'I ---------- */
+/* ---------- SLIDER ---------- */
 .slider {
   -webkit-appearance: none;
   appearance: none;
-  width: 150px;
-  height: 6px;
+  width: 130px; height: 5px;
   border-radius: var(--r-pill);
   background: var(--surface-3);
   outline: none;
   cursor: pointer;
 }
-
-/* WebKit thumb */
 .slider::-webkit-slider-thumb {
   -webkit-appearance: none;
-  appearance: none;
-  width: 18px;
-  height: 18px;
+  width: 16px; height: 16px;
   border-radius: 50%;
   background: var(--accent);
   box-shadow: var(--shadow-sm);
   transition: transform var(--t-fast);
 }
-
 .slider::-webkit-slider-thumb:hover { transform: scale(1.15); }
-
-/* Firefox thumb */
 .slider::-moz-range-thumb {
-  width: 18px;
-  height: 18px;
-  border: none;
-  border-radius: 50%;
+  width: 16px; height: 16px;
+  border: none; border-radius: 50%;
   background: var(--accent);
   box-shadow: var(--shadow-sm);
 }
-
-/* Ses kapalıyken slider soluk */
-.slider:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-
-
+.slider:disabled { opacity: .4; cursor: not-allowed; }
 
 /* ==========================================================
-   main.css — Parça 6/6
-   BÖLÜM: Toast bildirimleri, kazanma overlay'i, genel
-   animasyonlar ve responsive (tablet / mobil) düzen
+   TOAST BİLDİRİMLER
 ========================================================== */
-
-/* ---------- TOAST BİLDİRİM ALANI ---------- */
 .toast-area {
   position: fixed;
-  bottom: 24px;
+  bottom: 16px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 70;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
   pointer-events: none;
 }
 
 .toast {
-  min-width: 220px;
-  max-width: 90vw;
-  padding: 12px 18px;
+  min-width: 200px;
+  max-width: 88vw;
+  padding: 10px 16px;
   background: var(--surface);
   color: var(--text);
   border: 1px solid var(--border);
   border-left: 4px solid var(--accent);
   border-radius: var(--r-md);
   box-shadow: var(--shadow-lg);
-  font-size: 0.9rem;
+  font-size: 0.85rem;
   font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 10px;
   animation: toastIn var(--t-med) forwards;
 }
-
-/* Tür renkleri (JS .toast-danger / -success / -warn ekler) */
+.toast.toast-warn    { border-left-color: var(--warn); }
 .toast.toast-danger  { border-left-color: var(--danger); }
 .toast.toast-success { border-left-color: var(--success); }
-.toast.toast-warn    { border-left-color: var(--warn); }
+.toast.out { animation: toastOut var(--t-med) forwards; }
 
-.toast.out {
-  animation: toastOut var(--t-med) forwards;
-}
+@keyframes toastIn  { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+@keyframes toastOut { from { opacity:1; transform:translateY(0); } to { opacity:0; transform:translateY(10px); } }
 
-@keyframes toastIn {
-  from { opacity: 0; transform: translateY(14px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes toastOut {
-  from { opacity: 1; transform: translateY(0); }
-  to   { opacity: 0; transform: translateY(14px); }
-}
-
-/* ---------- KAZANMA OVERLAY'İ ---------- */
+/* ==========================================================
+   KAZANMA OVERLAY
+========================================================== */
 .win-overlay {
   position: fixed;
   inset: 0;
@@ -1147,52 +1053,36 @@ VİYESİ SLIDER'I ---------- */
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgba(8, 12, 20, 0.6);
-  backdrop-filter: blur(4px);
+  background: rgba(8,12,20,.6);
+  backdrop-filter: blur(5px);
   animation: fadeIn var(--t-med) forwards;
 }
-
 .win-overlay[hidden] { display: none; }
 
 .win-card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--r-lg);
-  box-shadow: var(--shadow-lg);
-  padding: 36px 40px;
+  box-shadow: var(--shadow-xl);
+  padding: 30px 36px;
   text-align: center;
-  max-width: 90vw;
-  animation: winPop var(--t-slow) cubic-bezier(0.2, 0.8, 0.3, 1.2) forwards;
+  max-width: 88vw;
+  animation: winPop var(--t-slow) cubic-bezier(.2,.8,.3,1.2) forwards;
 }
-
 @keyframes winPop {
-  from { opacity: 0; transform: scale(0.85); }
-  to   { opacity: 1; transform: scale(1); }
+  from { opacity:0; transform:scale(.82); }
+  to   { opacity:1; transform:scale(1); }
 }
 
-.win-icon {
-  width: 52px;
-  height: 52px;
-  color: var(--accent);
-  margin-bottom: 12px;
-}
-
-.win-title {
-  font-size: 1.5rem;
-  margin-bottom: 6px;
-}
-
-.win-sub {
-  font-size: 0.95rem;
-  color: var(--text-soft);
-  margin-bottom: 24px;
-}
+.win-icon  { width: 48px; height: 48px; color: var(--accent); margin-bottom: 10px; }
+.win-title { font-size: 1.4rem; margin-bottom: 5px; }
+.win-sub   { font-size: 0.9rem; color: var(--text-soft); margin-bottom: 22px; }
 
 .win-restart-btn {
   display: inline-flex;
   align-items: center;
-  gap: 10px;
-  padding: 12px 22px;
+  gap: 8px;
+  padding: 11px 20px;
   background: var(--accent);
   color: #fff;
   font-weight: 700;
@@ -1200,118 +1090,54 @@ VİYESİ SLIDER'I ---------- */
   box-shadow: var(--shadow-sm);
   transition: background var(--t-fast), transform var(--t-fast);
 }
-
 .win-restart-btn svg { color: #fff; }
-.win-restart-btn:hover { background: var(--accent-hover); }
-.win-restart-btn:active { transform: scale(0.97); }
-
-/* ---------- PUL HAREKET ANİMASYONU ---------- */
-/* JS yeni pul eklerken kısa giriş animasyonu uygular */
-.checker.placing {
-  animation: checkerPlace 0.25s ease;
-}
-
-@keyframes checkerPlace {
-  from { transform: scale(0.4); opacity: 0; }
-  to   { transform: scale(1); opacity: 1; }
-}
-
-/* Vurulan (hit) pulun bara uçma hissi */
-.checker.hit {
-  animation: checkerHit 0.35s ease;
-}
-
-@keyframes checkerHit {
-  0%   { transform: scale(1); }
-  50%  { transform: scale(1.3) rotate(20deg); }
-  100% { transform: scale(1); }
-}
+.win-restart-btn:hover  { background: var(--accent-hover); }
+.win-restart-btn:active { transform: scale(.96); }
 
 /* ==========================================================
-   RESPONSIVE — TABLET (≤ 1000px)
-   Yan paneller daralır, grid sütunları küçülür.
+   RESPONSIVE — portrait modunda uyarı
+   (Oyun yatay için tasarlandı)
 ========================================================== */
-@media (max-width: 1000px) {
-  .game-area {
-    grid-template-columns: 150px minmax(0, 1fr) 190px;
-    gap: 12px;
-    padding:
+.rotate-hint {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 999;
+  background: var(--bg);
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  text-align: center;
+  padding: 24px;
+}
+.rotate-hint svg { width: 56px; height: 56px; color: var(--accent); }
+.rotate-hint p   { font-size: 1rem; color: var(--text-soft); max-width: 240px; }
 
-16px 12px 32px;
-  }
-
-  .board { max-width: 100%; }
-
-  .die { width: 44px; height: 44px; }
+/* Eğer ekran portrait VE küçükse uyarı göster */
+@media (orientation: portrait) and (max-width: 700px) {
+  .rotate-hint { display: flex; }
 }
 
 /* ==========================================================
-   RESPONSIVE — MOBİL (≤ 720px)
-   Tek sütun düzen: tahta üstte, paneller altında yan yana,
-   zar alanı en altta.
+   KÜÇÜK YATAY EKRANLAR (yükseklik < 400px)
+   Panel daha kompakt
 ========================================================== */
-@media (max-width: 720px) {
-  .game-area {
-    grid-template-columns: 1fr;
-    grid-template-areas:
-      "board"
-      "panels"
-      "dice";
-  }
-
-  /* Tahta en üste */
-  .board-wrap { grid-area: board; order: 0; }
-
-  /* İki oyuncu paneli yan yana */
-  #panelP2, #panelP1 {
-    grid-area: panels;
-  }
-
-  .player-panel.side-right { order: 2; }
-
-  /* Paneller satır içinde kompakt */
-  .player-panel {
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-  }
-
-  .player-stats {
-    flex-direction: row;
-    gap: 8px;
-  }
-
-  /* Sıra göstergesi metnini kısalt */
-  .turn-text { font-size: 0.85rem; }
-
-  /* Ayarlar paneli tam genişlik */
-  .settings-panel { width: 100%; max-width: 100%; }
-
-  .board { aspect-ratio: 11 / 10; }
-
-  .header-left .brand-title { font-size: 1.1rem; }
+@media (max-height: 400px) {
+  :root { --ctrl-w: 110px; }
+  .die { width: 36px; height: 36px; }
+  .die .pip { width: 6px; height: 6px; }
+  .roll-btn { padding: 8px 6px; font-size: 0.78rem; }
+  .player-head { padding: 4px 6px; }
+  .stat { padding: 3px 6px; }
 }
 
 /* ==========================================================
-   RESPONSIVE — KÜÇÜK MOBİL (≤ 420px)
-========================================================== */
-@media (max-width: 420px) {
-  .turn-indicator { padding: 6px 10px; }
-  .die { width: 40px; height: 40px; }
-  .die .pip { width: 7px; height: 7px; }
-  .roll-btn { padding: 11px 14px; font-size: 0.95rem; }
-}
-
-/* ==========================================================
-   ERİŞİLEBİLİRLİK: hareketi azalt tercihi
+   ERİŞİLEBİLİRLİK
 ========================================================== */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
-    animation-duration: 0.001ms !important;
-    transition-duration: 0.001ms !important;
+  *, *::before, *::after {
+    animation-duration: .001ms !important;
+    transition-duration: .001ms !important;
   }
 }
