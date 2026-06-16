@@ -342,8 +342,7 @@ svg {
 .stat {
   display: flex;
   align-items: center;
-
-justify-content: space-between;
+  justify-content: space-between;
   padding: 10px 12px;
   background: var(--surface-2);
   border-radius: var(--r-md);
